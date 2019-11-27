@@ -13,7 +13,7 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 import TodoList from '../components/TodoList';
 
-export default function LinksScreen() {
+export default function TodoScreen() {
 
   const [inputvalue, setValue] = useState(''); // state of text input
   const [editvalue, setEditValue] = useState([]); // state of list item input
@@ -200,8 +200,8 @@ export default function LinksScreen() {
 
 
 
-LinksScreen.navigationOptions = {
-  title: 'Links',
+TodoScreen.navigationOptions = {
+  title: 'Todos',
 };
 
 const styles = StyleSheet.create({
