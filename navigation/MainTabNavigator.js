@@ -4,6 +4,7 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
+import JournalScreen from '../screens/JournalScreen';
 import TodoScreen from '../screens/TodoScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
@@ -12,6 +13,9 @@ const config = Platform.select({
   default: {},
 });
 
+/**
+ * 
+ */
 const HomeStack = createStackNavigator(
   {
     Home: HomeScreen,
@@ -35,6 +39,35 @@ HomeStack.navigationOptions = {
 
 HomeStack.path = '';
 
+/**
+ * 
+ */
+const JournalStack = createStackNavigator(
+  {
+    Journal: JournalScreen,
+  },
+  config
+);
+
+JournalStack.navigationOptions = {
+  tabBarLabel: 'Journal',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === 'ios'
+          ? `ios-information-circle${focused ? '' : '-outline'}`
+          : 'md-information-circle'
+      }
+    />
+  ),
+};
+
+JournalStack.path = '';
+
+/**
+ * 
+ */
 const TodoStack = createStackNavigator(
   {
     Links: TodoScreen,
@@ -50,7 +83,9 @@ TodoStack.navigationOptions = {
 };
 
 TodoStack.path = '';
-
+/**
+ * 
+ */
 const SettingsStack = createStackNavigator(
   {
     Settings: SettingsScreen,
@@ -69,6 +104,7 @@ SettingsStack.path = '';
 
 const tabNavigator = createBottomTabNavigator({
   HomeStack,
+  JournalStack,
   TodoStack,
   SettingsStack,
 });
