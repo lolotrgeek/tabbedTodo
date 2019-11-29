@@ -9,51 +9,40 @@ import {
   ScrollView
 } from 'react-native';
 
-import {getAll, storeItem, updateItem, removeItem, removeAll} from '../constants/Functions'
+import {updateItem, removeItem} from '../constants/Functions'
 
 
 import Icon from 'react-native-vector-icons/Feather';
-import EntryList from '../components/EntryList';
+import ProjectList from '../components/ProjectList';
 
-export default function JournalScreen() {
+export default function EditorScreen() {
 
   const [inputvalue, setValue] = useState(''); // state of text input
-  const [journalEntries, setJournalEntry] = useState([]); // state of journalEntries list
+  const [projects, setProject] = useState([]); // state of projects list
 
 
   useEffect(() => {
-    getAll(value => value.type === 'journal' ? true : false, entry => setJournalEntry(journalEntries => [...journalEntries, entry]))
+    
   }, [])
 
-  const addEntry = () => {
-    if (inputvalue.length > 0) {
-      const NEWKEY = Date.now().toString()
-      const NEWVALUE = { type :'journal', text: inputvalue}
-      const NEWENTRY = [NEWKEY, NEWVALUE]
-      storeItem(NEWKEY, NEWVALUE)
-      setJournalEntry([...journalEntries, NEWENTRY]); // add todo to state
-      setValue(''); // reset value of input to empty
-    }
-  }
-
-  const updateEntry = (key, value) => {
+  const updateProject = (key, value) => {
     updateItem(key, value)
     // find where key is the same and overwrite it
-    let update = journalEntries.filter(todo => {
+    let update = projects.filter(todo => {
       if (todo[0] === key) {
         todo[1] = value
         return todo
       }
     })
     console.log('STATE - updated : ', update)
-    console.log('STATE - journalEntries : ', journalEntries)
-    // setJournalEntry([...journalEntries, update[1].text = editvalue.input])
+    console.log('STATE - Projects : ', projects)
+    // setJournalEntry([...projects, update[1].text = editvalue.input])
   }
 
-  const deleteEntry = id => {
+  const deleteProject = id => {
     removeItem(id)
-    setJournalEntry(
-      journalEntries.filter(todo => {
+    setProject(
+      projects.filter(todo => {
         if (todo[0] !== id) {
           return true;
         }
@@ -62,30 +51,30 @@ export default function JournalScreen() {
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Journal Entries</Text>
+      <Text style={styles.header}>Projects</Text>
       <View style={styles.textInputContainer}>
         <TextInput
           style={styles.textInput}
           multiline={false}
-          placeholder="What do you want to enter?"
+          placeholder="Enter Project Name?"
           placeholderTextColor="#abbabb"
           value={inputvalue}
           onChangeText={inputvalue => setValue(inputvalue)}
         />
-        <TouchableOpacity onPress={() => addEntry()}>
+        <TouchableOpacity onPress={() => updateProject()}>
           <Icon name="plus" size={30} color="blue" style={{ marginLeft: 10 }} />
         </TouchableOpacity>
       </View>
       <ScrollView style={{ width: '100%' }}>
-        {journalEntries.map((item, i) =>
-          (<EntryList
+        {projects.map((item, i) =>
+          (<ProjectList
             text={item[1].text }
             key={item[0]}
-            deleteEntry={() => deleteEntry(item[0])}
+            deleteEntry={() => deleteProject(item[0])}
           />)
         )}
       </ScrollView>
-      <TouchableOpacity onPress={() => removeAll(setJournalEntry)}>
+      <TouchableOpacity onPress={() => removeAll(setProject)}>
         <Icon name="minus" size={40} color="red" style={{ marginLeft: 10 }} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => getAll()}>
@@ -95,8 +84,8 @@ export default function JournalScreen() {
   )
 }
 
-JournalScreen.navigationOptions = {
-  title: 'Journal',
+EditorScreen.navigationOptions = {
+  title: 'Edit',
 };
 
 const styles = StyleSheet.create({

@@ -4,6 +4,7 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
+import ProjectScreen from '../screens/ProjectScreen';
 import JournalScreen from '../screens/JournalScreen';
 import TodoScreen from '../screens/TodoScreen';
 import SettingsScreen from '../screens/SettingsScreen';
@@ -14,7 +15,7 @@ const config = Platform.select({
 });
 
 /**
- * 
+ * Home Stack
  */
 const HomeStack = createStackNavigator(
   {
@@ -36,11 +37,10 @@ HomeStack.navigationOptions = {
     />
   ),
 };
-
 HomeStack.path = '';
 
 /**
- * 
+ * Journal Stack
  */
 const JournalStack = createStackNavigator(
   {
@@ -48,7 +48,6 @@ const JournalStack = createStackNavigator(
   },
   config
 );
-
 JournalStack.navigationOptions = {
   tabBarLabel: 'Journal',
   tabBarIcon: ({ focused }) => (
@@ -62,11 +61,37 @@ JournalStack.navigationOptions = {
     />
   ),
 };
-
 JournalStack.path = '';
 
 /**
- * 
+ * Project Stack
+ */
+const ProjectStack = createStackNavigator(
+  {
+    Project: ProjectScreen
+  },
+  config
+);
+
+ProjectStack.navigationOptions = {
+  tabBarLabel: 'Projects',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === 'ios'
+          ? `ios-information-circle${focused ? '' : '-outline'}`
+          : 'md-information-circle'
+      }
+    />
+  ),
+  initialRouteName: 'Project',
+
+};
+ProjectStack.path = '';
+
+/**
+ * TodoStack
  */
 const TodoStack = createStackNavigator(
   {
@@ -81,10 +106,10 @@ TodoStack.navigationOptions = {
     <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'} />
   ),
 };
-
 TodoStack.path = '';
+
 /**
- * 
+ * SettingStack
  */
 const SettingsStack = createStackNavigator(
   {
@@ -102,8 +127,12 @@ SettingsStack.navigationOptions = {
 
 SettingsStack.path = '';
 
+/**
+ * Exports
+ */
 const tabNavigator = createBottomTabNavigator({
   HomeStack,
+  ProjectStack,
   JournalStack,
   TodoStack,
   SettingsStack,

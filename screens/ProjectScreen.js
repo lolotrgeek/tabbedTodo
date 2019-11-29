@@ -6,75 +6,54 @@ import {
   View,
   TouchableOpacity,
   TextInput,
-  ScrollView,
-  AsyncStorage
+  ScrollView
 } from 'react-native';
 
 import {getAll, storeItem, updateItem, removeItem, removeAll} from '../constants/Functions'
 
-import Icon from 'react-native-vector-icons/Feather';
-import TodoList from '../components/TodoList';
-import { arrayExpression } from '@babel/types';
 
-export default function TodoScreen() {
+import Icon from 'react-native-vector-icons/Feather';
+import ProjectList from '../components/ProjectList';
+
+export default function ProjectScreen() {
 
   const [inputvalue, setValue] = useState(''); // state of text input
-  const [editvalue, setEditValue] = useState([]); // state of list item input
-  const [todos, setTodos] = useState([]); // state of todo list
+  const [projects, setProject] = useState([]); // state of projects list
+
 
   useEffect(() => {
-    getAll( value => value.type === 'todo' ? true : false, entry => setTodos(todos => [...todos, entry]))
-  }, []) // [] makes useEffect run once!
-  // https://css-tricks.com/run-useeffect-only-once/
+    getAll(value => value.type === 'project' ? true : false, entry => setProject(projects => [...projects, entry]))
+  }, [])
 
-
-  const addTodo = () => {
+  const addProject = () => {
     if (inputvalue.length > 0) {
       const NEWKEY = Date.now().toString()
-      const NEWVALUE = { type : 'todo', text: inputvalue, checked: false }
+      const NEWVALUE = { type :'project', text: inputvalue}
       const NEWENTRY = [NEWKEY, NEWVALUE]
       storeItem(NEWKEY, NEWVALUE)
-      setTodos([...todos, NEWENTRY]); // add todo to state
+      setProject([...projects, NEWENTRY]); // add todo to state
       setValue(''); // reset value of input to empty
     }
   }
 
-  const checkTodo = id => {
-    setTodos(
-      todos.map(todo => {
-        if (todo[0] === id) {
-          todo[1].checked = !todo[1].checked;
-          updateItem(todo[0], { type : 'todo', text: todo[1].text, checked: todo[1].checked })
-        }
-        return todo;
-      })
-    );
-  }
-
-  const updateTodo = (key, value) => {
+  const updateProject = (key, value) => {
     updateItem(key, value)
     // find where key is the same and overwrite it
-    let update = todos.filter(todo => {
+    let update = projects.filter(todo => {
       if (todo[0] === key) {
         todo[1] = value
         return todo
       }
     })
     console.log('STATE - updated : ', update)
-    console.log('STATE - todos : ', todos)
-    // setTodos([...todos, update[1].text = editvalue.input])
+    console.log('STATE - Projects : ', projects)
+    // setJournalEntry([...projects, update[1].text = editvalue.input])
   }
 
-  const todoState = id => {
-    // console.log('STATE- editvalue : ' , editvalue)
-    if (editvalue.id && editvalue.id === id) return true
-  }
-
-  const deleteTodo = id => {
-    removeItem(id) // remove from async storage
-    setTodos(
-      // filter from todo state
-      todos.filter(todo => {
+  const deleteProject = id => {
+    removeItem(id)
+    setProject(
+      projects.filter(todo => {
         if (todo[0] !== id) {
           return true;
         }
@@ -83,35 +62,30 @@ export default function TodoScreen() {
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Todo List</Text>
+      <Text style={styles.header}>Projects</Text>
       <View style={styles.textInputContainer}>
         <TextInput
           style={styles.textInput}
           multiline={false}
-          placeholder="What do you want to do today?"
+          placeholder="Enter Project Name?"
           placeholderTextColor="#abbabb"
           value={inputvalue}
           onChangeText={inputvalue => setValue(inputvalue)}
         />
-        <TouchableOpacity onPress={() => addTodo()}>
+        <TouchableOpacity onPress={() => addProject()}>
           <Icon name="plus" size={30} color="blue" style={{ marginLeft: 10 }} />
         </TouchableOpacity>
       </View>
       <ScrollView style={{ width: '100%' }}>
-        {todos.map((item, i) =>
-          (<TodoList
-            value={!todoState(item[0]) ? item[1].text : editvalue.input}
+        {projects.map((item, i) =>
+          (<ProjectList
+            text={item[1].text }
             key={item[0]}
-            checked={item[1].checked}
-            onChangeText={input => setEditValue({ id: item[0], input: input })}
-            setChecked={() => checkTodo(item[0])}
-            updateTodo={() => updateTodo(item[0], { text: editvalue.input, checked: item[1].checked })}
-            deleteTodo={() => deleteTodo(item[0])}
-            onFocus={() => setEditValue({ id: item[0], input: item[1].text })}
+            deleteEntry={() => deleteProject(item[0])}
           />)
         )}
       </ScrollView>
-      <TouchableOpacity onPress={() => removeAll (setTodos)}>
+      <TouchableOpacity onPress={() => removeAll(setProject)}>
         <Icon name="minus" size={40} color="red" style={{ marginLeft: 10 }} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => getAll()}>
@@ -121,10 +95,8 @@ export default function TodoScreen() {
   )
 }
 
-
-
-TodoScreen.navigationOptions = {
-  title: 'Todos',
+ProjectScreen.navigationOptions = {
+  title: 'Projects',
 };
 
 const styles = StyleSheet.create({
