@@ -1,6 +1,8 @@
-import React from 'react';
+import * as React from 'react';
 import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
@@ -9,22 +11,43 @@ import JournalScreen from '../screens/JournalScreen';
 import TodoScreen from '../screens/TodoScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
-const config = Platform.select({
-  web: { headerMode: 'screen' },
-  default: {},
-});
 
 /**
- * Home Stack
+ * Main stack
  */
-const HomeStack = createStackNavigator(
-  {
-    Home: HomeScreen,
-  },
-  config
-);
+const Tab = createBottomTabNavigator();
+export default function MainStack() {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen
+        name='Home'
+        options={HomeTab.options}
+        component={HomeTab}
+      />
+      <Tab.Screen
+        name='Settings'
+        options={SettingsTab.options}
+        component={SettingsTab}
+      />
+    </Tab.Navigator>
+  )
+}
 
-HomeStack.navigationOptions = {
+/**
+ * Home Tab
+ */
+const HomeStack = createStackNavigator();
+const ProjectStack = createStackNavigator();
+const HomeTab = () => {
+  return (
+    <HomeStack.Navigator>
+      <HomeStack.Screen name="Projects" component={ProjectScreen} />
+      <HomeStack.Screen name="Journal" component={JournalScreen} />
+      <HomeStack.Screen name="Todo" component={TodoScreen} />
+    </HomeStack.Navigator>
+  )
+}
+HomeTab.options = {
   tabBarLabel: 'Home',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
@@ -35,109 +58,26 @@ HomeStack.navigationOptions = {
           : 'md-information-circle'
       }
     />
-  ),
-};
-HomeStack.path = '';
+  )
+}
+
 
 /**
- * Journal Stack
+ * Setting Tab
  */
-const JournalStack = createStackNavigator(
-  {
-    Journal: JournalScreen,
-  },
-  config
-);
-JournalStack.navigationOptions = {
-  tabBarLabel: 'Journal',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
-    />
-  ),
-};
-JournalStack.path = '';
+const SettingsStack = createStackNavigator();
+const SettingsTab = () => {
+  return (
+    <SettingsStack.Navigator>
+      <SettingsStack.Screen name="Settings" component={SettingsScreen} >
+      </SettingsStack.Screen>
+    </SettingsStack.Navigator>
 
-/**
- * Project Stack
- */
-const ProjectStack = createStackNavigator(
-  {
-    Project: ProjectScreen
-  },
-  config
-);
-
-ProjectStack.navigationOptions = {
-  tabBarLabel: 'Projects',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
-    />
-  ),
-  initialRouteName: 'Project',
-
-};
-ProjectStack.path = '';
-
-/**
- * TodoStack
- */
-const TodoStack = createStackNavigator(
-  {
-    Links: TodoScreen,
-  },
-  config
-);
-
-TodoStack.navigationOptions = {
-  tabBarLabel: 'Todos',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'} />
-  ),
-};
-TodoStack.path = '';
-
-/**
- * SettingStack
- */
-const SettingsStack = createStackNavigator(
-  {
-    Settings: SettingsScreen,
-  },
-  config
-);
-
-SettingsStack.navigationOptions = {
+  )
+}
+SettingsTab.options = {
   tabBarLabel: 'Settings',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'} />
   ),
 };
-
-SettingsStack.path = '';
-
-/**
- * Exports
- */
-const tabNavigator = createBottomTabNavigator({
-  HomeStack,
-  ProjectStack,
-  JournalStack,
-  TodoStack,
-  SettingsStack,
-});
-
-tabNavigator.path = '';
-
-export default tabNavigator;

@@ -1,7 +1,8 @@
-import React, {useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExpoLinksView } from '@expo/samples';
 import {
   StyleSheet,
+  Button,
   Text,
   View,
   TouchableOpacity,
@@ -9,13 +10,13 @@ import {
   ScrollView
 } from 'react-native';
 
-import {getAll, storeItem, updateItem, removeItem, removeAll} from '../constants/Functions'
+import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Functions'
 
 
 import Icon from 'react-native-vector-icons/Feather';
 import ProjectList from '../components/ProjectList';
 
-export default function ProjectScreen() {
+export default function ProjectScreen({ navigation }) {
 
   const [inputvalue, setValue] = useState(''); // state of text input
   const [projects, setProject] = useState([]); // state of projects list
@@ -28,7 +29,7 @@ export default function ProjectScreen() {
   const addProject = () => {
     if (inputvalue.length > 0) {
       const NEWKEY = Date.now().toString()
-      const NEWVALUE = { type :'project', text: inputvalue}
+      const NEWVALUE = { type: 'project', text: inputvalue }
       const NEWENTRY = [NEWKEY, NEWVALUE]
       storeItem(NEWKEY, NEWVALUE)
       setProject([...projects, NEWENTRY]); // add todo to state
@@ -79,9 +80,13 @@ export default function ProjectScreen() {
       <ScrollView style={{ width: '100%' }}>
         {projects.map((item, i) =>
           (<ProjectList
-            text={item[1].text }
+            text={item[1].text}
             key={item[0]}
             deleteEntry={() => deleteProject(item[0])}
+            onPress={() => navigation.navigate('Journal', {
+              projectName: item[1].text,
+              otherParam: 'anything you want here',
+            })}
           />)
         )}
       </ScrollView>
@@ -94,10 +99,6 @@ export default function ProjectScreen() {
     </View>
   )
 }
-
-ProjectScreen.navigationOptions = {
-  title: 'Projects',
-};
 
 const styles = StyleSheet.create({
   container: {

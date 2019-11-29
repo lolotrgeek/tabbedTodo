@@ -14,7 +14,7 @@ export default function ProjectList(props) {
 			/> */}
 			<View>
 				{props.checked && <View style={styles.verticalLine} />}
-				<Text style={styles.listItem} onPress={props.editItem}>{props.text}</Text>
+				<Text style={styles.listItem} onPress={props.onPress}>{props.text}</Text>
 
 			</View>
 			<Icon

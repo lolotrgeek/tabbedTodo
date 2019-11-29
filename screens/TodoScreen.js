@@ -2,6 +2,7 @@ import React, {useState, useEffect } from 'react';
 import { ExpoLinksView } from '@expo/samples';
 import {
   StyleSheet,
+  Button,
   Text,
   View,
   TouchableOpacity,
@@ -16,7 +17,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import TodoList from '../components/TodoList';
 import { arrayExpression } from '@babel/types';
 
-export default function TodoScreen() {
+export default function TodoScreen({route, navigation}) {
 
   const [inputvalue, setValue] = useState(''); // state of text input
   const [editvalue, setEditValue] = useState([]); // state of list item input
@@ -84,6 +85,10 @@ export default function TodoScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Todo List</Text>
+      <Button
+        title="Go Home"
+        onPress={() => navigation.push('Projects')}
+      />
       <View style={styles.textInputContainer}>
         <TextInput
           style={styles.textInput}

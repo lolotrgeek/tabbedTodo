@@ -1,7 +1,8 @@
-import React, {useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExpoLinksView } from '@expo/samples';
 import {
   StyleSheet,
+  Button,
   Text,
   View,
   TouchableOpacity,
@@ -9,26 +10,30 @@ import {
   ScrollView
 } from 'react-native';
 
-import {getAll, storeItem, updateItem, removeItem, removeAll} from '../constants/Functions'
+import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Functions'
 
 
 import Icon from 'react-native-vector-icons/Feather';
 import EntryList from '../components/EntryList';
 
-export default function JournalScreen() {
+export default function JournalScreen({ route, navigation }) {
+
+  const { projectName, otherParam } = route.params
 
   const [inputvalue, setValue] = useState(''); // state of text input
   const [journalEntries, setJournalEntry] = useState([]); // state of journalEntries list
 
-
   useEffect(() => {
-    getAll(value => value.type === 'journal' ? true : false, entry => setJournalEntry(journalEntries => [...journalEntries, entry]))
+    getAll(
+      value => value.type === 'journal' && value.project === projectName ? true : false,
+      entry => setJournalEntry(journalEntries => [...journalEntries, entry])
+    )
   }, [])
 
-  const addEntry = () => {
+  const addEntry = (project) => {
     if (inputvalue.length > 0) {
       const NEWKEY = Date.now().toString()
-      const NEWVALUE = { type :'journal', text: inputvalue}
+      const NEWVALUE = { type: 'journal', project: project, text: inputvalue }
       const NEWENTRY = [NEWKEY, NEWVALUE]
       storeItem(NEWKEY, NEWVALUE)
       setJournalEntry([...journalEntries, NEWENTRY]); // add todo to state
@@ -60,9 +65,14 @@ export default function JournalScreen() {
       })
     );
   }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Journal Entries</Text>
+      <Text style={styles.header}> {JSON.stringify(projectName)} Journal Entries</Text>
+      <Button
+        title="Go Home"
+        onPress={() => navigation.push('Projects')}
+      />
       <View style={styles.textInputContainer}>
         <TextInput
           style={styles.textInput}
@@ -72,14 +82,14 @@ export default function JournalScreen() {
           value={inputvalue}
           onChangeText={inputvalue => setValue(inputvalue)}
         />
-        <TouchableOpacity onPress={() => addEntry()}>
+        <TouchableOpacity onPress={() => addEntry(projectName)}>
           <Icon name="plus" size={30} color="blue" style={{ marginLeft: 10 }} />
         </TouchableOpacity>
       </View>
       <ScrollView style={{ width: '100%' }}>
         {journalEntries.map((item, i) =>
           (<EntryList
-            text={item[1].text }
+            text={item[1].text}
             key={item[0]}
             deleteEntry={() => deleteEntry(item[0])}
           />)
@@ -94,10 +104,6 @@ export default function JournalScreen() {
     </View>
   )
 }
-
-JournalScreen.navigationOptions = {
-  title: 'Journal',
-};
 
 const styles = StyleSheet.create({
   container: {

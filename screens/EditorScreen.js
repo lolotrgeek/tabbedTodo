@@ -15,7 +15,7 @@ import {updateItem, removeItem} from '../constants/Functions'
 import Icon from 'react-native-vector-icons/Feather';
 import ProjectList from '../components/ProjectList';
 
-export default function EditorScreen() {
+export default function EditorScreen({navigation}) {
 
   const [inputvalue, setValue] = useState(''); // state of text input
   const [projects, setProject] = useState([]); // state of projects list
