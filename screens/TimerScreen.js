@@ -14,40 +14,50 @@ import Icon from 'react-native-vector-icons/Feather';
 import { TimerList, Timer } from '../components/Timer';
 import { arrayExpression } from '@babel/types';
 import { useStopwatch, useTimer } from 'react-timer-hook';
-
 import BackgroundTimer from 'react-native-background-timer'
+import DateTimePicker from 'react-native-modal-datetime-picker'
+import socketIO from 'socket.io-client'
+//https://brentmarquez.com/uncategorized/how-to-get-socket-io-to-work-with-react-native/
 
-/**
- * Timer Screen
- * @param {Object} param
- * @param {string} param.projectName 
- */
 export default function TimerScreen({ route, navigation }) {
 
   const { projectName, otherParam } = route.params
+
+  //SERVER STATE
+  const endpoint = "http://127.0.0.1:5050"
+  const io = socketIO(endpoint, {
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 1000,
+  })
+  io.on('connection', socket => {
+    setConnection(true)
+    console.log('IO - CONNECTED')
+  })
+
+  // LOCAL STATE
+  const [connection, setConnection] = useState(Boolean)
   const [timers, setTimers] = useState([]); // state of timer list
-  const [inputvalue, setValue] = useState(''); // state of text input
-  const [second, setbackgroundTimer] = useState([])
+  const [selectorvalue, setValue] = useState(''); // state of timer selector
+  const [elements, setElements] = useState({})
+  // const [second, setbackgroundTimer] = useState([])
+  const { seconds, minutes, hours, days, start, pause, resume, restart } = useTimer({ expiryTimestamp: selectorvalue, onExpire: () => console.log('onExpire called') })
 
-  let t = new Date()
-  t.setSeconds(t.getSeconds() + inputvalue)
-
-  const {
-    seconds,
-    minutes,
-    hours,
-    days,
-    start,
-    pause,
-    resume,
-    restart
-  } = useTimer({ expiryTimestamp : t, onExpire: () => console.log('onExpire called') })
-
-
-
+  // When the View is loaded..
   useEffect(() => {
     getAll(value => value.type === 'timer' && value.project === projectName ? true : false, entry => setTimers(timers => [...timers, entry]))
+    const focused = navigation.addListener('focus', () => {
+
+    })
+
+    const unfocused = navigation.addListener('blur', () => {
+
+
+    })
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return focused, unfocused
   }, [])
+
 
   const addEntry = () => {
     const NEWKEY = Date.now().toString()
@@ -56,11 +66,6 @@ export default function TimerScreen({ route, navigation }) {
     storeItem(NEWKEY, NEWVALUE)
     setTimers([...timers, NEWENTRY]); // add timer to state
     return NEWKEY
-  }
-
-  const addTimer = () => {
-    let t = new Date()
-    t.setSeconds(t.getSeconds() + inputvalue)
   }
 
   const updateTimer = (key, time, event) => {
@@ -82,6 +87,7 @@ export default function TimerScreen({ route, navigation }) {
     if (editvalue.id && editvalue.id === id) return true
   }
 
+
   const deleteTimer = id => {
     removeItem(id) // remove from async storage
     setTimers(
@@ -94,24 +100,6 @@ export default function TimerScreen({ route, navigation }) {
     );
   }
 
-  let _interval
-
-  const startTimer = () => {
-    setbackgroundTimer(0)
-    _interval = BackgroundTimer.setInterval(() => {
-      setbackgroundTimer(second + 1)
-    }, 1000);
-  }
-  const pauseTimer = () => {
-    BackgroundTimer.clearInterval(_interval)
-  }
-
-  const restartTimer = () => {
-    setbackgroundTimer(0)
-    BackgroundTimer.clearInterval(_interval)
-  }
-
-
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Timers</Text>
@@ -119,36 +107,31 @@ export default function TimerScreen({ route, navigation }) {
         title="Go Home"
         onPress={() => navigation.navigate('Projects')}
       />
+      <Button title="Show DatePicker" onPress={() => setElements(true)} />
+      <DateTimePicker
+        isVisible={elements === true ? true : false}
+        mode={'time'}
+        is24Hour={false}
+        onConfirm={() => {
+          setValue()
+          setElements(false)
+          console.log(selectorvalue)
+        }}
+        onCancel={() => {
+          setElements(false)
+          console.log('cancelled time picker')
+        }}
+      />
       <View style={styles.textInputContainer}>
-        <TextInput
-          keyboardType={'numeric'}
-          style={styles.textInput}
-          multiline={false}
-          placeholderTextColor="#abbabb"
-          value={inputvalue}
-          onChangeText={inputvalue => setValue(inputvalue)}
-          
-        />
-        <TouchableOpacity onPress={() => addTimer()}>
-          <Icon name="plus" size={30} color="blue" style={{ marginLeft: 10 }} />
-        </TouchableOpacity>
+
+
       </View>
       <View style={styles.textInputContainer}>
-        {/* <TouchableOpacity onPress={}>
-          <Icon name="plus" size={30} color="blue" style={{ marginLeft: 10 }} />
-        </TouchableOpacity> */}
-        {/* <Timer
-        start={() => startTimer()}
-        pause={() => pauseTimer()}
-        resume={resume}
-        restart={() => restartTimer()}
-        seconds={second}
-      /> */}
         <Timer
-          start={() => start(t)}
+          start={() => start(selectorvalue)}
           pause={() => pause()}
           resume={() => resume()}
-          restart={() => restart(t)}
+          restart={() => restart(selectorvalue)}
           seconds={seconds}
           minutes={minutes}
           hours={hours}
