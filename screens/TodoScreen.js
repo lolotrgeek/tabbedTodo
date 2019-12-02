@@ -7,8 +7,7 @@ import {
   View,
   TouchableOpacity,
   TextInput,
-  ScrollView,
-  AsyncStorage
+  ScrollView
 } from 'react-native';
 
 import {getAll, storeItem, updateItem, removeItem, removeAll} from '../constants/Functions'
@@ -87,7 +86,7 @@ export default function TodoScreen({route, navigation}) {
       <Text style={styles.header}>Todo List</Text>
       <Button
         title="Go Home"
-        onPress={() => navigation.push('Projects')}
+        onPress={() => navigation.navigate('Projects')}
       />
       <View style={styles.textInputContainer}>
         <TextInput

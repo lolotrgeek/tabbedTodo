@@ -71,7 +71,7 @@ export default function JournalScreen({ route, navigation }) {
       <Text style={styles.header}> {JSON.stringify(projectName)} Journal Entries</Text>
       <Button
         title="Go Home"
-        onPress={() => navigation.push('Projects')}
+        onPress={() => navigation.navigate('Projects')}
       />
       <View style={styles.textInputContainer}>
         <TextInput

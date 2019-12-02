@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import ProjectScreen from '../screens/ProjectScreen';
+import TimerScreen from '../screens/TimerScreen'
 import JournalScreen from '../screens/JournalScreen';
 import TodoScreen from '../screens/TodoScreen';
 import SettingsScreen from '../screens/SettingsScreen';
@@ -42,6 +43,7 @@ const HomeTab = () => {
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen name="Projects" component={ProjectScreen} />
+      <HomeStack.Screen name="Timer" component={TimerScreen} />
       <HomeStack.Screen name="Journal" component={JournalScreen} />
       <HomeStack.Screen name="Todo" component={TodoScreen} />
     </HomeStack.Navigator>
@@ -60,7 +62,6 @@ HomeTab.options = {
     />
   )
 }
-
 
 /**
  * Setting Tab

@@ -13,7 +13,6 @@ export default function EntryList(props) {
 				onPress={props.openEntry}
 			/> */}
 			<View>
-				{props.checked && <View style={styles.verticalLine} />}
 				<Text style={styles.listItem} onPress={props.editItem}>{props.text}</Text>
 
 			</View>

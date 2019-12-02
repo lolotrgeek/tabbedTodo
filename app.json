@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "fresh",
+    "name": "Energy Timer",
     "slug": "fresh",
     "privacy": "public",
     "sdkVersion": "35.0.0",
@@ -24,7 +24,14 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
-    }
-  }
+      "supportsTablet": true,
+      "bundleIdentifier": "com.simplyenable.energytimer"
+    },
+    "android": {
+      "package": "com.simplyenable.energytimer"
+    },
+    "entryPoint": "node_modules/expo/AppEntry.js"
+  },
+  "displayName": "Energy Timer",
+  "name": "EnergyTimer"
 }

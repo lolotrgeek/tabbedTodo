@@ -83,7 +83,7 @@ export default function ProjectScreen({ navigation }) {
             text={item[1].text}
             key={item[0]}
             deleteEntry={() => deleteProject(item[0])}
-            onPress={() => navigation.navigate('Journal', {
+            onPress={() => navigation.navigate('Timer', {
               projectName: item[1].text,
               otherParam: 'anything you want here',
             })}
