@@ -1,19 +1,19 @@
 import React from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import { StyleSheet, View, Text, Button, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
-export function TimerInput(props){
-	
+export function TimerInput(props) {
+
 }
 
 export function Timer(props) {
 	return (
 		<View>
-			<Text>{props.days}:{props.hours}:{props.minutes}:{props.seconds}</Text>
-			<Button title='Start' style={{ marginLeft: 'auto' }} onPress={props.start}/>
-			<Button title='Pause' style={{ marginLeft: 'auto' }} onPress={props.pause}/>
-			<Button title='Resume' style={{ marginLeft: 'auto' }} onPress={props.resume}/>
-			<Button title='Restart' style={{ marginLeft: 'auto' }} onPress={props.restart} />
+			{/* <Text style={styles.counter}>{props.days}:{props.hours}:{props.minutes}:{props.seconds}</Text> */}
+			<Text style={styles.counter}>{props.counter}</Text>
+			<Button title='Start' style={{ marginLeft: 'auto' }} onPress={props.start} />
+			<Button title='Pause' style={{ marginLeft: 'auto' }} onPress={props.pause} />
+			<Button title='Reset' style={{ marginLeft: 'auto' }} onPress={props.reset} />
 		</View>
 	);
 }
@@ -41,6 +41,12 @@ export function TimerList(props) {
 }
 
 const styles = StyleSheet.create({
+	counter: {
+		marginTop: '15%',
+		fontSize: 40,
+		color: 'black',
+		paddingBottom: 10
+	},
 	listContainer: {
 		marginTop: '5%',
 		flexDirection: 'row',

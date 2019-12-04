@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { ExpoLinksView } from '@expo/samples';
+import React, { useState, useEffect, useCallback, useRef  } from 'react';
 import {
   StyleSheet,
   Button,
   Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-  ScrollView
+  View
 } from 'react-native';
-import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Functions'
-import Icon from 'react-native-vector-icons/Feather';
-import { TimerList, Timer } from '../components/Timer';
-import { arrayExpression } from '@babel/types';
+
+import useCounter from '../constants/Hooks';
+import { Timer } from '../components/Timer';
 import { useStopwatch, useTimer } from 'react-timer-hook';
-import BackgroundTimer from 'react-native-background-timer'
-import DateTimePicker from 'react-native-modal-datetime-picker'
-import socketIO from 'socket.io-client'
+import Grid from '@material-ui/core/Grid';
+import DateFnsUtils from '@date-io/date-fns';
+import NumPad from 'react-numpad';
+
+import socketIO from 'socket.io-client';
+import { set } from 'store2';
 //https://brentmarquez.com/uncategorized/how-to-get-socket-io-to-work-with-react-native/
 
 export default function TimerScreen({ route, navigation }) {
@@ -24,81 +22,61 @@ export default function TimerScreen({ route, navigation }) {
   const { projectName, otherParam } = route.params
 
   //SERVER STATE
-  const endpoint = "http://127.0.0.1:5050"
-  const io = socketIO(endpoint, {
-    reconnection: true,
-    reconnectionAttempts: Infinity,
-    reconnectionDelay: 1000,
-  })
-  io.on('connection', socket => {
-    setConnection(true)
-    console.log('IO - CONNECTED')
-  })
+  // const endpoint = "http://127.0.0.1:5050"
+  // const io = socketIO(endpoint, {
+  //   reconnection: true,
+  //   reconnectionAttempts: Infinity,
+  //   reconnectionDelay: 1000,
+  // })
+  // io.on('connection', socket => {
+  //   setConnection(true)
+  //   console.log('IO - CONNECTED')
+  // })
 
   // LOCAL STATE
   const [connection, setConnection] = useState(Boolean)
-  const [timers, setTimers] = useState([]); // state of timer list
-  const [selectorvalue, setValue] = useState(''); // state of timer selector
-  const [elements, setElements] = useState({})
-  // const [second, setbackgroundTimer] = useState([])
-  const { seconds, minutes, hours, days, start, pause, resume, restart } = useTimer({ expiryTimestamp: selectorvalue, onExpire: () => console.log('onExpire called') })
+  const [ms, setDuration] = useState(0)
+  // const { count, start, stop, reset } = useCounter(0, ms)
 
-  // When the View is loaded..
+  const [initialValue, setInitialValue] = useState(0)
+  const [count, setCount] = useState(initialValue);
+  const intervalRef = useRef(null);
+
+  const start = useCallback((ms) => {
+    if (intervalRef.current !== null) {
+      return;
+    }
+    
+    intervalRef.current = setInterval(() => {
+      setCount(c => c + 1);
+    }, ms);
+  }, []);
+
+  const stop = useCallback(() => {
+    if (intervalRef.current === null) {
+      return;
+    }
+
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
+  }, []);
+
+  const reset = useCallback(() => {
+    setCount(0);
+  }, []);
+
   useEffect(() => {
-    getAll(value => value.type === 'timer' && value.project === projectName ? true : false, entry => setTimers(timers => [...timers, entry]))
-    const focused = navigation.addListener('focus', () => {
+    const focused = navigation.addListener('focus', () => { 
+
 
     })
-
-    const unfocused = navigation.addListener('blur', () => {
-
-
+    const unfocused = navigation.addListener('blur', () => { 
+      console.log('attempting stop...')
+      stop()
     })
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return focused, unfocused
   }, [])
-
-
-  const addEntry = () => {
-    const NEWKEY = Date.now().toString()
-    const NEWVALUE = { type: 'timer', project: projectName, time: { seconds: seconds, minutes: minutes, hours: hours, days: days } }
-    const NEWENTRY = [NEWKEY, NEWVALUE]
-    storeItem(NEWKEY, NEWVALUE)
-    setTimers([...timers, NEWENTRY]); // add timer to state
-    return NEWKEY
-  }
-
-  const updateTimer = (key, time, event) => {
-    const value = { type: 'timer', project: projectName, time: time }
-    updateItem(key, value)
-    let update = timers.filter(timer => {
-      if (timer[0] === key) {
-        timer[1] = value
-      }
-    })
-    console.log('STATE - updated : ', update)
-    console.log('STATE - timers : ', timers)
-    // setTimers([...timers, update[1].text = editvalue.input])
-    return event
-  }
-
-  const timerState = id => {
-    // console.log('STATE- editvalue : ' , editvalue)
-    if (editvalue.id && editvalue.id === id) return true
-  }
-
-
-  const deleteTimer = id => {
-    removeItem(id) // remove from async storage
-    setTimers(
-      // filter from timer state
-      timers.filter(timer => {
-        if (timer[0] !== id) {
-          return true;
-        }
-      })
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -107,67 +85,30 @@ export default function TimerScreen({ route, navigation }) {
         title="Go Home"
         onPress={() => navigation.navigate('Projects')}
       />
-      <Button title="Show DatePicker" onPress={() => setElements(true)} />
-      <DateTimePicker
-        isVisible={elements === true ? true : false}
-        mode={'time'}
-        is24Hour={false}
-        onConfirm={() => {
-          setValue()
-          setElements(false)
-          console.log(selectorvalue)
-        }}
-        onCancel={() => {
-          setElements(false)
-          console.log('cancelled time picker')
-        }}
+      <Timer
+        start={() => start(ms)}
+        pause={stop}
+        reset={reset}
+        counter={count}
+      // seconds={seconds}
+      // minutes={minutes}
+      // hours={hours}
+      // days={days}
       />
-      <View style={styles.textInputContainer}>
-
-
-      </View>
-      <View style={styles.textInputContainer}>
-        <Timer
-          start={() => start(selectorvalue)}
-          pause={() => pause()}
-          resume={() => resume()}
-          restart={() => restart(selectorvalue)}
-          seconds={seconds}
-          minutes={minutes}
-          hours={hours}
-          days={days}
-        />
-      </View>
-      <ScrollView style={{ width: '100%' }}>
-        {timers.map((item, i) => {
-          let key = item[0]
-          let value = item[1]
-            (<TimerList
-              date={key}
-              start={value.time.start}
-              pause={value.time.pause}
-              resume={value.time.resume}
-              restart={value.time.restart}
-              days={value.time.days}
-              hours={value.time.hours}
-              minutes={value.time.minutes}
-              seconds={value.time.seconds}
-              deleteTimer={() => deleteTimer(key)}
-            />)
-        }
-        )}
-      </ScrollView>
-      <TouchableOpacity onPress={() => removeAll(setTimers)}>
-        <Icon name="minus" size={40} color="red" style={{ marginLeft: 10 }} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => getAll()}>
-        <Icon name="plus" size={40} color="blue" style={{ marginLeft: 10 }} />
-      </TouchableOpacity>
+      <Text style={styles.header}>Time {ms} </Text>
+      <NumPad.Number
+        confirm={}
+        update={}
+        
+        onChange={(value) => { setDuration(value)}}
+        label={'Timer'}
+        placeholder={'my placeholder'}
+        decimal={false}
+        inline={true}
+      />
     </View>
   )
 }
-
-
 
 TimerScreen.navigationOptions = {
   title: 'Timers',
@@ -182,8 +123,8 @@ const styles = StyleSheet.create({
   },
   header: {
     marginTop: '15%',
-    fontSize: 20,
-    color: 'red',
+    fontSize: 40,
+    color: 'black',
     paddingBottom: 10
   },
   textInputContainer: {
