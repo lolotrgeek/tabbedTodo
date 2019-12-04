@@ -12,8 +12,7 @@ export function Timer(props) {
 			{/* <Text style={styles.counter}>{props.days}:{props.hours}:{props.minutes}:{props.seconds}</Text> */}
 			<Text style={styles.counter}>{props.counter}</Text>
 			<Button title='Start' style={{ marginLeft: 'auto' }} onPress={props.start} />
-			<Button title='Pause' style={{ marginLeft: 'auto' }} onPress={props.pause} />
-			<Button title='Reset' style={{ marginLeft: 'auto' }} onPress={props.reset} />
+			<Button title='Stop' style={{ marginLeft: 'auto' }} onPress={props.stop} />
 		</View>
 	);
 }

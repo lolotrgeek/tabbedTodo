@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef  } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   StyleSheet,
   Button,
@@ -35,42 +35,39 @@ export default function TimerScreen({ route, navigation }) {
 
   // LOCAL STATE
   const [connection, setConnection] = useState(Boolean)
-  const [ms, setDuration] = useState(0)
+  const [duration, setDuration] = useState(0)
   // const { count, start, stop, reset } = useCounter(0, ms)
 
   const [initialValue, setInitialValue] = useState(0)
-  const [count, setCount] = useState(initialValue);
+  const [count, setCount] = useState(initialValue)
   const intervalRef = useRef(null);
 
-  const start = useCallback((ms) => {
+  const start = useCallback((ms, value) => {
     if (intervalRef.current !== null) {
       return;
     }
-    
-    intervalRef.current = setInterval(() => {
-      setCount(c => c + 1);
-    }, ms);
+    if (typeof value === 'number' ) {
+      setCount(value)
+      intervalRef.current = setInterval(() => setCount(c => c - 1), ms)
+    }
+    else {
+      console.log(value)
+      intervalRef.current = setInterval(() => setCount(c => c + 1), ms)
+    }
   }, []);
 
-  const stop = useCallback(() => {
+  const stop = useCallback((value) => {
     if (intervalRef.current === null) {
       return;
     }
-
     clearInterval(intervalRef.current);
     intervalRef.current = null;
   }, []);
 
-  const reset = useCallback(() => {
-    setCount(0);
-  }, []);
 
   useEffect(() => {
-    const focused = navigation.addListener('focus', () => { 
-
-
-    })
-    const unfocused = navigation.addListener('blur', () => { 
+    const focused = navigation.addListener('focus', () => { })
+    const unfocused = navigation.addListener('blur', () => {
       console.log('attempting stop...')
       stop()
     })
@@ -86,21 +83,22 @@ export default function TimerScreen({ route, navigation }) {
         onPress={() => navigation.navigate('Projects')}
       />
       <Timer
-        start={() => start(ms)}
-        pause={stop}
-        reset={reset}
+        start={() => { start(1000, count === 0 ? initialValue : count) }}
+        stop={() => {
+          stop(count)
+        }}
         counter={count}
       // seconds={seconds}
       // minutes={minutes}
       // hours={hours}
       // days={days}
       />
-      <Text style={styles.header}>Time {ms} </Text>
+      <Text style={styles.header}>Initial Value: {initialValue} </Text>
       <NumPad.Number
-        confirm={}
-        update={}
-        
-        onChange={(value) => { setDuration(value)}}
+        onChange={(value) => {
+          setInitialValue(value)
+        }
+        }
         label={'Timer'}
         placeholder={'my placeholder'}
         decimal={false}
