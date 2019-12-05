@@ -8,6 +8,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import ProjectScreen from '../screens/ProjectScreen';
 import TimerScreen from '../screens/TimerScreen'
+import TimerListScreen from '../screens/TimerListScreen'
 import JournalScreen from '../screens/JournalScreen';
 import TodoScreen from '../screens/TodoScreen';
 import SettingsScreen from '../screens/SettingsScreen';
@@ -44,6 +45,7 @@ const HomeTab = () => {
     <HomeStack.Navigator>
       <HomeStack.Screen name="Projects" component={ProjectScreen} />
       <HomeStack.Screen name="Timer" component={TimerScreen} />
+      <HomeStack.Screen name="TimerList" component={TimerListScreen} />
       <HomeStack.Screen name="Journal" component={JournalScreen} />
       <HomeStack.Screen name="Todo" component={TodoScreen} />
     </HomeStack.Navigator>

@@ -14,7 +14,7 @@ const io = socketIO("http://127.0.0.1:5050", {
 export const startSocketIO = () => {
     io.connect();
 
-    io.on('connect', () => {
+    io.on('connection', () => {
         console.log('socket connected')
 
         io.on('disconnect', () => {
@@ -23,6 +23,10 @@ export const startSocketIO = () => {
     })
 };
 
-export const emitSocketIO = (message) => {
+export const emitTickSocketIO = (message) => {
     io.emit('tick', message)
+}
+
+export const emitEntrySocketIO = (message) => {
+    io.emit('entry', message)
 }

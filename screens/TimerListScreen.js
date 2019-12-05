@@ -6,22 +6,14 @@ import {
   Text,
   View,
   TouchableOpacity,
-  TextInput,
   ScrollView
 } from 'react-native';
+import { TimerList } from '../components/Timer'
 import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Functions'
 import Icon from 'react-native-vector-icons/Feather';
 
 
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker
-} from '@material-ui/pickers';
-
-import socketIO from 'socket.io-client'
-//https://brentmarquez.com/uncategorized/how-to-get-socket-io-to-work-with-react-native/
-
-export default function TimerScreen({ route, navigation }) {
+export default function TimerListScreen({ route, navigation }) {
 
   const { projectName, otherParam } = route.params
 
@@ -29,37 +21,33 @@ export default function TimerScreen({ route, navigation }) {
   // LOCAL STATE
   const [connection, setConnection] = useState(Boolean)
   const [timers, setTimers] = useState([]); // state of timer list
-  const [elements, setElements] = useState({})
-  // const [second, setbackgroundTimer] = useState([])
-  
+
+  useEffect(async () => {
+    await countKeys()
+  }, [])
 
   // When the View is loaded..
   useEffect(() => {
+    countKeys()
     getAll(value => value.type === 'timer' && value.project === projectName ? true : false, entry => setTimers(timers => [...timers, entry]))
-    const focused = navigation.addListener('focus', () => {
-
-    })
-
-    const unfocused = navigation.addListener('blur', () => {
-
-
-    })
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return focused, unfocused
   }, [])
 
+  // useEffect(() => {
+  //   const focused = navigation.addListener('focus', () => {
 
-  const addEntry = () => {
-    const NEWKEY = Date.now().toString()
-    const NEWVALUE = { type: 'timer', project: projectName, time: { seconds: seconds, minutes: minutes, hours: hours, days: days } }
-    const NEWENTRY = [NEWKEY, NEWVALUE]
-    storeItem(NEWKEY, NEWVALUE)
-    setTimers([...timers, NEWENTRY]); // add timer to state
-    return NEWKEY
-  }
+  //   })
 
-  const updateTimer = (key, time, event) => {
-    const value = { type: 'timer', project: projectName, time: time }
+  //   const unfocused = navigation.addListener('blur', () => {
+
+
+  //   })
+  //   // Return the function to unsubscribe from the event so it gets removed on unmount
+  //   return focused, unfocused
+  // }, [])
+
+
+  const updateTimer = (key, time) => {
+    const value = { type: 'timer', project: projectName, start: time.start, end: time.end }
     updateItem(key, value)
     let update = timers.filter(timer => {
       if (timer[0] === key) {
@@ -77,6 +65,10 @@ export default function TimerScreen({ route, navigation }) {
     if (editvalue.id && editvalue.id === id) return true
   }
 
+  const getAsync = (storeLength) => {
+    if(storeLength !== timers.length) return false
+    return true
+  }
 
   const deleteTimer = id => {
     removeItem(id) // remove from async storage
@@ -92,42 +84,21 @@ export default function TimerScreen({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Timers</Text>
+      <Text style={styles.header}> {projectName} Timers</Text>
       <Button
         title="Go Home"
         onPress={() => navigation.navigate('Projects')}
       />
 
-      <View style={styles.textInputContainer}>
-        <Timer
-          start={() => start(selectorvalue)}
-          pause={() => pause()}
-          resume={() => resume()}
-          restart={() => restart(selectorvalue)}
-          seconds={seconds}
-          minutes={minutes}
-          hours={hours}
-          days={days}
-        />
-      </View>
       <ScrollView style={{ width: '100%' }}>
         {timers.map((item, i) => {
-          let key = item[0]
-          let value = item[1]
             (<TimerList
-              date={key}
-              start={value.time.start}
-              pause={value.time.pause}
-              resume={value.time.resume}
-              restart={value.time.restart}
-              days={value.time.days}
-              hours={value.time.hours}
-              minutes={value.time.minutes}
-              seconds={value.time.seconds}
+              date={item[0]}
+              start={item[1].start}
+              stop={item[1].stop}
               deleteTimer={() => deleteTimer(key)}
             />)
-        }
-        )}
+        })}
       </ScrollView>
       <TouchableOpacity onPress={() => removeAll(setTimers)}>
         <Icon name="minus" size={40} color="red" style={{ marginLeft: 10 }} />
@@ -141,7 +112,7 @@ export default function TimerScreen({ route, navigation }) {
 
 
 
-TimerScreen.navigationOptions = {
+TimerListScreen.navigationOptions = {
   title: 'Timers',
 };
 

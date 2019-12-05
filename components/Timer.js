@@ -22,10 +22,7 @@ export function TimerList(props) {
 		<View style={styles.listContainer}>
 			<View>
 				{<View style={styles.verticalLine} />}
-				<View style={styles.listItem}>
-					<Text>{props.date} - </Text>
-					<Text>{props.days}:{props.hours}:{props.minutes}:{props.seconds}</Text>
-				</View>
+				<Text style={styles.listItem}>{props.date} - Start : {props.start} Stop : {props.stop}</Text>
 			</View>
 			<Icon
 				name="trash-2"

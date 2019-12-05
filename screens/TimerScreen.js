@@ -12,17 +12,18 @@ import { useStopwatch, useTimer } from 'react-timer-hook';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
 import NumPad from 'react-numpad';
-import {startSocketIO, emitSocketIO} from '../constants/Socket';
+import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
+
+import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Functions'
+
 
 export default function TimerScreen({ route, navigation }) {
 
   const { projectName, otherParam } = route.params
 
-
-
   // LOCAL STATE
   const [connection, setConnection] = useState()
-  const [duration, setDuration] = useState(0)
+  const [currentTimer, setCurrentTimer] = useState('')
   // const { count, start, stop, reset } = useCounter(0, ms)
   const [initialValue, setInitialValue] = useState(0)
   const [count, setCount] = useState(initialValue)
@@ -34,25 +35,27 @@ export default function TimerScreen({ route, navigation }) {
   }, [])
 
   useEffect(() => {
-    emitSocketIO(count)
+    emitEntrySocketIO(currentTimer)
+  },[currentTimer])
+
+  useEffect(() => {
+    emitTickSocketIO([currentTimer[0], count])
   },[count])
 
   // TIMER FUNCTIONS
-  const start = useCallback((ms, value) => {
+  const start = useCallback((ms, value, countdown) => {
     if (intervalRef.current !== null) {
       return;
     }
 
-    if (typeof value === 'number') {
+    if (countdown) {
       setCount(value)
       intervalRef.current = setInterval(() => {
         setCount(c => c - 1)
-        
       }, ms)
 
     }
     else {
-      console.log(value)
       intervalRef.current = setInterval(() => setCount(c => c + 1), ms)
     }
   }, []);
@@ -74,27 +77,54 @@ export default function TimerScreen({ route, navigation }) {
     const unfocused = navigation.addListener('blur', () => {
       console.log('attempting stop...')
       stop()
+      
     })
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return focused, unfocused
   }, [])
 
-  
+  // STORAGE FUNCTIONS
+  const addTimer = (start) => {
+    const NEWKEY = Date.now().toString()
+    const NEWVALUE = {
+      type: 'timer',
+      project: projectName,
+      start: start,
+      stop: count,
+    }
+    const NEWENTRY = [NEWKEY, NEWVALUE]
+    console.log(NEWVALUE)
+    storeItem(NEWKEY, NEWVALUE)
+    setCurrentTimer(NEWENTRY)
+  }
+  const updateTimer = (key, count) => {
+    let value = {
+      type: 'timer',
+      project: projectName,
+      start: initialValue,
+      stop: count,
+    }
+    setCurrentTimer([key, value])
+    updateItem(key, value)
+  }
 
   // TIMER VIEW
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Timers</Text>
+      <Text style={styles.header}>{projectName} Timer</Text>
       <Button
         title="Go Home"
         onPress={() => navigation.navigate('Projects')}
       />
       <Timer
         start={() => {
-          start(1000, countDown())
+          // start(1000, countDown())
+          start(1000, initialValue, true)
+          addTimer(initialValue)
         }}
         stop={() => {
           stop(count)
+          updateTimer(currentTimer[0], count)
         }}
         counter={count}
       // seconds={seconds}
@@ -118,7 +148,7 @@ export default function TimerScreen({ route, navigation }) {
 }
 
 TimerScreen.navigationOptions = {
-  title: 'Timers',
+  title: 'Timer',
 };
 
 const styles = StyleSheet.create({
