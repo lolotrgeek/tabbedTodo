@@ -12,43 +12,44 @@ import { useStopwatch, useTimer } from 'react-timer-hook';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
 import NumPad from 'react-numpad';
-
-import socketIO from 'socket.io-client';
-import { set } from 'store2';
-//https://brentmarquez.com/uncategorized/how-to-get-socket-io-to-work-with-react-native/
+import {startSocketIO, emitSocketIO} from '../constants/Socket';
 
 export default function TimerScreen({ route, navigation }) {
 
   const { projectName, otherParam } = route.params
 
-  //SERVER STATE
-  // const endpoint = "http://127.0.0.1:5050"
-  // const io = socketIO(endpoint, {
-  //   reconnection: true,
-  //   reconnectionAttempts: Infinity,
-  //   reconnectionDelay: 1000,
-  // })
-  // io.on('connection', socket => {
-  //   setConnection(true)
-  //   console.log('IO - CONNECTED')
-  // })
+
 
   // LOCAL STATE
-  const [connection, setConnection] = useState(Boolean)
+  const [connection, setConnection] = useState()
   const [duration, setDuration] = useState(0)
   // const { count, start, stop, reset } = useCounter(0, ms)
-
   const [initialValue, setInitialValue] = useState(0)
   const [count, setCount] = useState(initialValue)
   const intervalRef = useRef(null);
 
+  useEffect(() => {
+    startSocketIO()
+    return startSocketIO()
+  }, [])
+
+  useEffect(() => {
+    emitSocketIO(count)
+  },[count])
+
+  // TIMER FUNCTIONS
   const start = useCallback((ms, value) => {
     if (intervalRef.current !== null) {
       return;
     }
-    if (typeof value === 'number' ) {
+
+    if (typeof value === 'number') {
       setCount(value)
-      intervalRef.current = setInterval(() => setCount(c => c - 1), ms)
+      intervalRef.current = setInterval(() => {
+        setCount(c => c - 1)
+        
+      }, ms)
+
     }
     else {
       console.log(value)
@@ -64,9 +65,12 @@ export default function TimerScreen({ route, navigation }) {
     intervalRef.current = null;
   }, []);
 
+  const countDown = () => count === 0 ? initialValue : count
 
   useEffect(() => {
-    const focused = navigation.addListener('focus', () => { })
+    const focused = navigation.addListener('focus', () => {
+
+    })
     const unfocused = navigation.addListener('blur', () => {
       console.log('attempting stop...')
       stop()
@@ -75,6 +79,9 @@ export default function TimerScreen({ route, navigation }) {
     return focused, unfocused
   }, [])
 
+  
+
+  // TIMER VIEW
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Timers</Text>
@@ -83,7 +90,9 @@ export default function TimerScreen({ route, navigation }) {
         onPress={() => navigation.navigate('Projects')}
       />
       <Timer
-        start={() => { start(1000, count === 0 ? initialValue : count) }}
+        start={() => {
+          start(1000, countDown())
+        }}
         stop={() => {
           stop(count)
         }}
