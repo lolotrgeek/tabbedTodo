@@ -12,14 +12,14 @@ import { useStopwatch, useTimer } from 'react-timer-hook';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
 import NumPad from 'react-numpad';
-import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
+// import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
 
 import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
 
 
 export default function TimerScreen({ route, navigation }) {
 
-  const { projectName, otherParam } = route.params
+  const { projectName, run } = route.params
 
   // LOCAL STATE
   const [connection, setConnection] = useState()
@@ -29,18 +29,18 @@ export default function TimerScreen({ route, navigation }) {
   const [count, setCount] = useState(initialValue)
   const intervalRef = useRef(null);
 
-  useEffect(() => {
-    startSocketIO()
-    return startSocketIO()
-  }, [])
+  // useEffect(() => {
+  //   startSocketIO()
+  //   return startSocketIO()
+  // }, [])
 
-  useEffect(() => {
-    emitEntrySocketIO(currentTimer)
-  },[currentTimer])
+  // useEffect(() => {
+  //   emitEntrySocketIO(currentTimer)
+  // },[currentTimer])
 
-  useEffect(() => {
-    emitTickSocketIO([currentTimer[0], count])
-  },[count])
+  // useEffect(() => {
+  //   emitTickSocketIO([currentTimer[0], count])
+  // },[count])
 
   // TIMER FUNCTIONS
   const start = useCallback((ms, value, countdown) => {
@@ -127,10 +127,6 @@ export default function TimerScreen({ route, navigation }) {
           updateTimer(currentTimer[0], count)
         }}
         counter={count}
-      // seconds={seconds}
-      // minutes={minutes}
-      // hours={hours}
-      // days={days}
       />
       <Text style={styles.header}>Initial Value: {initialValue} </Text>
       <NumPad.Number

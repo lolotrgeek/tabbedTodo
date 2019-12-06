@@ -81,25 +81,34 @@ export default function ProjectScreen({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.textInputContainer}>
-        <Button title='Add Project' onPress={() => navigation.navigate('Edit', {
-          projectName: '',
-          color: '',
-        })} />
+      <View style={styles.addButton}>
+        <Button
+          title='Add Project'
+          onPress={() => navigation.navigate('Edit', { name: '', color: '' })}
+        />
       </View>
       <ScrollView style={{ width: '100%' }}>
         {projects.map((project, i) =>
           (<ProjectList
-            text={project[1].name}
             key={project[0]}
+            text={project[1].name}
+            color={project[1].color}
             deleteEntry={() => deleteProject(project[0])}
-            onPress={() => navigation.navigate('TimerList', {
+            onPress={() => navigation.navigate('Edit', {
+              project: project,
+              otherParam: 'anything you want here',
+            })}
+            onView={() => navigation.navigate('TimerList', {
               projectName: project[1].name,
               otherParam: 'anything you want here',
             })}
-            onEdit={() => navigation.navigate('Edit', {
-              project: project,
-              otherParam: 'anything you want here',
+            onStart={() => navigation.navigate('Timer', {
+              projectName: project[1].name,
+              run: true,
+            })}
+            onStop={() => navigation.navigate('Timer', {
+              projectName: project[1].name,
+              run: false,
             })}
           />
           ))}
@@ -125,24 +134,23 @@ const styles = StyleSheet.create({
   header: {
     marginTop: '15%',
     fontSize: 40,
-    color: 'black',
+    color: 'white',
     paddingBottom: 10
   },
-  textInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    borderColor: 'black',
-    borderBottomWidth: 1,
-    paddingRight: 10,
-    paddingBottom: 10
+  addButton: {
+    width: '100%',
+    marginTop: '10%', 
+    paddingBottom: 20, 
+    borderColor: '#aaaaaa',
+    borderBottomWidth: 1.5,
   },
   textInput: {
-    flex: 1,
-    height: 20,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
-    paddingLeft: 10,
-    minHeight: '3%'
-  }
+  flex: 1,
+  height: 20,
+  fontSize: 18,
+  fontWeight: 'bold',
+  color: 'black',
+  paddingLeft: 10,
+  minHeight: '3%'
+}
 });

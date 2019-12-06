@@ -6,10 +6,32 @@ import Icon from 'react-native-vector-icons/Feather';
 export default function ProjectList(props) {
 	return (
 		<View style={styles.listContainer}>
-			<View>
-				<Text style={styles.listItem} onPress={props.onPress}>{props.text}</Text>
-			</View>
-			<Button title='Edit' onPress={props.onEdit} style={{ marginLeft: 10 }} />
+			<Icon
+				name="package"
+				size={30}
+				color={props.color}
+				style={{ marginRight: 5, marginTop: 5 }}
+			/>
+
+			<Text style={styles.listItem} onPress={props.onPress}>{props.text}</Text>
+
+			<Button
+				title='View'
+				onPress={props.onView}
+				style={{ marginLeft: 20, paddingBottom: 30 }}
+			/>
+			<Button
+				title='Start'
+				onPress={props.onStart}
+				style={{ marginLeft: 20, paddingBottom: 30 }}
+			/>
+			<Button
+				title='Stop'
+				onPress={props.onStop}
+				style={{ marginLeft: 20, paddingBottom: 30 }}
+			/>
+			<Text >{props.count}</Text>
+
 			<Icon
 				name="trash-2"
 				size={30}
@@ -30,12 +52,13 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1.5,
 		width: '100%',
 		alignItems: 'stretch',
-		minHeight: 40
+		minHeight: 40,
+		paddingBottom: 20,
 	},
 	listItem: {
-		paddingBottom: 20,
 		paddingLeft: 10,
 		marginTop: 6,
+		marginRight: 10,
 		borderColor: 'green',
 		fontSize: 17,
 		fontWeight: 'bold',

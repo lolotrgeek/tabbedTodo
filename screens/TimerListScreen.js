@@ -10,11 +10,11 @@ import {
 } from 'react-native';
 
 import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
-import {TimerList} from '../components/Timer';
+import { TimerList } from '../components/Timer';
 
 export default function TimerListScreen({ route, navigation }) {
 
-  const { projectName, otherParam } = route.params
+  const { projectName, color, otherParam } = route.params
 
   const [inputvalue, setValue] = useState(''); // state of text input
   const [timers, setTimers] = useState([]); // state of timers list
@@ -24,7 +24,7 @@ export default function TimerListScreen({ route, navigation }) {
       let entry = await getAll(value => value.type === 'timer' && value.project === projectName ? true : false)
       console.log(entry)
       setTimers(entry)
-    }  catch (error) {
+    } catch (error) {
       console.log(error)
     }
   }
@@ -60,7 +60,19 @@ export default function TimerListScreen({ route, navigation }) {
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>{projectName}</Text>
+      <Text style={{
+        marginTop: '15%',
+        fontSize: 40,
+        color: color,
+        paddingBottom: 10
+      }}>{projectName}</Text>
+
+      <View style={styles.addButton}>
+        <Button
+          title='Add Project'
+          onPress={() => navigation.navigate('Timer', { name: '', color: '' })}
+        />
+      </View>
       <ScrollView style={{ width: '100%' }}>
         {timers.map((item, i) =>
           (<TimerList

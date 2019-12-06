@@ -24,9 +24,9 @@ export default function EditorScreen({ route, navigation }) {
   const [name, setName] = useState(''); // state of input project Name
   const [color, setColor] = useState(''); // state of color picker
 
-const projectValid = () => Array.isArray(project) && project[1] === 'project' ? true : false  
-const nameValid = () => typeof project[1].name === 'string' ? true : false
-const colorValid = () => typeof project[1].color === 'string' && project[1].color.charAt(0) === '#' ? true : false
+  const projectValid = () => Array.isArray(project) && project[1] === 'project' ? true : false
+  const nameValid = () => typeof project[1].name === 'string' ? true : false
+  const colorValid = () => typeof project[1].color === 'string' && project[1].color.charAt(0) === '#' ? true : false
 
   const handleRoutedParams = () => {
     if (project && projectValid) {
@@ -74,7 +74,7 @@ const colorValid = () => typeof project[1].color === 'string' && project[1].colo
         newroute = {
           project: [key, value],
           update: true
-        } 
+        }
       }
       if (!key || key === '') {
         let newkey = Date.now().toString()
@@ -84,9 +84,9 @@ const colorValid = () => typeof project[1].color === 'string' && project[1].colo
         newroute = {
           project: [newkey, value],
           update: false
-        } 
+        }
       }
-      navigation.navigate('Projects' , newroute) 
+      navigation.navigate('Projects', newroute)
     }
   }
 
@@ -112,12 +112,12 @@ const colorValid = () => typeof project[1].color === 'string' && project[1].colo
           <Icon name="plus" size={30} color="blue" style={{ marginLeft: 10 }} />
         </TouchableOpacity>
       </View>
-      <CirclePicker
-        onChangeComplete={handleSelectedColor}
-      />
-      <ScrollView style={{ width: '100%' }}>
 
-      </ScrollView>
+      <View style={styles.colorPicker}>
+        <CirclePicker
+          onChangeComplete={handleSelectedColor}
+        />
+      </View>
     </View>
   )
 }
@@ -150,6 +150,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
     paddingLeft: 10,
-    minHeight: '3%'
+    minHeight: '3%',
+    paddingBottom: 10
+  },
+  colorPicker: {
+    flex: 1,
+    marginTop: 10,
   }
 });
