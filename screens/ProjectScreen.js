@@ -10,23 +10,32 @@ import {
   ScrollView
 } from 'react-native';
 
-import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Functions'
-
-
 import Icon from 'react-native-vector-icons/Feather';
 import ProjectList from '../components/ProjectList';
+import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
 
-export default function ProjectScreen({ navigation }) {
+export default function ProjectScreen({ route, navigation }) {
 
-  const [inputvalue, setValue] = useState(''); // state of text input
+  
   const [projects, setProject] = useState([]); // state of projects list
+
+  const handleRoutedParams = () => {
+    if(route.params) {
+      const { projectKey, projectName, projectColor } = route.params
+      if (!projectKey || !projectName || !projectColor) return false
+      if (typeof projectName === 'string' && typeof projectColor === 'string' && projectColor.charAt(0) === '#') {
+         let value = [projectKey, { type: 'project', name: projectName, color: projectColor }]
+         setProjects([...projects, value])
+       }
+    }
+  }
 
   const entries = async () => {
     try {
       let entry = await getAll(value => value.type === 'project' ? true : false)
       console.log(entry)
       setProject(entry)
-    }  catch (error) {
+    } catch (error) {
       console.log(error)
     }
   }
@@ -35,31 +44,6 @@ export default function ProjectScreen({ navigation }) {
     entries()
   }, [])
 
-
-  const addProject = () => {
-    if (inputvalue.length > 0) {
-      const NEWKEY = Date.now().toString()
-      const NEWVALUE = { type: 'project', text: inputvalue }
-      const NEWENTRY = [NEWKEY, NEWVALUE]
-      storeItem(NEWKEY, NEWVALUE)
-      setProject([...projects, NEWENTRY]); // add todo to state
-      setValue(''); // reset value of input to empty
-    }
-  }
-
-  const updateProject = (key, value) => {
-    updateItem(key, value)
-    // find where key is the same and overwrite it
-    let update = projects.filter(todo => {
-      if (todo[0] === key) {
-        todo[1] = value
-        return todo
-      }
-    })
-    console.log('STATE - updated : ', update)
-    console.log('STATE - Projects : ', projects)
-    // setJournalEntry([...projects, update[1].text = editvalue.input])
-  }
 
   const deleteProject = id => {
     removeItem(id)
@@ -71,34 +55,33 @@ export default function ProjectScreen({ navigation }) {
       })
     );
   }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Projects</Text>
       <View style={styles.textInputContainer}>
-        <TextInput
-          style={styles.textInput}
-          multiline={false}
-          placeholder="Enter Project Name?"
-          placeholderTextColor="#abbabb"
-          value={inputvalue}
-          onChangeText={inputvalue => setValue(inputvalue)}
-        />
-        <TouchableOpacity onPress={() => addProject()}>
-          <Icon name="plus" size={30} color="blue" style={{ marginLeft: 10 }} />
-        </TouchableOpacity>
+        <Button title='Add Project' onPress={() => navigation.navigate('Edit', {
+          projectName: '',
+          color: '',
+        })} />
       </View>
       <ScrollView style={{ width: '100%' }}>
         {projects.map((item, i) =>
           (<ProjectList
-            text={item[1].text}
+            text={item[1].name}
             key={item[0]}
             deleteEntry={() => deleteProject(item[0])}
             onPress={() => navigation.navigate('TimerList', {
-              projectName: item[1].text,
+              projectName: item[1].name,
               otherParam: 'anything you want here',
             })}
-          />)
-        )}
+            onEdit={() => navigation.navigate('Edit', {
+              projectName: item[1].name,
+              color: item[1].color,
+              otherParam: 'anything you want here',
+            })}
+          />
+          ))}
+
       </ScrollView>
       <TouchableOpacity onPress={() => removeAll(setProject)}>
         <Icon name="minus" size={40} color="red" style={{ marginLeft: 10 }} />
@@ -119,8 +102,8 @@ const styles = StyleSheet.create({
   },
   header: {
     marginTop: '15%',
-    fontSize: 20,
-    color: 'red',
+    fontSize: 40,
+    color: 'black',
     paddingBottom: 10
   },
   textInputContainer: {

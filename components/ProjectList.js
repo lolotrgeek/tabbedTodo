@@ -1,14 +1,15 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Button } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+
 
 export default function ProjectList(props) {
 	return (
 		<View style={styles.listContainer}>
 			<View>
 				<Text style={styles.listItem} onPress={props.onPress}>{props.text}</Text>
-
 			</View>
+			<Button title='Edit' onPress={props.onEdit} style={{ marginLeft: 10 }} />
 			<Icon
 				name="trash-2"
 				size={30}

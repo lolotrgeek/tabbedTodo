@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { ExpoLinksView } from '@expo/samples';
 import {
-  StyleSheet,
   Button,
   Text,
   View,
   TouchableOpacity,
+  StyleSheet,
   ScrollView
 } from 'react-native';
 
-import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Functions'
-
-
-import Icon from 'react-native-vector-icons/Feather';
+import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
 import {TimerList} from '../components/Timer';
 
 export default function TimerListScreen({ route, navigation }) {
@@ -24,7 +21,7 @@ export default function TimerListScreen({ route, navigation }) {
 
   const entries = async () => {
     try {
-      let entry = await getAll(value => value.type === 'timer' ? true : false)
+      let entry = await getAll(value => value.type === 'timer' && value.project === projectName ? true : false)
       console.log(entry)
       setTimers(entry)
     }  catch (error) {
@@ -63,7 +60,7 @@ export default function TimerListScreen({ route, navigation }) {
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Timers</Text>
+      <Text style={styles.header}>{projectName}</Text>
       <ScrollView style={{ width: '100%' }}>
         {timers.map((item, i) =>
           (<TimerList
@@ -71,7 +68,7 @@ export default function TimerListScreen({ route, navigation }) {
             date={item[0]}
             start={item[1].start}
             stop={item[1].stop}
-            deleteEntry={() => deleteProject(item[0])}
+            deleteTimer={() => deleteProject(item[0])}
             onPress={() => navigation.navigate('Timer', {
               projectName: projectName,
               otherParam: 'anything you want here',

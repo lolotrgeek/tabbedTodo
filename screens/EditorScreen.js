@@ -1,4 +1,4 @@
-import React, {useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExpoLinksView } from '@expo/samples';
 import {
   StyleSheet,
@@ -6,87 +6,104 @@ import {
   View,
   TouchableOpacity,
   TextInput,
+  Button,
   ScrollView
 } from 'react-native';
-
-import {updateItem, removeItem} from '../constants/Functions'
-
-
+import { updateItem, storeItem } from '../constants/Store'
 import Icon from 'react-native-vector-icons/Feather';
-import ProjectList from '../components/ProjectList';
+import { CirclePicker } from 'react-color'
 
-export default function EditorScreen({navigation}) {
+// Color picking
+//https://casesandberg.github.io/react-color/
 
-  const [inputvalue, setValue] = useState(''); // state of text input
-  const [projects, setProject] = useState([]); // state of projects list
+export default function EditorScreen({ route, navigation }) {
+  const { projectKey, projectName, projectColor } = route.params
 
+
+  const [name, setName] = useState(''); // state of input project Name
+  const [color, setColor] = useState(''); // state of color picker
+
+  const handleRoutedParams = () => {
+    if (!projectKey) {
+    
+    }
+    if (projectName && typeof projectName === 'string') {
+      setName(projectName)
+    }
+    if (projectColor && typeof projectColor === 'string' && projectColor.charAt(0) === '#') {
+      setColor(projectColor)
+    }
+  }
 
   useEffect(() => {
-    
+    handleRoutedParams()
   }, [])
 
-  const updateProject = (key, value) => {
-    updateItem(key, value)
-    // find where key is the same and overwrite it
-    let update = projects.filter(todo => {
-      if (todo[0] === key) {
-        todo[1] = value
-        return todo
-      }
-    })
-    console.log('STATE - updated : ', update)
-    console.log('STATE - Projects : ', projects)
-    // setJournalEntry([...projects, update[1].text = editvalue.input])
+  const addProject = () => {
+    if (name.length > 0) {
+      const NEWKEY = Date.now().toString()
+      const NEWVALUE = { type: 'project', name: name, color: color }
+      const NEWENTRY = [NEWKEY, NEWVALUE]
+      storeItem(NEWKEY, NEWVALUE)
+    }
   }
 
-  const deleteProject = id => {
-    removeItem(id)
-    setProject(
-      projects.filter(todo => {
-        if (todo[0] !== id) {
-          return true;
-        }
-      })
-    );
+  const handleSelectedColor = (color, event) => {
+    console.log(color)
+    console.log(event)
+    setColor(color.hex)
   }
+
+  const handleComplete = () => {
+    if (!name || name === '') {
+      console.warn('Give a Valid Name')
+    }
+    else if (!color || color === '' || color.charAt(0) !== '#') {
+      console.warn('Give a Valid Color')
+    }
+    else {
+      if (projectKey) { updateItem(projectKey, { type: 'project', name: name, color: color }) }
+      if (!projectKey) { addProject() }
+      navigation.navigate('Projects' , {
+        projectName : name,
+        projectColor : color
+      })
+    }
+  }
+
+  const headerColor = () => color && color.charAt(0) !== '#' ? color : 'black'
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Projects</Text>
+      <Text style={{
+        marginTop: '10%',
+        fontSize: 40,
+        color: color,
+        paddingBottom: 10
+      }}>{projectName}</Text>
       <View style={styles.textInputContainer}>
         <TextInput
           style={styles.textInput}
           multiline={false}
           placeholder="Enter Project Name?"
           placeholderTextColor="#abbabb"
-          value={inputvalue}
-          onChangeText={inputvalue => setValue(inputvalue)}
+          value={name}
+          onChangeText={name => setName(name)}
         />
-        <TouchableOpacity onPress={() => updateProject()}>
+        <Button title='Done' onPress={() => handleComplete()} />
+        <TouchableOpacity onPress={() => handleComplete()}>
           <Icon name="plus" size={30} color="blue" style={{ marginLeft: 10 }} />
         </TouchableOpacity>
       </View>
+      <CirclePicker
+        onChangeComplete={handleSelectedColor}
+      />
       <ScrollView style={{ width: '100%' }}>
-        {projects.map((item, i) =>
-          (<ProjectList
-            text={item[1].text }
-            key={item[0]}
-            deleteEntry={() => deleteProject(item[0])}
-          />)
-        )}
+
       </ScrollView>
-      <TouchableOpacity onPress={() => removeAll(setProject)}>
-        <Icon name="minus" size={40} color="red" style={{ marginLeft: 10 }} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => getAll()}>
-        <Icon name="plus" size={40} color="blue" style={{ marginLeft: 10 }} />
-      </TouchableOpacity>
     </View>
   )
 }
-
-EditorScreen.navigationOptions = {
-  title: 'Edit',
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -96,9 +113,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF'
   },
   header: {
-    marginTop: '15%',
-    fontSize: 20,
-    color: 'red',
+    marginTop: '10%',
+    fontSize: 40,
+    color: 'black',
     paddingBottom: 10
   },
   textInputContainer: {

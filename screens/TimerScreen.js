@@ -14,7 +14,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import NumPad from 'react-numpad';
 import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
 
-import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Functions'
+import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
 
 
 export default function TimerScreen({ route, navigation }) {

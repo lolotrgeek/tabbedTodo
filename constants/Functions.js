@@ -1,108 +1,108 @@
-import { AsyncStorage } from 'react-native';
+import { storeItem, updateItem, removeItem, removeAll } from '../constants/Functions'
 
 
-export const countKeys = async () => await AsyncStorage.getAllKeys()
+const todoValue = { type: 'todo', text: inputvalue, checked: false }
+const journalValue = { type: 'journal', project: project, text: inputvalue }
 
-const storeMap = (result, validator) => {
-    let key = result[0]
-    let value = result[1]
-    if (!key || key === 'undefined') {
-        console.log('ASYNC STORAGE - INVALID KEY : ', key) 
-        return false
-    }
-    if (!value || value === 'undefined') { 
-        console.log('ASYNC STORAGE - INVALID VALUE : ', value)
-        return false 
-    }
-    if (typeof value === 'string' && value.charAt(0) === '{') {
-        let value = JSON.parse(result[1])
-        if (validator(value) === true) {
-            let entry = [key, value]
-            console.log('ASYNC STORAGE - ADDING TO STATE : ', entry)
-            return entry
+const add = (VALUE) => {
+
+    const NEWKEY = Date.now().toString()
+    const NEWENTRY = [NEWKEY, NEWVALUE]
+    storeItem(NEWKEY, NEWVALUE)
+    setProject([...projects, NEWENTRY]); // list of Entries
+    setValue(''); // input value for a text input
+
+}
+
+const updateProject = (key, value) => {
+    updateItem(key, value)
+    let update = projects.filter(todo => {
+        if (todo[0] === key) {
+            todo[1] = value
+            return todo
         }
-        else {
-            console.info('ASYNC STORAGE - INVALID ENTRY: ', result)
-            return false
-        }
+    })
+    console.log('STATE - updated : ', update)
+    console.log('STATE - Projects : ', projects)
+    // setJournalEntry([...projects, update[1].text = editvalue.input])
+}
+
+const deleteProject = id => {
+    removeItem(id)
+    setProject(
+        projects.filter(todo => {
+            if (todo[0] !== id) {
+                return true;
+            }
+        })
+    );
+}
+
+const addTimer = (start) => {
+    const NEWKEY = Date.now().toString()
+    const NEWVALUE = {
+        type: 'timer',
+        project: projectName,
+        start: start,
+        stop: count,
     }
-    else {
-        console.info('ASYNC STORAGE - INVALID ENTRY: ', result)
-        return false
+    const NEWENTRY = [NEWKEY, NEWVALUE]
+    console.log(NEWVALUE)
+    storeItem(NEWKEY, NEWVALUE)
+    setCurrentTimer(NEWENTRY)
+}
+
+const updateTimer = (key, count) => {
+    let value = {
+        type: 'timer',
+        project: projectName,
+        start: initialValue,
+        stop: count,
     }
+    setCurrentTimer([key, value])
+    updateItem(key, value)
 }
 
-/**
- * Get all values from AsyncStorage
- * @param {boolean} validator (value) critera for values to pass
- * @param {function} state (entry) the state to update upon validation
- */
-export const getAll = async (validator) => {
-    console.log('ASYNC STORAGE - getting all entries... ')
-    const keys = await AsyncStorage.getAllKeys()
-    console.info('ASYNC STORAGE - KEYS :', keys)
-    const stores = await AsyncStorage.multiGet(keys)
-    return stores.map(result => storeMap(result, validator)).filter(result => result)
-}
 
-export const stringifyValue = value => {
-    if (typeof value === 'object' || Array.isArray(value)) value = JSON.stringify(value)
-    return value
-}
-
-/**
- * Add key value pair to Async Storage
- * @param {*} key 
- * @param {*} value 
- */
-export const storeItem = async (key, value) => {
-    if (typeof value === 'object' || Array.isArray(value)) value = JSON.stringify(value)
-    try {
-        console.log('ASYNC STORAGE - STORING : [' + key + ' , ' + value + ']')
-        await AsyncStorage.setItem(key, value);
-    } catch (error) {
-        console.error(error)
-    }
-}
-
-/**
- * Update existing key with given value in Async Storage
- * @param {*} key 
- * @param {*} value 
- */
-export const updateItem = async (key, value) => {
-    if (typeof value === 'object' || Array.isArray(value)) value = JSON.stringify(value)
-    try {
-        console.log('ASYNC STORAGE - UPDATING: ', [key, value])
-        await AsyncStorage.mergeItem(key, value);
-    } catch (error) {
-        console.error(error)
+const addTodo = () => {
+    if (inputvalue.length > 0) {
+        const NEWKEY = Date.now().toString()
+        const NEWVALUE = { type: 'todo', text: inputvalue, checked: false }
+        const NEWENTRY = [NEWKEY, NEWVALUE]
+        storeItem(NEWKEY, NEWVALUE)
+        setTodos([...todos, NEWENTRY]); // add todo to state
+        setValue(''); // reset value of input to empty
     }
 }
 
-/**
- * Remove item by key in Async Storage
- * @param {*} key 
- */
-export const removeItem = async key => {
-    try {
-        console.log('ASYNC STORAGE - REMOVING : ' + key)
-        await AsyncStorage.removeItem(key);
-    } catch (error) {
-        console.error(error)
-    }
+const checkTodo = id => {
+    setTodos(
+        todos.map(todo => {
+            if (todo[0] === id) {
+                todo[1].checked = !todo[1].checked;
+                updateItem(todo[0], { type: 'todo', text: todo[1].text, checked: todo[1].checked })
+            }
+            return todo;
+        })
+    );
 }
 
-/**
- *  Delete entire async Storage
- * @param {function} state
- */
-export const removeAll = async state => {
-    try {
-        console.log('ASYNC STORAGE - REMOVING ALL')
-        state([])
-        await AsyncStorage.clear()
-    } catch (error) {
-        console.error(error)
-    }
+const stateFilter = (key, state) => state[0] === key ? true : false
+
+const deleteEntry = (key, states, setState) => {
+    removeItem(key)
+    setState(states.filter(state => stateFilter(key, state) ? false : true))
 }
+
+const updateEntry = (key, value, states) => {
+    updateItem(key, value)
+    let update = states.filter(state => {
+        if (stateFilter(key, state)) 
+        state[1] = value 
+        return state
+        
+    }) 
+    console.log('STATE - UPDATING : ', update)
+    console.log('STATE : ', states)
+}
+
