@@ -16,24 +16,44 @@ import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constan
 
 export default function ProjectScreen({ route, navigation }) {
 
-  
+
   const [projects, setProject] = useState([]); // state of projects list
 
+  const projectValid = () => Array.isArray(project) && project[1] === 'project' ? true : false
+  const nameValid = () => typeof project[1].name === 'string' ? true : false
+  const colorValid = () => typeof project[1].color === 'string' && project[1].color.charAt(0) === '#' ? true : false
+
+  const updateProject = (key, value) => {
+    setProject(projects.map(project => key === project[0] ? [key, value] : project))
+    console.log('STATE UPDATED - Projects : ', projects)
+  }
+
   const handleRoutedParams = () => {
-    if(route.params) {
-      const { projectKey, projectName, projectColor } = route.params
-      if (!projectKey || !projectName || !projectColor) return false
-      if (typeof projectName === 'string' && typeof projectColor === 'string' && projectColor.charAt(0) === '#') {
-         let value = [projectKey, { type: 'project', name: projectName, color: projectColor }]
-         setProjects([...projects, value])
-       }
+    if (route.params) {
+      console.log('PARAMS : ' + JSON.stringify(route.params))
+      const { project, update } = route.params
+      if (!projectValid) {
+        console.log('INVALID ROUTED PROJECT : ' + JSON.stringify(project))
+        return false
+      }
+      if (nameValid && colorValid) {
+        console.log('VALID ROUTED PROJECT : ' + project[0] + ',' + JSON.stringify(project[1]))
+        if (update) {
+          updateProject(project[0], project[1])
+          console.log('UPDATING ROUTED PROJECT : ' + JSON.stringify(project))
+        }
+        else {
+          console.log('ADDING ROUTED PROJECT : ' + JSON.stringify(project))
+          setProject([...projects, project])
+        }
+
+      }
     }
   }
 
   const entries = async () => {
     try {
       let entry = await getAll(value => value.type === 'project' ? true : false)
-      console.log(entry)
       setProject(entry)
     } catch (error) {
       console.log(error)
@@ -44,6 +64,9 @@ export default function ProjectScreen({ route, navigation }) {
     entries()
   }, [])
 
+  useEffect(() => {
+    handleRoutedParams()
+  }, [route])
 
   const deleteProject = id => {
     removeItem(id)
@@ -65,18 +88,17 @@ export default function ProjectScreen({ route, navigation }) {
         })} />
       </View>
       <ScrollView style={{ width: '100%' }}>
-        {projects.map((item, i) =>
+        {projects.map((project, i) =>
           (<ProjectList
-            text={item[1].name}
-            key={item[0]}
-            deleteEntry={() => deleteProject(item[0])}
+            text={project[1].name}
+            key={project[0]}
+            deleteEntry={() => deleteProject(project[0])}
             onPress={() => navigation.navigate('TimerList', {
-              projectName: item[1].name,
+              projectName: project[1].name,
               otherParam: 'anything you want here',
             })}
             onEdit={() => navigation.navigate('Edit', {
-              projectName: item[1].name,
-              color: item[1].color,
+              project: project,
               otherParam: 'anything you want here',
             })}
           />

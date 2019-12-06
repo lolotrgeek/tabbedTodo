@@ -12,26 +12,31 @@ import {
 import { updateItem, storeItem } from '../constants/Store'
 import Icon from 'react-native-vector-icons/Feather';
 import { CirclePicker } from 'react-color'
+import { keyToTestName } from 'jest-snapshot/build/utils';
 
 // Color picking
 //https://casesandberg.github.io/react-color/
 
 export default function EditorScreen({ route, navigation }) {
-  const { projectKey, projectName, projectColor } = route.params
+  const { project } = route.params
 
-
+  const [key, setKey] = useState('')
   const [name, setName] = useState(''); // state of input project Name
   const [color, setColor] = useState(''); // state of color picker
 
+const projectValid = () => Array.isArray(project) && project[1] === 'project' ? true : false  
+const nameValid = () => typeof project[1].name === 'string' ? true : false
+const colorValid = () => typeof project[1].color === 'string' && project[1].color.charAt(0) === '#' ? true : false
+
   const handleRoutedParams = () => {
-    if (!projectKey) {
-    
-    }
-    if (projectName && typeof projectName === 'string') {
-      setName(projectName)
-    }
-    if (projectColor && typeof projectColor === 'string' && projectColor.charAt(0) === '#') {
-      setColor(projectColor)
+    if (project && projectValid) {
+      setKey(project[0])
+      if (nameValid) {
+        setName(project[1].name)
+      }
+      if (colorValid) {
+        setColor(project[1].color)
+      }
     }
   }
 
@@ -39,9 +44,8 @@ export default function EditorScreen({ route, navigation }) {
     handleRoutedParams()
   }, [])
 
-  const addProject = () => {
+  const addProject = (NEWKEY) => {
     if (name.length > 0) {
-      const NEWKEY = Date.now().toString()
       const NEWVALUE = { type: 'project', name: name, color: color }
       const NEWENTRY = [NEWKEY, NEWVALUE]
       storeItem(NEWKEY, NEWVALUE)
@@ -62,16 +66,29 @@ export default function EditorScreen({ route, navigation }) {
       console.warn('Give a Valid Color')
     }
     else {
-      if (projectKey) { updateItem(projectKey, { type: 'project', name: name, color: color }) }
-      if (!projectKey) { addProject() }
-      navigation.navigate('Projects' , {
-        projectName : name,
-        projectColor : color
-      })
+      let newroute
+      let value = { type: 'project', name: name, color: color }
+      if (key) {
+        console.log('Updating Project')
+        updateItem(key, value)
+        newroute = {
+          project: [key, value],
+          update: true
+        } 
+      }
+      if (!key || key === '') {
+        let newkey = Date.now().toString()
+        setKey(newkey)
+        console.log('Adding New Project')
+        addProject(newkey)
+        newroute = {
+          project: [newkey, value],
+          update: false
+        } 
+      }
+      navigation.navigate('Projects' , newroute) 
     }
   }
-
-  const headerColor = () => color && color.charAt(0) !== '#' ? color : 'black'
 
   return (
     <View style={styles.container}>
@@ -80,7 +97,7 @@ export default function EditorScreen({ route, navigation }) {
         fontSize: 40,
         color: color,
         paddingBottom: 10
-      }}>{projectName}</Text>
+      }}>{name}</Text>
       <View style={styles.textInputContainer}>
         <TextInput
           style={styles.textInput}
