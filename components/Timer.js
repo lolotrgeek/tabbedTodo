@@ -21,8 +21,7 @@ export function TimerList(props) {
 	return (
 		<View style={styles.listContainer}>
 			<View>
-				{<View style={styles.verticalLine} />}
-				<Text style={styles.listItem}>{props.date} - Start : {props.start} Stop : {props.stop}</Text>
+				<Text style={styles.listItem} onPress={props.onPress} >{props.date} - Start : {props.start} Stop : {props.stop}</Text>
 			</View>
 			<Icon
 				name="trash-2"

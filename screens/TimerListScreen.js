@@ -8,113 +8,80 @@ import {
   TouchableOpacity,
   ScrollView
 } from 'react-native';
-import { TimerList } from '../components/Timer'
-import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Functions'
-import Icon from 'react-native-vector-icons/Feather';
 
+import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Functions'
+
+
+import Icon from 'react-native-vector-icons/Feather';
+import {TimerList} from '../components/Timer';
 
 export default function TimerListScreen({ route, navigation }) {
 
   const { projectName, otherParam } = route.params
 
+  const [inputvalue, setValue] = useState(''); // state of text input
+  const [timers, setTimers] = useState([]); // state of timers list
 
-  // LOCAL STATE
-  const [connection, setConnection] = useState(Boolean)
-  const [timers, setTimers] = useState([]); // state of timer list
+  const entries = async () => {
+    try {
+      let entry = await getAll(value => value.type === 'timer' ? true : false)
+      console.log(entry)
+      setTimers(entry)
+    }  catch (error) {
+      console.log(error)
+    }
+  }
 
-  useEffect(async () => {
-    await countKeys()
-  }, [])
-
-  // When the View is loaded..
   useEffect(() => {
-    countKeys()
-    getAll(value => value.type === 'timer' && value.project === projectName ? true : false, entry => setTimers(timers => [...timers, entry]))
+    entries()
   }, [])
 
-  // useEffect(() => {
-  //   const focused = navigation.addListener('focus', () => {
 
-  //   })
-
-  //   const unfocused = navigation.addListener('blur', () => {
-
-
-  //   })
-  //   // Return the function to unsubscribe from the event so it gets removed on unmount
-  //   return focused, unfocused
-  // }, [])
-
-
-  const updateTimer = (key, time) => {
-    const value = { type: 'timer', project: projectName, start: time.start, end: time.end }
+  const updateProject = (key, value) => {
     updateItem(key, value)
-    let update = timers.filter(timer => {
-      if (timer[0] === key) {
-        timer[1] = value
+    // find where key is the same and overwrite it
+    let update = timers.filter(todo => {
+      if (todo[0] === key) {
+        todo[1] = value
+        return todo
       }
     })
     console.log('STATE - updated : ', update)
-    console.log('STATE - timers : ', timers)
-    // setTimers([...timers, update[1].text = editvalue.input])
-    return event
+    console.log('STATE - Projects : ', timers)
+    // setJournalEntry([...timers, update[1].text = editvalue.input])
   }
 
-  const timerState = id => {
-    // console.log('STATE- editvalue : ' , editvalue)
-    if (editvalue.id && editvalue.id === id) return true
-  }
-
-  const getAsync = (storeLength) => {
-    if(storeLength !== timers.length) return false
-    return true
-  }
-
-  const deleteTimer = id => {
-    removeItem(id) // remove from async storage
+  const deleteProject = id => {
+    removeItem(id)
     setTimers(
-      // filter from timer state
-      timers.filter(timer => {
-        if (timer[0] !== id) {
+      timers.filter(todo => {
+        if (todo[0] !== id) {
           return true;
         }
       })
     );
   }
-
   return (
     <View style={styles.container}>
-      <Text style={styles.header}> {projectName} Timers</Text>
-      <Button
-        title="Go Home"
-        onPress={() => navigation.navigate('Projects')}
-      />
-
+      <Text style={styles.header}>Timers</Text>
       <ScrollView style={{ width: '100%' }}>
-        {timers.map((item, i) => {
-            (<TimerList
-              date={item[0]}
-              start={item[1].start}
-              stop={item[1].stop}
-              deleteTimer={() => deleteTimer(key)}
-            />)
-        })}
+        {timers.map((item, i) =>
+          (<TimerList
+            key={item[0]}
+            date={item[0]}
+            start={item[1].start}
+            stop={item[1].stop}
+            deleteEntry={() => deleteProject(item[0])}
+            onPress={() => navigation.navigate('Timer', {
+              projectName: projectName,
+              otherParam: 'anything you want here',
+            })}
+          />)
+        )}
       </ScrollView>
-      <TouchableOpacity onPress={() => removeAll(setTimers)}>
-        <Icon name="minus" size={40} color="red" style={{ marginLeft: 10 }} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => getAll()}>
-        <Icon name="plus" size={40} color="blue" style={{ marginLeft: 10 }} />
-      </TouchableOpacity>
     </View>
   )
 }
-
-
-
-TimerListScreen.navigationOptions = {
-  title: 'Timers',
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -125,8 +92,8 @@ const styles = StyleSheet.create({
   },
   header: {
     marginTop: '15%',
-    fontSize: 20,
-    color: 'red',
+    fontSize: 40,
+    color: 'black',
     paddingBottom: 10
   },
   textInputContainer: {

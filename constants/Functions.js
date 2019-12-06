@@ -1,44 +1,48 @@
 import { AsyncStorage } from 'react-native';
 
 
-export const countKeys = () => new Promise(async (resolve, reject) => {
-    const keys = await AsyncStorage.getAllKeys()
-    resolve(keys.length)
-    if (!keys) reject('unable to get keys')
-})
+export const countKeys = async () => await AsyncStorage.getAllKeys()
 
-
+const storeMap = (result, validator) => {
+    let key = result[0]
+    let value = result[1]
+    if (!key || key === 'undefined') {
+        console.log('ASYNC STORAGE - INVALID KEY : ', key) 
+        return false
+    }
+    if (!value || value === 'undefined') { 
+        console.log('ASYNC STORAGE - INVALID VALUE : ', value)
+        return false 
+    }
+    if (typeof value === 'string' && value.charAt(0) === '{') {
+        let value = JSON.parse(result[1])
+        if (validator(value) === true) {
+            let entry = [key, value]
+            console.log('ASYNC STORAGE - ADDING TO STATE : ', entry)
+            return entry
+        }
+        else {
+            console.info('ASYNC STORAGE - INVALID ENTRY: ', result)
+            return false
+        }
+    }
+    else {
+        console.info('ASYNC STORAGE - INVALID ENTRY: ', result)
+        return false
+    }
+}
 
 /**
  * Get all values from AsyncStorage
  * @param {boolean} validator (value) critera for values to pass
  * @param {function} state (entry) the state to update upon validation
  */
-export const getAll = async (validator, state) => {
+export const getAll = async (validator) => {
     console.log('ASYNC STORAGE - getting all entries... ')
     const keys = await AsyncStorage.getAllKeys()
     console.info('ASYNC STORAGE - KEYS :', keys)
     const stores = await AsyncStorage.multiGet(keys)
-    stores.map((result, i, store) => {
-        let key = result[0]
-        let value = result[1]
-        if (!key || key === 'undefined') { console.log('ASYNC STORAGE - INVALID KEY : ', key) }
-        if (!value || value === 'undefined') { console.log('ASYNC STORAGE - INVALID VALUE : ', value) }
-        if (typeof value === 'string' && value.charAt(0) === '{') {
-            let value = JSON.parse(result[1])
-            if (validator(value) === true) {
-                let entry = [key, value]
-                console.log('ASYNC STORAGE - ADDING TO STATE : ', entry)
-                state(entry)
-            }
-            else {
-                console.info('ASYNC STORAGE - INVALID ENTRY: ', result)
-            }
-        }
-        else {
-            console.info('ASYNC STORAGE - INVALID ENTRY: ', result)
-        }
-    });
+    return stores.map(result => storeMap(result, validator)).filter(result => result)
 }
 
 export const stringifyValue = value => {

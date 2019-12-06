@@ -21,10 +21,20 @@ export default function ProjectScreen({ navigation }) {
   const [inputvalue, setValue] = useState(''); // state of text input
   const [projects, setProject] = useState([]); // state of projects list
 
+  const entries = async () => {
+    try {
+      let entry = await getAll(value => value.type === 'project' ? true : false)
+      console.log(entry)
+      setProject(entry)
+    }  catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
-    getAll(value => value.type === 'project' ? true : false, entry => setProject(projects => [...projects, entry]))
+    entries()
   }, [])
+
 
   const addProject = () => {
     if (inputvalue.length > 0) {
