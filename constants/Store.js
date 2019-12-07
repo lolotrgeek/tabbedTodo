@@ -33,9 +33,8 @@ const storeMap = (result, validator) => {
 }
 
 /**
- * Get all values from AsyncStorage
- * @param {boolean} validator (value) critera for values to pass
- * @param {function} state (entry) the state to update upon validation
+ * Get all entries from AsyncStorage
+ * @param {boolean} validator (key, value) critera for each entry to pass
  */
 export const getAll = async (validator) => {
     console.log('ASYNC STORAGE - getting all entries... ')
@@ -43,6 +42,43 @@ export const getAll = async (validator) => {
     console.info('ASYNC STORAGE - KEYS :', keys)
     const stores = await AsyncStorage.multiGet(keys)
     return stores.map(result => storeMap(result, validator)).filter(result => result)
+}
+
+const keyValueMap = (result, validator) => {
+    let key = result[0]
+    let value = result[1]
+    if (!key || key === 'undefined') {
+        console.log('ASYNC STORAGE - INVALID KEY : ', key) 
+        return false
+    }
+    if (!value || value === 'undefined') { 
+        console.log('ASYNC STORAGE - INVALID VALUE : ', value)
+        return false 
+    }
+    if (typeof value === 'string' && value.charAt(0) === '{') {
+        let value = JSON.parse(result[1])
+        if (validator(key, value) === true) {
+            let entry = [key, value]
+            console.log('ASYNC STORAGE - VALID ENTRY : ', entry)
+            return entry
+        }
+        else {
+            console.info('ASYNC STORAGE - INVALID ENTRY: ', result)
+            return false
+        }
+    }
+    else {
+        console.info('ASYNC STORAGE - INVALID ENTRY: ', result)
+        return false
+    }
+}
+
+export const getAllEntries = async (validator) => {
+    console.log('ASYNC STORAGE - getting all entries... ')
+    const keys = await AsyncStorage.getAllKeys()
+    console.info('ASYNC STORAGE - KEYS :', keys)
+    const stores = await AsyncStorage.multiGet(keys)
+    return stores.map(result => keyValueMap(result, validator)).filter(result => result)
 }
 
 export const stringifyValue = value => {

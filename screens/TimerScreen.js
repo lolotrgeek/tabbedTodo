@@ -12,6 +12,7 @@ import { useStopwatch, useTimer } from 'react-timer-hook';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
 import NumPad from 'react-numpad';
+import Hashids from 'hashids'
 // import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
 
 import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
@@ -19,7 +20,7 @@ import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constan
 
 export default function TimerScreen({ route, navigation }) {
 
-  const { projectName, run } = route.params
+  const { projectKey, projectName, run } = route.params
 
   // LOCAL STATE
   const [connection, setConnection] = useState()
@@ -27,6 +28,7 @@ export default function TimerScreen({ route, navigation }) {
   // const { count, start, stop, reset } = useCounter(0, ms)
   const [initialValue, setInitialValue] = useState(0)
   const [count, setCount] = useState(initialValue)
+  const [created, setCreated] = useState('')
   const intervalRef = useRef(null);
 
   // useEffect(() => {
@@ -83,24 +85,37 @@ export default function TimerScreen({ route, navigation }) {
     return focused, unfocused
   }, [])
 
+
   // STORAGE FUNCTIONS
+  const dateCreator = () => {
+    const today = new Date();
+    const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    return date + ' ' + time;
+  }
+
   const addTimer = (start) => {
-    const NEWKEY = Date.now().toString()
     const NEWVALUE = {
+      created : dateCreator(),
       type: 'timer',
-      project: projectName,
+      project: projectKey,
       start: start,
       stop: count,
-    }
+    }   
+    setCreated(NEWVALUE.created)
+    const hashids = new Hashids() 
+    const NEWKEY = hashids.encode(Date.now().toString())
     const NEWENTRY = [NEWKEY, NEWVALUE]
     console.log(NEWVALUE)
     storeItem(NEWKEY, NEWVALUE)
     setCurrentTimer(NEWENTRY)
   }
+
   const updateTimer = (key, count) => {
     let value = {
+      created: created,
       type: 'timer',
-      project: projectName,
+      project: projectKey,
       start: initialValue,
       stop: count,
     }
@@ -112,10 +127,7 @@ export default function TimerScreen({ route, navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>{projectName} Timer</Text>
-      <Button
-        title="Go Home"
-        onPress={() => navigation.navigate('Projects')}
-      />
+      <Text >{projectKey} </Text>
       <Timer
         start={() => {
           // start(1000, countDown())

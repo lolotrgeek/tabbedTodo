@@ -13,6 +13,8 @@ import JournalScreen from '../screens/JournalScreen';
 // import TodoScreen from '../screens/TodoScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import EditorScreen from '../screens/EditorScreen'
+import TimelineScreen from '../screens/TimelineScreen'
+
 
 
 /**
@@ -26,6 +28,11 @@ export default function MainStack() {
         name='Home'
         options={HomeTab.options}
         component={HomeTab}
+      />
+      <Tab.Screen
+        name='Timeline'
+        options={TimelineTab.options}
+        component={TimelineTab}
       />
       <Tab.Screen
         name='Settings'
@@ -64,6 +71,27 @@ HomeTab.options = {
     />
   )
 }
+
+
+/**
+ * Timeline Tab
+ */
+const TimelineStack = createStackNavigator();
+const TimelineTab = () => {
+  return (
+    <TimelineStack.Navigator>
+      <TimelineStack.Screen name="Timeline" component={TimelineScreen} >
+      </TimelineStack.Screen>
+    </TimelineStack.Navigator>
+
+  )
+}
+TimelineTab.options = {
+  tabBarLabel: 'Timeline',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'} />
+  ),
+};
 
 /**
  * Setting Tab

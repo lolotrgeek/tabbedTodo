@@ -35,6 +35,7 @@ export function TimerList(props) {
 	);
 }
 
+
 const styles = StyleSheet.create({
 	counter: {
 		marginTop: '15%',

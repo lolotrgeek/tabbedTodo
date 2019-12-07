@@ -99,15 +99,17 @@ export default function ProjectScreen({ route, navigation }) {
               otherParam: 'anything you want here',
             })}
             onView={() => navigation.navigate('TimerList', {
+              projectKey: project[0],
               projectName: project[1].name,
-              otherParam: 'anything you want here',
+              run: false,
             })}
             onStart={() => navigation.navigate('Timer', {
+              projectKey: project[0],
               projectName: project[1].name,
               run: true,
             })}
             onStop={() => navigation.navigate('Timer', {
-              projectName: project[1].name,
+              projectKey: project[0],
               run: false,
             })}
           />

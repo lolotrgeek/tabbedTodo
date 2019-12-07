@@ -13,6 +13,7 @@ import { updateItem, storeItem } from '../constants/Store'
 import Icon from 'react-native-vector-icons/Feather';
 import { CirclePicker } from 'react-color'
 import { keyToTestName } from 'jest-snapshot/build/utils';
+import Hashids from 'hashids'
 
 // Color picking
 //https://casesandberg.github.io/react-color/
@@ -21,16 +22,21 @@ export default function EditorScreen({ route, navigation }) {
   const { project } = route.params
 
   const [key, setKey] = useState('')
+  const [created, setCreated] = useState('')
   const [name, setName] = useState(''); // state of input project Name
   const [color, setColor] = useState(''); // state of color picker
 
   const projectValid = () => Array.isArray(project) && project[1] === 'project' ? true : false
+  const createdValid = () => typeof project[1].created.charAt(0) === 'number' ? true : false
   const nameValid = () => typeof project[1].name === 'string' ? true : false
   const colorValid = () => typeof project[1].color === 'string' && project[1].color.charAt(0) === '#' ? true : false
 
   const handleRoutedParams = () => {
     if (project && projectValid) {
       setKey(project[0])
+      if (createdValid) {
+        setCreated(project[1].created)
+      }
       if (nameValid) {
         setName(project[1].name)
       }
@@ -44,12 +50,17 @@ export default function EditorScreen({ route, navigation }) {
     handleRoutedParams()
   }, [])
 
-  const addProject = (NEWKEY) => {
+  const addProject = (NEWKEY, NEWVALUE) => {
     if (name.length > 0) {
-      const NEWVALUE = { type: 'project', name: name, color: color }
-      const NEWENTRY = [NEWKEY, NEWVALUE]
       storeItem(NEWKEY, NEWVALUE)
     }
+  }
+
+  const dateCreator = () => {
+    const today = new Date();
+    const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    return date + ' ' + time;
   }
 
   const handleSelectedColor = (color, event) => {
@@ -67,7 +78,7 @@ export default function EditorScreen({ route, navigation }) {
     }
     else {
       let newroute
-      let value = { type: 'project', name: name, color: color }
+      let value = { created: created, type: 'project', name: name, color: color }
       if (key) {
         console.log('Updating Project')
         updateItem(key, value)
@@ -77,10 +88,13 @@ export default function EditorScreen({ route, navigation }) {
         }
       }
       if (!key || key === '') {
-        let newkey = Date.now().toString()
+        value.created = dateCreator()
+        const hashids = new Hashids()
+        const newkey = hashids.encode(Date.now())
+        console.log(newkey)
         setKey(newkey)
         console.log('Adding New Project')
-        addProject(newkey)
+        addProject(newkey, value)
         newroute = {
           project: [newkey, value],
           update: false

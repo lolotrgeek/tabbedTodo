@@ -9,19 +9,19 @@ import {
   ScrollView
 } from 'react-native';
 
-import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
+import { getAll, getAllEntries, updateItem, removeItem } from '../constants/Store'
 import { TimerList } from '../components/Timer';
 
 export default function TimerListScreen({ route, navigation }) {
 
-  const { projectName, color, otherParam } = route.params
+  const { projectKey, projectName, color, otherParam } = route.params
 
   const [inputvalue, setValue] = useState(''); // state of text input
   const [timers, setTimers] = useState([]); // state of timers list
 
   const entries = async () => {
     try {
-      let entry = await getAll(value => value.type === 'timer' && value.project === projectName ? true : false)
+      let entry = await getAll(value => value.type === 'timer' && value.project === projectKey ? true : false)
       console.log(entry)
       setTimers(entry)
     } catch (error) {
@@ -69,19 +69,20 @@ export default function TimerListScreen({ route, navigation }) {
 
       <View style={styles.addButton}>
         <Button
-          title='Add Project'
-          onPress={() => navigation.navigate('Timer', { name: '', color: '' })}
+          title='New Entry'
+          onPress={() => navigation.navigate('Timer', { projectKey: projectKey, name: '', color: '' })}
         />
       </View>
       <ScrollView style={{ width: '100%' }}>
         {timers.map((item, i) =>
           (<TimerList
             key={item[0]}
-            date={item[0]}
+            date={item[1].created}
             start={item[1].start}
             stop={item[1].stop}
             deleteTimer={() => deleteProject(item[0])}
             onPress={() => navigation.navigate('Timer', {
+              projectKey: projectKey,
               projectName: projectName,
               otherParam: 'anything you want here',
             })}
