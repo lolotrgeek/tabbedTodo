@@ -18,6 +18,7 @@ export default function TimelineScreen({ route, navigation }) {
   const [projects, setProjects] = useState([]); // state of timers list
   const [matches, setMatches] = useState([]) // timer/project pairs
   const [timerView, setTimerView] = useState([]); // state of sorted timers list
+  const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
 
   // PROJECT FUNCTIONS
   const updateProject = (key, value) => {
@@ -90,32 +91,93 @@ export default function TimelineScreen({ route, navigation }) {
     entries()
   }, [])
 
+
+  const sortbydate = () => timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
+  const listDay = () => timers.map(timer => new Date(timer[1].created))
+  const simpleDate = date => date.getDate() + " " + date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear()
+
+  const dayHeaders = () => {
+    // organize timers by day
+    let standin = []
+    let timerday = timers.map(timer => {
+      return { day: simpleDate(new Date(timer[1].created)), timer: [timer] }
+    })
+
+    console.log(timerday)
+
+    let output = []
+    timerday.forEach(entry => {
+      // first value if output is empty is always unique
+      if (output.length === 0) {
+        output.push(entry)
+      }
+      else {
+        // compare entries
+        output.find((out, i) => {
+          if (out.day === entry.day) {
+            output[i] = {day: out.day, timer: [...out.timer, entry.timer[0]]}
+          }
+           else {
+             console.log(entry)
+             //TODO: add recursion here???
+             return [...output, entry]
+           }
+        })
+      }
+    })
+    console.log(output)
+  }
+
+
+  // const sortView = view => view.sort((a, b) => )
   useEffect(() => {
-    setTimerView(timers.sort((a, b) => b[1].created - a[1].created).reverse())
+    // sort by date
+    // setTimerView(timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created)))
+    dayHeaders()
   }, [timers])
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}> Timeline </Text>
-      <Button title='Get Matches' onPress={() => projectMatch()}></Button>
       <ScrollView style={{ width: '100%' }}>
         {
-          timerView.map((item, i) =>
-            (<Timeline
-              key={item[0]}
-              date={item[1].created}
-              color={item[1].details ? item[1].details.color : 'white'}
-              project={item[1].details ? item[1].details.name : item[1].project}
-              total={item[1].total}
-              deleteTimer={() => deleteProject(item[0])}
-              onPress={() => navigation.navigate('Timer', {
-                projectKey: item[1].project,
-                timerKey: item[0],
-                otherParam: 'anything you want here',
-              })}
-            />)
-          )
+          // daysWithTimer.map(day => (<Text>{day.date}</Text>),
+          //   // day.entries.map(item =>
+          //   //   (<Timeline
+          //   //     key={item[0]}
+          //   //     date={item[1].created}
+          //   //     color={item[1].details ? item[1].details.color : 'white'}
+          //   //     project={item[1].details ? item[1].details.name : item[1].project}
+          //   //     total={item[1].total}
+          //   //     deleteTimer={() => deleteProject(item[0])}
+          //   //     onPress={() => navigation.navigate('Timer', {
+          //   //       projectKey: item[1].project,
+          //   //       timerKey: item[0],
+          //   //       otherParam: 'anything you want here',
+          //   //     })}
+          //   //   />)
+          //   // )
+
+          // )
         }
+        {/* {
+            timerView.map((item, i) =>
+              (<Timeline
+                key={item[0]}
+                day={new Date(item[1].created).toString().split(' ')[0]}
+                date={item[1].created}
+                color={item[1].details ? item[1].details.color : 'white'}
+                project={item[1].details ? item[1].details.name : item[1].project}
+                total={item[1].total}
+                deleteTimer={() => deleteProject(item[0])}
+                onPress={() => navigation.navigate('Timer', {
+                  projectKey: item[1].project,
+                  timerKey: item[0],
+                  otherParam: 'anything you want here',
+                })}
+              />)
+            )
+          } */}
       </ScrollView>
     </View>
   )

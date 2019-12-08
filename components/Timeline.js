@@ -5,7 +5,10 @@ import Icon from 'react-native-vector-icons/Feather';
 export function Timeline(props) {
     console.log(props.color)
     return (
+
         <View style={styles.listContainer}>
+            <Text>{props.day}</Text>
+
             <View>
                 <Text style={{
                     paddingBottom: 20,
