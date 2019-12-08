@@ -59,7 +59,7 @@ const HomeTab = () => {
   )
 }
 HomeTab.options = {
-  tabBarLabel: 'Home',
+  tabBarLabel: 'Projects',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}

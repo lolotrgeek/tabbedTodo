@@ -28,6 +28,7 @@ export default function TimerScreen({ route, navigation }) {
   // const { count, start, stop, reset } = useCounter(0, ms)
   const [initialValue, setInitialValue] = useState(0)
   const [count, setCount] = useState(initialValue)
+  const [total, setTotal] = useState(0)
   const [created, setCreated] = useState('')
   const intervalRef = useRef(null);
 
@@ -44,24 +45,32 @@ export default function TimerScreen({ route, navigation }) {
   //   emitTickSocketIO([currentTimer[0], count])
   // },[count])
 
-  // TIMER FUNCTIONS
+/**
+ * Timer - start
+ */
   const start = useCallback((ms, value, countdown) => {
     if (intervalRef.current !== null) {
       return;
     }
-
     if (countdown) {
       setCount(value)
       intervalRef.current = setInterval(() => {
         setCount(c => c - 1)
+        setTotal(c => c + 1)
       }, ms)
 
     }
     else {
-      intervalRef.current = setInterval(() => setCount(c => c + 1), ms)
+      intervalRef.current = setInterval(() => {
+        setCount(c => c + 1)
+        setTotal(c => c + 1)
+      }, ms)
     }
   }, []);
 
+  /**
+   * Timer - Stop
+   */
   const stop = useCallback((value) => {
     if (intervalRef.current === null) {
       return;
@@ -72,6 +81,7 @@ export default function TimerScreen({ route, navigation }) {
 
   const countDown = () => count === 0 ? initialValue : count
 
+  // PAGE FUNCTIONS
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
 
@@ -79,11 +89,11 @@ export default function TimerScreen({ route, navigation }) {
     const unfocused = navigation.addListener('blur', () => {
       console.log('attempting stop...')
       stop()
-      
+
     })
-    // Return the function to unsubscribe from the event so it gets removed on unmount
     return focused, unfocused
   }, [])
+
 
 
   // STORAGE FUNCTIONS
@@ -96,14 +106,15 @@ export default function TimerScreen({ route, navigation }) {
 
   const addTimer = (start) => {
     const NEWVALUE = {
-      created : dateCreator(),
+      created: dateCreator(),
       type: 'timer',
       project: projectKey,
       start: start,
       stop: count,
-    }   
+      total: total
+    }
     setCreated(NEWVALUE.created)
-    const hashids = new Hashids() 
+    const hashids = new Hashids()
     const NEWKEY = hashids.encode(Date.now().toString())
     const NEWENTRY = [NEWKEY, NEWVALUE]
     console.log(NEWVALUE)
@@ -118,6 +129,7 @@ export default function TimerScreen({ route, navigation }) {
       project: projectKey,
       start: initialValue,
       stop: count,
+      total: total
     }
     setCurrentTimer([key, value])
     updateItem(key, value)
@@ -128,6 +140,7 @@ export default function TimerScreen({ route, navigation }) {
     <View style={styles.container}>
       <Text style={styles.header}>{projectName} Timer</Text>
       <Text >{projectKey} </Text>
+      <Text> {total} </Text>
       <Timer
         start={() => {
           // start(1000, countDown())

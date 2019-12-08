@@ -17,7 +17,7 @@ export function Timeline(props) {
                     backgroundColor: props.color
                 }}
                     onPress={props.onPress}>
-                    {props.project} - Start : {props.start} Stop : {props.stop} ({props.date})
+                    {props.project} - Total : {props.total}  ({props.date})
                 </Text>
             </View>
             <Icon

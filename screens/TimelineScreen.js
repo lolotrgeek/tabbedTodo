@@ -16,23 +16,10 @@ export default function TimelineScreen({ route, navigation }) {
 
   const [timers, setTimers] = useState([]); // state of timers list
   const [projects, setProjects] = useState([]); // state of timers list
+  const [matches, setMatches] = useState([]) // timer/project pairs
+  const [timerView, setTimerView] = useState([]); // state of sorted timers list
 
-  const entries = async () => {
-    try {
-      let timerEntries = await getAll(value => value.type === 'timer' ? true : false)
-      let projectEntries = await getAll(value => value.type === 'project' ? true : false)
-      setTimers(timerEntries)
-      setProjects(projectEntries)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(() => {
-    entries()
-  }, [])
-
-
+  // PROJECT FUNCTIONS
   const updateProject = (key, value) => {
     updateItem(key, value)
     // find where key is the same and overwrite it
@@ -57,92 +44,73 @@ export default function TimelineScreen({ route, navigation }) {
       })
     );
   }
-
-  const getProjectbyName = (name) => {
-    let filtered = projects.filter(project => name === project[1].name ? project : false)
-    console.log(filtered)
-    return filtered
-  }
-
-  const getProjectColors = (name) => {
-    projects.map(project => {
-      if (name === project[1].name) {
-        // console.log(project[1].color)
-        return project[1].color
+  const getProjects = (id) => {
+    timers.filter(timer => {
+      if (id === timer[1].project) {
+        console.log('MATCH - timer :' + id + ' to timer: ' + timer[1].project)
+        return true
+      }
+      else {
+        return false
       }
     })
   }
 
-  const convertDate = (unixtimestamp) => {
-
-    // Months array
-    var months_arr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-    // Convert timestamp to milliseconds
-    var date = new Date(unixtimestamp * 1000);
-
-    // Year
-    var year = date.getFullYear();
-
-    // Month
-    var month = months_arr[date.getMonth()];
-
-    // Day
-    var day = date.getDate();
-
-    // Hours
-    var hours = date.getHours();
-
-    // Minutes
-    var minutes = "0" + date.getMinutes();
-
-    // Seconds
-    var seconds = "0" + date.getSeconds();
-
-    // Display date time in MM-dd-yyyy h:m:s format
-    var convdataTime = month + '-' + day + '-' + year + ' ' + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-    return convdataTime
-
+  const projectMatch = () => {
+    console.log('sorting...')
+    setTimers(timers.map(timer => projects.filter(project => project[0] === timer[1].project ?
+      timer[1].details = { name: project[1].name, color: project[1].color }
+      : false
+    ))[0]
+    )
   }
 
-  useEffect(() => {
 
-    timers.map((item) => {
-      // projects.map(project => {
-      //   if (item[1].project === project[1].name) {
-      //     console.log(project[1].color)
-      //     return project[1].color
-      //   }
-      //   else {
-      //     return 'black'
-      //   }
-      // })
-      let colors = getProjectColors(item[1].project)
-      console.log(colors)
+  // PAGE FUNCTIONS
+  const entries = async () => {
+    try {
+      let timerEntries = await getAll(value => value.type === 'timer' ? true : false)
+      let projectEntries = await getAll(value => value.type === 'project' ? true : false)
+      setTimers(timerEntries)
+      setProjects(projectEntries)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  useEffect(() => {
+    const focused = navigation.addListener('focus', () => {
+      console.log('FOCUS - TIMELINE')
     })
-  }, [projects])
+    const unfocused = navigation.addListener('blur', () => {
+    })
+    return focused, unfocused
+  }, [])
+
+  useEffect(() => {
+    entries()
+  }, [])
+
+  useEffect(() => {
+    setTimerView(timers.sort((a, b) => b[1].created - a[1].created).reverse())
+  }, [timers])
+
   return (
     <View style={styles.container}>
-
-      <View style={styles.addButton}>
-        <Button
-          title='New Entry'
-          onPress={() => navigation.navigate('Timer', { name: '', color: '' })}
-        />
-      </View>
+      <Text style={styles.header}> Timeline </Text>
+      <Button title='Get Matches' onPress={() => projectMatch()}></Button>
       <ScrollView style={{ width: '100%' }}>
         {
-          timers.map((item, i) =>
+          timerView.map((item, i) =>
             (<Timeline
               key={item[0]}
               date={item[1].created}
-              color={getProjectColors(item[1].project)}
-              project={item[1].project}
-              start={item[1].start}
-              stop={item[1].stop}
+              color={item[1].details ? item[1].details.color : 'white'}
+              project={item[1].details ? item[1].details.name : item[1].project}
+              total={item[1].total}
               deleteTimer={() => deleteProject(item[0])}
               onPress={() => navigation.navigate('Timer', {
-                projectName: projectName,
+                projectKey: item[1].project,
+                timerKey: item[0],
                 otherParam: 'anything you want here',
               })}
             />)

@@ -16,9 +16,10 @@ import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constan
 
 export default function ProjectScreen({ route, navigation }) {
 
-
+  // LOCAL STATE
   const [projects, setProject] = useState([]); // state of projects list
 
+  // PROJECT FUNCTIONS
   const projectValid = () => Array.isArray(project) && project[1] === 'project' ? true : false
   const nameValid = () => typeof project[1].name === 'string' ? true : false
   const colorValid = () => typeof project[1].color === 'string' && project[1].color.charAt(0) === '#' ? true : false
@@ -28,6 +29,27 @@ export default function ProjectScreen({ route, navigation }) {
     console.log('STATE UPDATED - Projects : ', projects)
   }
 
+  const deleteProject = id => {
+    removeItem(id)
+    setProject(
+      projects.filter(todo => {
+        if (todo[0] !== id) {
+          return true;
+        }
+      })
+    );
+  }
+
+  // PAGE FUNCTIONS
+  const entries = async () => {
+    try {
+      let entry = await getAll(value => value.type === 'project' ? true : false)
+      setProject(entry)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
   const handleRoutedParams = () => {
     if (route.params) {
       console.log('PARAMS : ' + JSON.stringify(route.params))
@@ -51,14 +73,14 @@ export default function ProjectScreen({ route, navigation }) {
     }
   }
 
-  const entries = async () => {
-    try {
-      let entry = await getAll(value => value.type === 'project' ? true : false)
-      setProject(entry)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  useEffect(() => {
+    const focused = navigation.addListener('focus', () => {
+      console.log('FOCUS - PROJECTS')
+    })
+    const unfocused = navigation.addListener('blur', () => {
+    })
+    return focused, unfocused
+  }, [])
 
   useEffect(() => {
     entries()
@@ -67,17 +89,6 @@ export default function ProjectScreen({ route, navigation }) {
   useEffect(() => {
     handleRoutedParams()
   }, [route])
-
-  const deleteProject = id => {
-    removeItem(id)
-    setProject(
-      projects.filter(todo => {
-        if (todo[0] !== id) {
-          return true;
-        }
-      })
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -141,18 +152,18 @@ const styles = StyleSheet.create({
   },
   addButton: {
     width: '100%',
-    marginTop: '10%', 
-    paddingBottom: 20, 
+    marginTop: '10%',
+    paddingBottom: 20,
     borderColor: '#aaaaaa',
     borderBottomWidth: 1.5,
   },
   textInput: {
-  flex: 1,
-  height: 20,
-  fontSize: 18,
-  fontWeight: 'bold',
-  color: 'black',
-  paddingLeft: 10,
-  minHeight: '3%'
-}
+    flex: 1,
+    height: 20,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+    paddingLeft: 10,
+    minHeight: '3%'
+  }
 });
