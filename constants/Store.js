@@ -22,12 +22,12 @@ const storeMap = (result, validator) => {
             return entry
         }
         else {
-            console.info('ASYNC STORAGE - INVALID ENTRY: ', result)
+            console.info('ASYNC STORAGE - INVALID ENTRY TYPE: ', result)
             return false
         }
     }
     else {
-        console.info('ASYNC STORAGE - INVALID ENTRY: ', result)
+        console.info('ASYNC STORAGE - INVALID ENTRY STRING: ', result)
         return false
     }
 }
@@ -63,12 +63,12 @@ const keyValueMap = (result, validator) => {
             return entry
         }
         else {
-            console.info('ASYNC STORAGE - INVALID ENTRY: ', result)
+            console.info('ASYNC STORAGE - INVALID ENTRY TYPE: ', result)
             return false
         }
     }
     else {
-        console.info('ASYNC STORAGE - INVALID ENTRY: ', result)
+        console.info('ASYNC STORAGE - INVALID ENTRY STRING: ', result)
         return false
     }
 }

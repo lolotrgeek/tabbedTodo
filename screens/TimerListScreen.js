@@ -9,7 +9,7 @@ import {
   ScrollView
 } from 'react-native';
 
-import { getAll, getAllEntries, updateItem, removeItem } from '../constants/Store'
+import { getAll, removeItem } from '../constants/Store'
 import { TimerList } from '../components/Timer';
 
 export default function TimerListScreen({ route, navigation }) {
@@ -18,21 +18,7 @@ export default function TimerListScreen({ route, navigation }) {
 
   const [inputvalue, setValue] = useState(''); // state of text input
   const [timers, setTimers] = useState([]); // state of timers list
-
-  const entries = async () => {
-    try {
-      let entry = await getAll(value => value.type === 'timer' && value.project === projectKey ? true : false)
-      console.log(entry)
-      setTimers(entry)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(() => {
-    entries()
-  }, [])
-
+  const [timerView, setTimerView] = useState([])
 
   const deleteProject = id => {
     removeItem(id)
@@ -44,6 +30,33 @@ export default function TimerListScreen({ route, navigation }) {
       })
     );
   }
+
+  const entries = async () => {
+    try {
+      let entry = await getAll(value => value.type === 'timer' && value.project === projectKey ? true : false)
+      console.log(entry)
+      setTimers(entry)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  useEffect(() => {
+    const focused = navigation.addListener('focus', () => {
+      console.log('FOCUS - TIMERLIST')
+    })
+    const unfocused = navigation.addListener('blur', () => {
+    })
+    return focused, unfocused
+  }, [])
+
+  useEffect(() => {
+    entries()
+  }, [])
+
+  useEffect(() => {
+    setTimerView(timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created)))
+  }, [timers])
+
   return (
     <View style={styles.container}>
       <Text style={{
@@ -60,7 +73,7 @@ export default function TimerListScreen({ route, navigation }) {
         />
       </View>
       <ScrollView style={{ width: '100%' }}>
-        {timers.map((timer, i) =>
+        {timerView.map((timer, i) =>
           (<TimerList
             key={timer[0]}
             date={timer[1].created}
@@ -77,7 +90,7 @@ export default function TimerListScreen({ route, navigation }) {
               project: project,
               projectName: projectName,
               otherParam: 'anything you want here',
-            }) }
+            })}
           />)
         )}
       </ScrollView>

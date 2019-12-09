@@ -39,10 +39,9 @@ export default function TimerEditorScreen({ route, navigation }) {
 
     const handleComplete = () => {
         let newroute
-        let value = { created: created, type: 'timer', project: projectName, start: start, stop: stop }
+        let value = { created: created, type: 'timer', project: project[0], start: start, stop: stop, total : Math.abs(start) + Math.abs(stop) }
         console.log(value)
         if (key) {
-            console.log('Updating Project')
             updateItem(key, value)
             newroute = {
                 timer: [key, value],
@@ -71,11 +70,12 @@ export default function TimerEditorScreen({ route, navigation }) {
             <View style={styles.textInputContainer}>
                 <Button title='-5' onPress={() => setStart(start - 5)}></Button>
                 <TextInput
+                    keyboardType='numeric'
                     style={styles.textInput}
                     multiline={false}
                     placeholder="Start"
                     placeholderTextColor="#abbabb"
-                    value={start}
+                    value={start.toString()}
                     onChangeText={input => setStart(input)}
                 />
                 <Button title='+5' onPress={() => setStart(start + 5)}></Button>
@@ -91,7 +91,7 @@ export default function TimerEditorScreen({ route, navigation }) {
                     multiline={false}
                     placeholder="Stop"
                     placeholderTextColor="#abbabb"
-                    value={stop}
+                    value={stop.toString()}
                     onChangeText={input => setStop(input)}
                 />
                 <Button title='+5' onPress={() => setStop(stop + 5)}></Button>
