@@ -115,13 +115,13 @@ export default function TimelineScreen({ route, navigation }) {
         // compare entries
         output.find((out, i) => {
           if (out.day === entry.day) {
-            output[i] = {day: out.day, timer: [...out.timer, entry.timer[0]]}
+            output[i] = { day: out.day, timer: [...out.timer, entry.timer[0]] }
           }
-           else {
-             console.log(entry)
-             //TODO: add recursion here???
-             return [...output, entry]
-           }
+          else {
+            console.log(entry)
+            //TODO: add recursion here???
+            return [...output, entry]
+          }
         })
       }
     })
@@ -132,7 +132,7 @@ export default function TimelineScreen({ route, navigation }) {
   // const sortView = view => view.sort((a, b) => )
   useEffect(() => {
     // sort by date
-    // setTimerView(timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created)))
+    setTimerView(timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created)))
     dayHeaders()
   }, [timers])
 
@@ -160,24 +160,29 @@ export default function TimelineScreen({ route, navigation }) {
 
           // )
         }
-        {/* {
-            timerView.map((item, i) =>
-              (<Timeline
-                key={item[0]}
-                day={new Date(item[1].created).toString().split(' ')[0]}
-                date={item[1].created}
-                color={item[1].details ? item[1].details.color : 'white'}
-                project={item[1].details ? item[1].details.name : item[1].project}
-                total={item[1].total}
-                deleteTimer={() => deleteProject(item[0])}
-                onPress={() => navigation.navigate('Timer', {
-                  projectKey: item[1].project,
-                  timerKey: item[0],
-                  otherParam: 'anything you want here',
-                })}
-              />)
-            )
-          } */}
+        {
+          projects.map(project => timerView.map((item) => 
+            (<Timeline
+              key={item[0]}
+              day={new Date(item[1].created).toString().split(' ')[0]}
+              date={item[1].created}
+              color={item[1].details ? item[1].details.color : 'white'}
+              project={item[1].details ? item[1].details.name : item[1].project}
+              total={item[1].total}
+              deleteTimer={() => deleteProject(item[0])}
+              onPress={() => navigation.navigate('TimerList', {
+                project : project[0] === item[1].project ? project : null,
+                projectName : project[0] === item[1].project ? project[1].name : null, 
+                projectKey: item[1].project,
+                timerKey: item[0],
+                otherParam: 'anything you want here',
+              })}
+              onEdit={() => navigation.navigate('TimerEditor', {
+                project : project[0] === item[1].project ? project : null
+              })}
+            />)
+          ))
+        }
       </ScrollView>
     </View>
   )

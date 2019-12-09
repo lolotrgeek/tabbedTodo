@@ -13,6 +13,7 @@ import JournalScreen from '../screens/JournalScreen';
 // import TodoScreen from '../screens/TodoScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import EditorScreen from '../screens/EditorScreen'
+import TimerEditorScreen from '../screens/TimerEditorScreen'
 import TimelineScreen from '../screens/TimelineScreen'
 
 
@@ -54,6 +55,7 @@ const HomeTab = () => {
       <HomeStack.Screen name="Projects" component={ProjectScreen} />
       <HomeStack.Screen name="Timer" component={TimerScreen} />
       <HomeStack.Screen name="TimerList" component={TimerListScreen} />
+      <HomeStack.Screen name="TimerEditor" component={TimerEditorScreen} />
       <HomeStack.Screen name="Edit" component={EditorScreen} />
     </HomeStack.Navigator>
   )

@@ -14,7 +14,7 @@ import { TimerList } from '../components/Timer';
 
 export default function TimerListScreen({ route, navigation }) {
 
-  const { projectKey, projectName, color, otherParam } = route.params
+  const { projectKey, projectName, color, project, timer, update } = route.params
 
   const [inputvalue, setValue] = useState(''); // state of text input
   const [timers, setTimers] = useState([]); // state of timers list
@@ -33,20 +33,6 @@ export default function TimerListScreen({ route, navigation }) {
     entries()
   }, [])
 
-
-  const updateProject = (key, value) => {
-    updateItem(key, value)
-    // find where key is the same and overwrite it
-    let update = timers.filter(todo => {
-      if (todo[0] === key) {
-        todo[1] = value
-        return todo
-      }
-    })
-    console.log('STATE - updated : ', update)
-    console.log('STATE - Projects : ', timers)
-    // setJournalEntry([...timers, update[1].text = editvalue.input])
-  }
 
   const deleteProject = id => {
     removeItem(id)
@@ -74,18 +60,24 @@ export default function TimerListScreen({ route, navigation }) {
         />
       </View>
       <ScrollView style={{ width: '100%' }}>
-        {timers.map((item, i) =>
+        {timers.map((timer, i) =>
           (<TimerList
-            key={item[0]}
-            date={item[1].created}
-            start={item[1].start}
-            stop={item[1].stop}
-            deleteTimer={() => deleteProject(item[0])}
+            key={timer[0]}
+            date={timer[1].created}
+            start={timer[1].start}
+            stop={timer[1].stop}
+            deleteTimer={() => deleteProject(timer[0])}
             onPress={() => navigation.navigate('Timer', {
               projectKey: projectKey,
               projectName: projectName,
               otherParam: 'anything you want here',
             })}
+            onEdit={() => navigation.navigate('TimerEditor', {
+              timer: timer,
+              project: project,
+              projectName: projectName,
+              otherParam: 'anything you want here',
+            }) }
           />)
         )}
       </ScrollView>
