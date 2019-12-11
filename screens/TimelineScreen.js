@@ -61,16 +61,12 @@ export default function TimelineScreen({ route, navigation }) {
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
       console.log('FOCUS - ' + pagename)
+      entries()
     })
     const unfocused = navigation.addListener('blur', () => {
     })
     return focused, unfocused
   }, [])
-
-  useEffect(() => {
-    entries()
-  }, [])
-
 
   const sortbydate = () => timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
   const listDay = () => timers.map(timer => new Date(timer[1].created))

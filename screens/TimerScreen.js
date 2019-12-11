@@ -90,7 +90,6 @@ export default function TimerScreen({ route, navigation }) {
     const unfocused = navigation.addListener('blur', () => {
       console.log('attempting stop...')
       stop()
-
     })
     return focused, unfocused
   }, [])
