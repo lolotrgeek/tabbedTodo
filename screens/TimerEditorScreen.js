@@ -38,16 +38,16 @@ export default function TimerEditorScreen({ route, navigation }) {
     }, [])
 
     const handleComplete = () => {
-        let newroute
+        // let newroute
         let value = { created: created, type: 'timer', project: project[0], start: start, stop: stop, total : Math.abs(start) + Math.abs(stop) }
         console.log(value)
         if (key) {
             updateItem(key, value)
-            newroute = {
-                timer: [key, value],
-                update: true
-            }
-            navigation.navigate('TimerList', newroute)
+            // newroute = {
+            //     timer: [key, value],
+            //     update: true
+            // }
+            // navigation.navigate('TimerList', newroute)
         }
     }
 
@@ -68,7 +68,7 @@ export default function TimerEditorScreen({ route, navigation }) {
 
             <Text style={{fontSize: 20}}>Start</Text>
             <View style={styles.textInputContainer}>
-                <Button title='-5' onPress={() => setStart(start - 5)}></Button>
+                <Button title='-5' onPress={() => {setStart(start - 5) ; handleComplete()}}></Button>
                 <TextInput
                     keyboardType='numeric'
                     style={styles.textInput}
@@ -78,14 +78,12 @@ export default function TimerEditorScreen({ route, navigation }) {
                     value={start.toString()}
                     onChangeText={input => setStart(input)}
                 />
-                <Button title='+5' onPress={() => setStart(start + 5)}></Button>
-                <Button title='Done' onPress={() => handleComplete()} />
-
+                <Button title='+5' onPress={() => {setStart(start + 5) ; handleComplete()}}></Button>
             </View>
             <Text style={{fontSize: 20}}>Stop </Text>
             <View style={styles.textInputContainer}>
 
-                <Button title='-5' onPress={() => setStop(stop - 5)}></Button>
+            <Button title='-5' onPress={() => {setStop(start - 5) ; handleComplete()}}></Button>
                 <TextInput
                     style={styles.textInput}
                     multiline={false}
@@ -94,9 +92,7 @@ export default function TimerEditorScreen({ route, navigation }) {
                     value={stop.toString()}
                     onChangeText={input => setStop(input)}
                 />
-                <Button title='+5' onPress={() => setStop(stop + 5)}></Button>
-                <Button title='Done' onPress={() => handleComplete()} />
-
+                <Button title='+5' onPress={() => {setStop(start + 5) ; handleComplete()}}></Button>
             </View>
         </View>
     )

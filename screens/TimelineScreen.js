@@ -11,7 +11,7 @@ import {
 import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
 import { Timeline } from '../components/Timeline';
 
-export default function TimelineScreen({ route, navigation }) {
+export default function TimelineScreen({ navigation }) {
 
   let pagename = 'TIMELINE'
 
@@ -45,12 +45,12 @@ export default function TimelineScreen({ route, navigation }) {
   }
 
 
-
-
+  const isValidTimer = value => value.type === 'timer'  ? true : false
+  //&& typeof value.start === 'number' && typeof value.stop === 'number' && typeof value.total === 'number'
   // PAGE FUNCTIONS
   const entries = async () => {
     try {
-      let timerEntries = await getAll(value => value.type === 'timer' ? true : false)
+      let timerEntries = await getAll(value => isValidTimer(value) ? true : false)
       let projectEntries = await getAll(value => value.type === 'project' ? true : false)
       setTimers(timerEntries)
       setProjects(projectEntries)
@@ -58,15 +58,7 @@ export default function TimelineScreen({ route, navigation }) {
       console.log(error)
     }
   }
-  useEffect(() => {
-    const focused = navigation.addListener('focus', () => {
-      console.log('FOCUS - ' + pagename)
-      entries()
-    })
-    const unfocused = navigation.addListener('blur', () => {
-    })
-    return focused, unfocused
-  }, [])
+
 
   const sortbydate = () => timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
   const listDay = () => timers.map(timer => new Date(timer[1].created))
@@ -107,16 +99,33 @@ export default function TimelineScreen({ route, navigation }) {
   const projectMatch = () => {
     console.log(pagename + '- matching...')
     return (
-      timers.map(timer => projects.filter(project =>  project[0] === timer[1].project ? timer[1].details = { name: project[1].name, color: project[1].color } : false))
+      timers.filter(timer => projects.filter(project =>  project[0] === timer[1].project ? timer[1].details = { name: project[1].name, color: project[1].color } : false))
     )
   }
   // const sortView = view => view.sort((a, b) => )
   useEffect(() => {
+    let matches = projectMatch()
+    console.log(matches)
+    let filterprojects = timers.map( timer => projects.filter(project => project[0] === timer[1].project ? project : false))
+    console.log(filterprojects)
+  }, [timers, projects])
+  useEffect(() => {
     // sort by date
     setTimerView(timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created)))
     dayHeaders()
-    console.log(projectMatch())
   }, [timers])
+
+
+
+  useEffect(() => {
+    const focused = navigation.addListener('focus', () => {
+      console.log('FOCUS - ' + pagename)
+      entries()
+    })
+    const unfocused = navigation.addListener('blur', () => {
+    })
+    return focused, unfocused
+  }, [])
 
   return (
     <View style={styles.container}>

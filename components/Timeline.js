@@ -20,7 +20,7 @@ export function Timeline(props) {
                     onPress={props.onPress}>
                     {props.project} - Total : {props.total}  ({props.date})
                 </Text>
-                <Button title="Edit" onPress={props.onEdit} />
+                <Button title="Edit" style={{ backgroundColor : props.onEdit ? 'blue' : 'grey'}} onPress={props.onEdit ? props.onEdit : ''} />
             </View>
             <Icon
                 name="trash-2"

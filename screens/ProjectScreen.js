@@ -76,6 +76,7 @@ export default function ProjectScreen({ route, navigation }) {
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
       console.log('FOCUSED PAGE - ' + pagename)
+      // entries()
     })
     const unfocused = navigation.addListener('blur', () => {
     })
