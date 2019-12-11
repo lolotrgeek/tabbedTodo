@@ -15,7 +15,7 @@ import ProjectList from '../components/ProjectList';
 import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
 
 export default function ProjectScreen({ route, navigation }) {
-
+  let pagename = 'Projects'
   // LOCAL STATE
   const [projects, setProject] = useState([]); // state of projects list
 
@@ -26,7 +26,7 @@ export default function ProjectScreen({ route, navigation }) {
 
   const updateProject = (key, value) => {
     setProject(projects.map(project => key === project[0] ? [key, value] : project))
-    console.log('STATE UPDATED - Projects : ', projects)
+    console.log(pagename +'- STATE UPDATED - Projects : ', projects)
   }
 
   const deleteProject = id => {
@@ -55,17 +55,17 @@ export default function ProjectScreen({ route, navigation }) {
       console.log('PARAMS : ' + JSON.stringify(route.params))
       const { project, update } = route.params
       if (!projectValid) {
-        console.log('INVALID ROUTED PROJECT : ' + JSON.stringify(project))
+        console.log(pagename +'- INVALID ROUTED PROJECT : ' + JSON.stringify(project))
         return false
       }
       if (nameValid && colorValid) {
-        console.log('VALID ROUTED PROJECT : ' + project[0] + ',' + JSON.stringify(project[1]))
+        console.log(pagename +'- VALID ROUTED PROJECT : ' + project[0] + ',' + JSON.stringify(project[1]))
         if (update) {
           updateProject(project[0], project[1])
-          console.log('UPDATING ROUTED PROJECT : ' + JSON.stringify(project))
+          console.log(pagename +'- UPDATING ROUTED PROJECT : ' + JSON.stringify(project))
         }
         else {
-          console.log('ADDING ROUTED PROJECT : ' + JSON.stringify(project))
+          console.log(pagename +'- ADDING ROUTED PROJECT : ' + JSON.stringify(project))
           setProject([...projects, project])
         }
 
@@ -75,7 +75,7 @@ export default function ProjectScreen({ route, navigation }) {
 
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
-      console.log('FOCUS - PROJECTS')
+      console.log('FOCUSED PAGE - ' + pagename)
     })
     const unfocused = navigation.addListener('blur', () => {
     })

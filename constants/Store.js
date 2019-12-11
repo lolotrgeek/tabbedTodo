@@ -94,7 +94,7 @@ export const stringifyValue = value => {
 export const storeItem = async (key, value) => {
     if (typeof value === 'object' || Array.isArray(value)) value = JSON.stringify(value)
     try {
-        console.info('ASYNC STORAGE - STORING : [' + key + ' , ' + value + ']')
+        console.info('ASYNC STORAGE - STORING : ', [key  , value] )
         await AsyncStorage.setItem(key, value);
     } catch (error) {
         console.error(error)
@@ -122,7 +122,7 @@ export const updateItem = async (key, value) => {
  */
 export const removeItem = async key => {
     try {
-        console.info('ASYNC STORAGE - REMOVING : ' + key)
+        console.info('ASYNC STORAGE - REMOVING : ' , key)
         await AsyncStorage.removeItem(key);
     } catch (error) {
         console.error(error)

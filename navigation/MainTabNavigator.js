@@ -82,10 +82,10 @@ const TimelineStack = createStackNavigator();
 const TimelineTab = () => {
   return (
     <TimelineStack.Navigator>
-      <TimelineStack.Screen name="Timeline" component={TimelineScreen} >
-      <TimelineStack.Screen name="Timer" component={TimerScreen} />
-      <TimelineStack.Screen name="TimerEditor" component={TimerEditorScreen} />
-      </TimelineStack.Screen>
+      <TimelineStack.Screen name="Timeline" component={TimelineScreen} />
+      <TimelineStack.Screen name="TimerLine" component={TimerScreen} />
+      <TimelineStack.Screen name="TimerLineEditor" component={TimerEditorScreen} />
+      
     </TimelineStack.Navigator>
 
   )

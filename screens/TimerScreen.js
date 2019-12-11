@@ -16,6 +16,7 @@ import Hashids from 'hashids'
 // import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
 
 import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
+import { set } from 'date-fns';
 
 
 export default function TimerScreen({ route, navigation }) {
@@ -143,13 +144,13 @@ export default function TimerScreen({ route, navigation }) {
       <Text> {total} </Text>
       <Timer
         start={() => {
-          // start(1000, countDown())
           start(1000, initialValue, true)
           addTimer(initialValue)
         }}
         stop={() => {
           stop(count)
           updateTimer(currentTimer[0], count)
+          setTotal(0)
         }}
         counter={count}
       />

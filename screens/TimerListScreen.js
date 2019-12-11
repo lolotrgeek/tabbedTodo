@@ -14,6 +14,8 @@ import { TimerList } from '../components/Timer';
 
 export default function TimerListScreen({ route, navigation }) {
 
+  let pagename = 'TIMERLIST'
+
   const { projectKey, projectName, color, project, timer, update } = route.params
 
   const [inputvalue, setValue] = useState(''); // state of text input
@@ -34,15 +36,14 @@ export default function TimerListScreen({ route, navigation }) {
   const entries = async () => {
     try {
       let entry = await getAll(value => value.type === 'timer' && value.project === projectKey ? true : false)
-      console.log(entry)
       setTimers(entry)
     } catch (error) {
-      console.log(error)
+      console.log(pagename + ' - ERROR : ' , error)
     }
   }
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
-      console.log('FOCUS - TIMERLIST')
+      console.log('FOCUS - '+ pagename)
     })
     const unfocused = navigation.addListener('blur', () => {
     })
@@ -79,6 +80,7 @@ export default function TimerListScreen({ route, navigation }) {
             date={timer[1].created}
             start={timer[1].start}
             stop={timer[1].stop}
+            total={timer[1].total}
             deleteTimer={() => deleteProject(timer[0])}
             onPress={() => navigation.navigate('Timer', {
               projectKey: projectKey,

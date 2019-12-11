@@ -3,9 +3,7 @@ import { StyleSheet, View, Text, Button, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
 export function Timeline(props) {
-    console.log(props.color)
     return (
-
         <View style={styles.listContainer}>
             <Text>{props.day}</Text>
 
