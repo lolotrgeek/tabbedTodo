@@ -42,9 +42,19 @@ export function TimerList(props) {
 
 
 const styles = StyleSheet.create({
-	counter: {
-		marginTop: '15%',
+	header: {
+		marginTop: '5%',
 		fontSize: 40,
+		color: 'black',
+		paddingBottom: 10
+	  },
+	  subheader: {
+		fontSize: 20,
+		color: 'black',
+	  },
+	counter: {
+		marginTop: '5%',
+		fontSize: 100,
 		color: 'black',
 		paddingBottom: 10
 	},

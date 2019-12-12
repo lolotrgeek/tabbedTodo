@@ -8,6 +8,7 @@ import {
 
 import useCounter from '../constants/Hooks';
 import { Timer } from '../components/Timer';
+import { TimerStartNotes, TimerStopNotes } from '../components/TimerNotes';
 import { useStopwatch, useTimer } from 'react-timer-hook';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
@@ -16,6 +17,7 @@ import Hashids from 'hashids'
 
 import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
 import { set } from 'date-fns';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 
 export default function TimerScreen({ route, navigation }) {
@@ -29,11 +31,13 @@ export default function TimerScreen({ route, navigation }) {
   const [connection, setConnection] = useState()
   const [currentTimer, setCurrentTimer] = useState('')
   // const { count, start, stop, reset } = useCounter(0, ms)
-  const [initialValue, setInitialValue] = useState(project[1].time > 0 ? project[1].time : 0 )
+  const [initialValue, setInitialValue] = useState(project[1].time > 0 ? project[1].time : 0)
   const [count, setCount] = useState(initialValue)
   const [total, setTotal] = useState(0)
   const [created, setCreated] = useState('')
   const [button, setButton] = useState('start')
+  const [mood, setMood] = useState('')
+  const [energy, setEnergy] = useState(50)
   const intervalRef = useRef(null);
 
   // useEffect(() => {
@@ -49,9 +53,9 @@ export default function TimerScreen({ route, navigation }) {
   //   emitTickSocketIO([currentTimer[0], count])
   // },[count])
 
-/**
- * Timer - start
- */
+  /**
+   * Timer - start
+   */
   const start = useCallback((ms, value, countdown) => {
     if (intervalRef.current !== null) {
       return;
@@ -113,7 +117,9 @@ export default function TimerScreen({ route, navigation }) {
       project: projectKey,
       start: start,
       stop: count,
-      total: total
+      total: total,
+      mood: mood,
+      energy: energy,
     }
     setCreated(NEWVALUE.created)
     const hashids = new Hashids()
@@ -131,19 +137,27 @@ export default function TimerScreen({ route, navigation }) {
       project: projectKey,
       start: initialValue,
       stop: count,
-      total: total
+      total: total,
+      mood: mood,
+      energy: energy,
     }
     setCurrentTimer([key, value])
     updateItem(key, value)
   }
 
+  useEffect(() => {
+    console.log(mood)
+    console.log(energy)
+  }, [mood, energy])
+
+
   // TIMER VIEW
   return (
     <View style={styles.container}>
       <Text style={styles.header}>{projectName}</Text>
-      <Text style={styles.subheader}>{initialValue} </Text>
+      {/* <Text style={styles.subheader}>{initialValue} </Text>
       <Text >{projectKey} </Text>
-      <Text> Total: {total} </Text>
+      <Text> Total: {total} </Text> */}
       <Timer
         start={() => {
           start(1000, initialValue, initialValue > 0 ? true : false)
@@ -160,14 +174,23 @@ export default function TimerScreen({ route, navigation }) {
         hideStart={button === 'start' ? 'flex' : 'none'}
         counter={count}
       />
-      
+      <TimerStopNotes
+        onGreat={() => setMood('great')}
+        onGood={() => setMood('good')}
+        onMeh={() => setMood('meh')}
+        onSad={() => setMood('bad')}
+        onAwful={() => setMood('awful')}
+        selected={mood}
+        startingEnergy={energy}
+        onEnergySet={(event, value) => setEnergy(value)}
+      />
     </View>
   )
 }
 
-TimerScreen.navigationOptions = {
-  title: 'Timer',
-};
+// TimerScreen.options = {
+//   title: ({ route }) => ({title : route.params.project[1].name}) 
+// };
 
 const styles = StyleSheet.create({
   container: {
@@ -177,7 +200,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF'
   },
   header: {
-    marginTop: '15%',
+    marginTop: '5%',
     fontSize: 40,
     color: 'black',
     paddingBottom: 10

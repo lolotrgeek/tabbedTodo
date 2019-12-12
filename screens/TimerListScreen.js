@@ -16,7 +16,10 @@ export default function TimerListScreen({ route, navigation }) {
 
   let pagename = 'TIMERLIST'
 
-  const { projectKey, projectName, color, project, timer, update } = route.params
+  const {project, timer, update } = route.params
+  let projectKey = project[0]
+  let projectName = project[1].name
+  let color = project[1].color
 
   const [inputvalue, setValue] = useState(''); // state of text input
   const [timers, setTimers] = useState([]); // state of timers list

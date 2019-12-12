@@ -54,7 +54,7 @@ const HomeTab = () => {
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen name="Projects" component={ProjectScreen} />
-      <HomeStack.Screen name="Timer" component={TimerScreen} />
+      <HomeStack.Screen name="Timer" component={TimerScreen}  options={TimerScreen.options} />
       <HomeStack.Screen name="TimerList" component={TimerListScreen} />
       <HomeStack.Screen name="TimerEditor" component={TimerEditorScreen} />
       <HomeStack.Screen name="Edit" component={EditorScreen} />
