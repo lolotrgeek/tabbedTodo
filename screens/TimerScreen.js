@@ -11,7 +11,6 @@ import { Timer } from '../components/Timer';
 import { useStopwatch, useTimer } from 'react-timer-hook';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
-import NumPad from 'react-numpad';
 import Hashids from 'hashids'
 // import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
 
@@ -21,16 +20,20 @@ import { set } from 'date-fns';
 
 export default function TimerScreen({ route, navigation }) {
 
-  const { projectKey, projectName, run } = route.params
+  const { project, run } = route.params
+
+  let projectKey = project[0]
+  let projectName = project[1].name
 
   // LOCAL STATE
   const [connection, setConnection] = useState()
   const [currentTimer, setCurrentTimer] = useState('')
   // const { count, start, stop, reset } = useCounter(0, ms)
-  const [initialValue, setInitialValue] = useState(0)
+  const [initialValue, setInitialValue] = useState(project[1].time > 0 ? project[1].time : 0 )
   const [count, setCount] = useState(initialValue)
   const [total, setTotal] = useState(0)
   const [created, setCreated] = useState('')
+  const [button, setButton] = useState('start')
   const intervalRef = useRef(null);
 
   // useEffect(() => {
@@ -80,7 +83,6 @@ export default function TimerScreen({ route, navigation }) {
     intervalRef.current = null;
   }, []);
 
-  const countDown = () => count === 0 ? initialValue : count
 
   // PAGE FUNCTIONS
   useEffect(() => {
@@ -138,32 +140,27 @@ export default function TimerScreen({ route, navigation }) {
   // TIMER VIEW
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>{projectName} Timer</Text>
+      <Text style={styles.header}>{projectName}</Text>
+      <Text style={styles.subheader}>{initialValue} </Text>
       <Text >{projectKey} </Text>
-      <Text> {total} </Text>
+      <Text> Total: {total} </Text>
       <Timer
         start={() => {
-          start(1000, initialValue, true)
+          start(1000, initialValue, initialValue > 0 ? true : false)
           addTimer(initialValue)
+          setButton('stop')
         }}
         stop={() => {
           stop(count)
           updateTimer(currentTimer[0], count)
           setTotal(0)
+          setButton('start')
         }}
+        hideStop={button === 'stop' ? 'flex' : 'none'}
+        hideStart={button === 'start' ? 'flex' : 'none'}
         counter={count}
       />
-      <Text style={styles.header}>Initial Value: {initialValue} </Text>
-      <NumPad.Number
-        onChange={(value) => {
-          setInitialValue(value)
-        }
-        }
-        label={'Timer'}
-        placeholder={'my placeholder'}
-        decimal={false}
-        inline={true}
-      />
+      
     </View>
   )
 }
@@ -184,6 +181,10 @@ const styles = StyleSheet.create({
     fontSize: 40,
     color: 'black',
     paddingBottom: 10
+  },
+  subheader: {
+    fontSize: 20,
+    color: 'black',
   },
   textInputContainer: {
     flexDirection: 'row',

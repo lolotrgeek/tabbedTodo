@@ -152,28 +152,29 @@ export default function TimelineScreen({ navigation }) {
           // )
         }
         {
-          timerView.map(item =>
+          timerView.map(item => projects.forEach(project => project[0] === item[1].project ?
             (<Timeline
               key={item[0]}
               day={new Date(item[1].created).toString().split(' ')[0]}
               date={item[1].created}
-              color={item[1].details ? item[1].details.color : 'white'}
-              project={item[1].details ? item[1].details.name : item[1].project}
+              // color={item[1].details ? item[1].details.color : 'white'}
+              color={item[1].details ? project[1].color : 'white'}
+              project={item[1].details ? project[1].name : item[1].project}
               total={item[1].total}
               deleteTimer={() => deleteProject(item[0])}
               onPress={() => navigation.navigate('TimerList', {
-                project: project[0] === item[1].project ? project : null,
-                projectName: project[0] === item[1].project ? project[1].name : null,
+                project: project,
+                projectName: project[1].name,
                 projectKey: item[1].project,
                 timerKey: item[0],
                 otherParam: 'anything you want here',
               })}
               onEdit={() => navigation.navigate('TimerLineEditor', {
-                project: projects.filter(project => project[0] === item[1].project ? project : false)[0],
+                project: project,
                 timer: item
               })}
-            />)
-          )
+            />) : false
+          ))
         }
       </ScrollView>
     </View>

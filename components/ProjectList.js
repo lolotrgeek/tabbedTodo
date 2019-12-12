@@ -21,25 +21,15 @@ export default function ProjectList(props) {
 				style={{ marginLeft: 20, paddingBottom: 30 }}
 			/>
 			<Button
+				title='Edit'
+				onPress={props.onPress}
+				style={{ marginLeft: 20, paddingBottom: 30 }}
+			/>
+			<Button
 				title='Start'
 				onPress={props.onStart}
 				style={{ marginLeft: 20, paddingBottom: 30 }}
 			/>
-			<Button
-				title='Stop'
-				onPress={props.onStop}
-				style={{ marginLeft: 20, paddingBottom: 30 }}
-			/>
-			<Text >{props.count}</Text>
-
-			<Icon
-				name="trash-2"
-				size={30}
-				color="red"
-				style={{ marginLeft: 'auto' }}
-				onPress={props.deleteEntry}
-			/>
-
 		</View>
 	);
 }

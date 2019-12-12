@@ -9,11 +9,12 @@ import {
   Button,
   ScrollView
 } from 'react-native';
-import { updateItem, storeItem } from '../constants/Store'
+import { updateItem, storeItem, removeItem } from '../constants/Store'
 import Icon from 'react-native-vector-icons/Feather';
 import { CirclePicker } from 'react-color'
 import { keyToTestName } from 'jest-snapshot/build/utils';
 import Hashids from 'hashids'
+import NumPad from 'react-numpad';
 
 // Color picking
 //https://casesandberg.github.io/react-color/
@@ -23,13 +24,15 @@ export default function EditorScreen({ route, navigation }) {
 
   const [key, setKey] = useState('')
   const [created, setCreated] = useState('')
-  const [name, setName] = useState(''); // state of input project Name
-  const [color, setColor] = useState(''); // state of color picker
+  const [name, setName] = useState('');
+  const [color, setColor] = useState('');
+  const [time, setTime] = useState(0)
 
   const projectValid = () => Array.isArray(project) && project[1] === 'project' ? true : false
   const createdValid = () => typeof project[1].created.charAt(0) === 'number' ? true : false
   const nameValid = () => typeof project[1].name === 'string' ? true : false
   const colorValid = () => typeof project[1].color === 'string' && project[1].color.charAt(0) === '#' ? true : false
+  const timeValid = () => true
 
   const handleRoutedParams = () => {
     if (project && projectValid) {
@@ -43,12 +46,13 @@ export default function EditorScreen({ route, navigation }) {
       if (colorValid) {
         setColor(project[1].color)
       }
+      if (timeValid) {
+        setTime(project[1].time)
+      }
     }
   }
 
-  useEffect(() => {
-    handleRoutedParams()
-  }, [])
+  useEffect(() => handleRoutedParams(), [])
 
   const addProject = (NEWKEY, NEWVALUE) => {
     if (name.length > 0) {
@@ -56,6 +60,11 @@ export default function EditorScreen({ route, navigation }) {
     }
   }
 
+  const deleteProject = id => {
+    removeItem(id)
+    //todo are you sure notification        
+    navigation.navigate('Projects')
+  }
   const dateCreator = () => {
     const today = new Date();
     const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
@@ -78,7 +87,7 @@ export default function EditorScreen({ route, navigation }) {
     }
     else {
       let newroute
-      let value = { created: created, type: 'project', name: name, color: color }
+      let value = { created: created, type: 'project', name: name, color: color, time: time }
       if (key) {
         console.log('Updating Project')
         updateItem(key, value)
@@ -119,9 +128,8 @@ export default function EditorScreen({ route, navigation }) {
           placeholder="Enter Project Name?"
           placeholderTextColor="#abbabb"
           value={name}
-          onChangeText={name => setName(name)}
+          onChangeText={value => setName(value)}
         />
-        <Button title='Done' onPress={() => handleComplete()} />
         <TouchableOpacity onPress={() => handleComplete()}>
           <Icon name="plus" size={30} color="blue" style={{ marginLeft: 10 }} />
         </TouchableOpacity>
@@ -131,6 +139,24 @@ export default function EditorScreen({ route, navigation }) {
         <CirclePicker
           onChangeComplete={handleSelectedColor}
         />
+      </View>
+    <Text>Time Value: {time}</Text>
+      <NumPad.Number
+        onChange={value => setTime(value)}
+        label={'Optional: Set Ideal Project Time'}
+        placeholder={'my placeholder'}
+        decimal={false}
+        inline={true}
+      />
+      <Button title="done" style={styles.doneButton} size={40} onPress={() => handleComplete()} />
+      <View style={styles.deleteButton}>
+        {project ? (<Icon
+          name="trash-2"
+          size={30}
+          color="red"
+          style={{ marginLeft: 'auto' }}
+          onPress={() => deleteProject(project[0])}
+        />) : <Text></Text>}
       </View>
     </View>
   )
@@ -168,7 +194,20 @@ const styles = StyleSheet.create({
     paddingBottom: 10
   },
   colorPicker: {
+    alignItems: 'baseline',
     flex: 1,
     marginTop: 10,
+  },
+  deleteButton: {
+    alignItems: 'baseline',
+    flexDirection: 'row',
+    flex: 1,
+    marginTop: 10,
+  },
+  doneButton : {
+    alignItems: 'baseline',
+    flexDirection: 'row',
+    flex: 1,
+    marginTop: 10
   }
 });

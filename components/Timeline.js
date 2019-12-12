@@ -6,7 +6,6 @@ export function Timeline(props) {
     return (
         <View style={styles.listContainer}>
             <Text>{props.day}</Text>
-
             <View>
                 <Text style={{
                     paddingBottom: 20,

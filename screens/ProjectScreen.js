@@ -29,16 +29,6 @@ export default function ProjectScreen({ route, navigation }) {
     console.log(pagename +'- STATE UPDATED - Projects : ', projects)
   }
 
-  const deleteProject = id => {
-    removeItem(id)
-    setProject(
-      projects.filter(todo => {
-        if (todo[0] !== id) {
-          return true;
-        }
-      })
-    );
-  }
 
   // PAGE FUNCTIONS
   const entries = async () => {
@@ -76,7 +66,7 @@ export default function ProjectScreen({ route, navigation }) {
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
       console.log('FOCUSED PAGE - ' + pagename)
-      // entries()
+      entries()
     })
     const unfocused = navigation.addListener('blur', () => {
     })
@@ -87,9 +77,9 @@ export default function ProjectScreen({ route, navigation }) {
     entries()
   }, [])
 
-  useEffect(() => {
-    handleRoutedParams()
-  }, [route])
+  // useEffect(() => {
+  //   handleRoutedParams()
+  // }, [route])
 
   return (
     <View style={styles.container}>
@@ -112,19 +102,14 @@ export default function ProjectScreen({ route, navigation }) {
             })}
             onView={() => navigation.navigate('TimerList', {
               project : project,
-              projectKey: project[0],
-              projectName: project[1].name,
               run: false,
             })}
             onStart={() => navigation.navigate('Timer', {
               project : project,
-              projectKey: project[0],
-              projectName: project[1].name,
               run: true,
             })}
             onStop={() => navigation.navigate('Timer', {
               project : project,
-              projectKey: project[0],
               run: false,
             })}
           />

@@ -35,6 +35,7 @@ export default function MainStack() {
         options={TimelineTab.options}
         component={TimelineTab}
       />
+
       <Tab.Screen
         name='Settings'
         options={SettingsTab.options}
@@ -85,7 +86,7 @@ const TimelineTab = () => {
       <TimelineStack.Screen name="Timeline" component={TimelineScreen} />
       <TimelineStack.Screen name="TimerLine" component={TimerScreen} />
       <TimelineStack.Screen name="TimerLineEditor" component={TimerEditorScreen} />
-      
+
     </TimelineStack.Navigator>
 
   )

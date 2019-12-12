@@ -11,10 +11,10 @@ export function Timer(props) {
 		<View>
 			{/* <Text style={styles.counter}>{props.days}:{props.hours}:{props.minutes}:{props.seconds}</Text> */}
 			<Text style={styles.counter}>{props.counter}</Text>
-			<View style={{ display: props.display }}>
+			<View style={{ display: props.hideStart }}>
 				<Button title='Start' style={{ marginLeft: 'auto' }} onPress={props.start} />
 			</View>
-			<View style={{ display: props.display }}>
+			<View style={{ display: props.hideStop }}>
 				<Button title='Stop' style={{ flex: 1, marginLeft: 'auto' }} onPress={props.stop} />
 			</View>
 		</View >
