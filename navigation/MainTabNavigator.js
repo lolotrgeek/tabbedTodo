@@ -25,16 +25,18 @@ const Tab = createBottomTabNavigator();
 export default function MainStack() {
   return (
     <Tab.Navigator>
-      <Tab.Screen
-        name='Home'
-        options={HomeTab.options}
-        component={HomeTab}
-      />
+
       <Tab.Screen
         name='Timeline'
         options={TimelineTab.options}
         component={TimelineTab}
       />
+      <Tab.Screen
+        name='Home'
+        options={HomeTab.options}
+        component={HomeTab}
+      />
+
 
       <Tab.Screen
         name='Settings'
@@ -54,7 +56,7 @@ const HomeTab = () => {
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen name="Projects" component={ProjectScreen} />
-      <HomeStack.Screen name="Timer" component={TimerScreen}  options={TimerScreen.options} />
+      <HomeStack.Screen name="Timer" component={TimerScreen} options={TimerScreen.options} />
       <HomeStack.Screen name="TimerList" component={TimerListScreen} />
       <HomeStack.Screen name="TimerEditor" component={TimerEditorScreen} />
       <HomeStack.Screen name="Edit" component={EditorScreen} />
@@ -84,7 +86,7 @@ const TimelineTab = () => {
   return (
     <TimelineStack.Navigator>
       <TimelineStack.Screen name="Timeline" component={TimelineScreen} />
-      <TimelineStack.Screen name="TimerLine" component={TimerScreen} />
+      <TimelineStack.Screen name="Timer" component={TimerScreen} />
       <TimelineStack.Screen name="TimerLineEditor" component={TimerEditorScreen} />
 
     </TimelineStack.Navigator>

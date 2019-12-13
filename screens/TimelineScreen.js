@@ -19,6 +19,7 @@ export default function TimelineScreen({ navigation }) {
   const [projects, setProjects] = useState([]); // state of timers list
   const [matches, setMatches] = useState([]) // timer/project pairs
   const [timerView, setTimerView] = useState([]); // state of sorted timers list
+  const [matchedTimers, setMatchedTimers] = useState([]); // state of sorted timers matched with Projects list
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
 
   // PROJECT FUNCTIONS
@@ -45,7 +46,7 @@ export default function TimelineScreen({ navigation }) {
   }
 
 
-  const isValidTimer = value => value.type === 'timer'  ? true : false
+  const isValidTimer = value => value.type === 'timer' ? true : false
   //&& typeof value.start === 'number' && typeof value.stop === 'number' && typeof value.total === 'number'
   // PAGE FUNCTIONS
   const entries = async () => {
@@ -95,27 +96,14 @@ export default function TimelineScreen({ navigation }) {
     console.log(pagename + '- DAYHEADERS - OUTPUT', output)
   }
 
-
-  const projectMatch = () => {
-    console.log(pagename + '- matching...')
-    return (
-      timers.filter(timer => projects.filter(project =>  project[0] === timer[1].project ? timer[1].details = { name: project[1].name, color: project[1].color } : false))
-    )
-  }
-  // const sortView = view => view.sort((a, b) => )
   useEffect(() => {
-    let matches = projectMatch()
-    console.log(matches)
-    let filterprojects = timers.map( timer => projects.filter(project => project[0] === timer[1].project ? project : false))
-    console.log(filterprojects)
-  }, [timers, projects])
+    entries()
+  }, [])
+
   useEffect(() => {
     // sort by date
     setTimerView(timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created)))
-    dayHeaders()
   }, [timers])
-
-
 
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
@@ -132,48 +120,27 @@ export default function TimelineScreen({ navigation }) {
       <Text style={styles.header}> Timeline </Text>
       <ScrollView style={{ width: '100%' }}>
         {
-          // daysWithTimer.map(day => (<Text>{day.date}</Text>),
-          //   // day.entries.map(item =>
-          //   //   (<Timeline
-          //   //     key={item[0]}
-          //   //     date={item[1].created}
-          //   //     color={item[1].details ? item[1].details.color : 'white'}
-          //   //     project={item[1].details ? item[1].details.name : item[1].project}
-          //   //     total={item[1].total}
-          //   //     deleteTimer={() => deleteProject(item[0])}
-          //   //     onPress={() => navigation.navigate('Timer', {
-          //   //       projectKey: item[1].project,
-          //   //       timerKey: item[0],
-          //   //       otherParam: 'anything you want here',
-          //   //     })}
-          //   //   />)
-          //   // )
-
-          // )
-        }
-        {
-          timerView.map(item => projects.forEach(project => project[0] === item[1].project ?
-            (<Timeline
-              key={item[0]}
-              day={new Date(item[1].created).toString().split(' ')[0]}
-              date={item[1].created}
-              // color={item[1].details ? item[1].details.color : 'white'}
-              color={item[1].details ? project[1].color : 'white'}
-              project={item[1].details ? project[1].name : item[1].project}
-              total={item[1].total}
-              deleteTimer={() => deleteProject(item[0])}
-              onPress={() => navigation.navigate('TimerList', {
-                project: project,
-                projectName: project[1].name,
-                projectKey: item[1].project,
-                timerKey: item[0],
-                otherParam: 'anything you want here',
-              })}
-              onEdit={() => navigation.navigate('TimerLineEditor', {
-                project: project,
-                timer: item
-              })}
-            />) : false
+          timerView.map(timer => projects.map(project => {
+              if(project[0] === timer[1].project) {
+                return (<Timeline
+                  key={timer[0]}
+                  day={new Date(timer[1].created).toString().split(' ')[0]}
+                  date={timer[1].created}
+                  color={project[1].color}
+                  project={project[1].name }
+                  total={timer[1].total}
+                  deleteTimer={() => deleteProject(timer[0])}
+                  onPress={() => navigation.navigate('Timer', {
+                    project: project,
+                    timer: timer,
+                  })}
+                  onEdit={() => navigation.navigate('TimerLineEditor', {
+                    project: project,
+                    timer: timer
+                  })}
+                />)
+              }
+          }
           ))
         }
       </ScrollView>

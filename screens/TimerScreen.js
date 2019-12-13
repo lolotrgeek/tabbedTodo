@@ -14,7 +14,7 @@ import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
 import Hashids from 'hashids'
 // import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
-
+// import * as CommonActions from '@react-navigation/native' 
 import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
 import { set } from 'date-fns';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -26,6 +26,8 @@ export default function TimerScreen({ route, navigation }) {
 
   let projectKey = project[0]
   let projectName = project[1].name
+
+  // navigation.dispatch(CommonActions.setParams({ title: projectName }))
 
   // LOCAL STATE
   const [connection, setConnection] = useState()
@@ -187,10 +189,6 @@ export default function TimerScreen({ route, navigation }) {
     </View>
   )
 }
-
-// TimerScreen.options = {
-//   title: ({ route }) => ({title : route.params.project[1].name}) 
-// };
 
 const styles = StyleSheet.create({
   container: {
