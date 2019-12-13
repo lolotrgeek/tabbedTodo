@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { CirclePicker } from 'react-color'
 import { keyToTestName } from 'jest-snapshot/build/utils';
 import Hashids from 'hashids'
-import NumPad from 'react-numpad';
+import NumPad from '../components/NumPad';
 
 // Color picking
 //https://casesandberg.github.io/react-color/
@@ -26,7 +26,7 @@ export default function EditorScreen({ route, navigation }) {
   const [created, setCreated] = useState('')
   const [name, setName] = useState('');
   const [color, setColor] = useState('');
-  const [time, setTime] = useState(0)
+  const [time, setTime] = useState([])
 
   const projectValid = () => Array.isArray(project) && project[1] === 'project' ? true : false
   const createdValid = () => typeof project[1].created.charAt(0) === 'number' ? true : false
@@ -113,20 +113,39 @@ export default function EditorScreen({ route, navigation }) {
     }
   }
 
+  // const formatTime = () => time[0].toString() + time[1].toString() + ':' + time[2].toString() + time[3].toString() + ':' + time[4].toString() + time[5].toString()
+  const formatTime = t => {
+    if (!Array.isArray(t)) return t
+    if (t.length === 0) return '00 : 00 : 00'
+    if (t.length === 1) return '00 : 00 : 0' + t[0].toString()
+    if (t.length === 2) return '00 : 00 : ' + t[1].toString() + t[0].toString()
+    if (t.length === 3) return '00 : 0' + t[2].toString() + ' : ' + t[1].toString() + t[0].toString()
+    if (t.length === 4) return '00 :' + t[3].toString() + t[2].toString() + ' : ' + t[1].toString() + t[0].toString()
+    if (t.length === 5) return '0' + t[4].toString() + ' : ' + t[3].toString() + t[2].toString() + ' : ' + t[1].toString() + t[0].toString()
+    if (t.length > 5) return t[5].toString() + t[4].toString() + ' : ' + t[3].toString() + t[2].toString() + ' : ' + t[1].toString() + t[0].toString()
+  }
   return (
     <View style={styles.container}>
-      <Text style={{
-        marginTop: '10%',
+      {/* <Text style={{
+        marginTop: '5%',
         fontSize: 40,
         color: color,
         paddingBottom: 10
-      }}>{name}</Text>
+      }}>{name}</Text> */}
       <View style={styles.textInputContainer}>
         <TextInput
-          style={styles.textInput}
+          style={{
+            height: 20,
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: color ? color: "black",
+            paddingLeft: 10,
+            minHeight: '3%',
+            paddingBottom: 10
+          }}
           multiline={false}
           placeholder="Enter Project Name?"
-          placeholderTextColor="#abbabb"
+          placeholderTextColor= {color ? color: "#abbabb"}
           value={name}
           onChangeText={value => setName(value)}
         />
@@ -140,15 +159,26 @@ export default function EditorScreen({ route, navigation }) {
           onChangeComplete={handleSelectedColor}
         />
       </View>
-    <Text>Time Value: {time}</Text>
-      <NumPad.Number
-        onChange={value => setTime(value)}
-        label={'Optional: Set Ideal Project Time'}
-        placeholder={'my placeholder'}
-        decimal={false}
-        inline={true}
+      <Text style={{fontSize: 20 }}>{  formatTime(time)}</Text>
+
+      <NumPad
+        onOne={() => { console.log(time); setTime([...time, 1]) }}
+        onTwo={() => { console.log(time); setTime([...time, 2]) }}
+        onThree={() => { console.log(time); setTime([...time, 3]) }}
+        onFour={() => { console.log(time); setTime([...time, 4]) }}
+        onFive={() => { console.log(time); setTime([...time, 5]) }}
+        onSix={() => { console.log(time); setTime([...time, 6]) }}
+        onSeven={() => { console.log(time); setTime([...time, 7]) }}
+        onEight={() => { console.log(time); setTime([...time, 8]) }}
+        onNine={() => { console.log(time); setTime([...time, 9]) }}
+        onZero={() => { console.log(time); setTime([...time, 0]) }}
+        onDel={() => { console.log(time.slice(1)); setTime(time.slice(1)) }}
       />
-      <Button title="done" style={styles.doneButton} size={40} onPress={() => handleComplete()} />
+
+      <View style={styles.doneButton}>
+        <Button title="done" style={{ fontSize: 60 }} onPress={() => handleComplete()} />
+
+      </View>
       <View style={styles.deleteButton}>
         {project ? (<Icon
           name="trash-2"
@@ -157,7 +187,9 @@ export default function EditorScreen({ route, navigation }) {
           style={{ marginLeft: 'auto' }}
           onPress={() => deleteProject(project[0])}
         />) : <Text></Text>}
+
       </View>
+
     </View>
   )
 }
@@ -167,7 +199,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF'
+    backgroundColor: '#F5FCFF',
+    width: '100%'
   },
   header: {
     marginTop: '10%',
@@ -180,11 +213,11 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
     borderColor: 'black',
     borderBottomWidth: 1,
+    marginTop: '5%',
     paddingRight: 10,
     paddingBottom: 10
   },
   textInput: {
-    flex: 1,
     height: 20,
     fontSize: 18,
     fontWeight: 'bold',
@@ -194,20 +227,21 @@ const styles = StyleSheet.create({
     paddingBottom: 10
   },
   colorPicker: {
-    alignItems: 'baseline',
-    flex: 1,
-    marginTop: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: '5%',
+    marginBottom: '5%'
   },
   deleteButton: {
-    alignItems: 'baseline',
+    alignItems: 'center',
     flexDirection: 'row',
-    flex: 1,
-    marginTop: 10,
+    marginTop: '5%',
+    marginBottom: '5%'
   },
-  doneButton : {
-    alignItems: 'baseline',
+  doneButton: {
+    alignItems: 'center',
     flexDirection: 'row',
-    flex: 1,
-    marginTop: 10
+    marginTop: '5%',
+    marginBottom: '5%'
   }
 });

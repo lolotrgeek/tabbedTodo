@@ -1,13 +1,13 @@
 import React from 'react';
 import { StyleSheet, View, Text, Button } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import { FontAwesome } from '@expo/vector-icons'
 
 
 export default function ProjectList(props) {
 	return (
 		<View style={styles.listContainer}>
-			<Icon
-				name="package"
+			<FontAwesome
+				name="circle"
 				size={30}
 				color={props.color}
 				style={{ marginRight: 5, marginTop: 5 }}
