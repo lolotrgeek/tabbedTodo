@@ -11,6 +11,7 @@ import { Timer } from '../components/Timer';
 import { TimerStartNotes, TimerStopNotes } from '../components/TimerNotes';
 import { useStopwatch, useTimer } from 'react-timer-hook';
 import Grid from '@material-ui/core/Grid';
+import { compareAsc, format } from 'date-fns'
 import DateFnsUtils from '@date-io/date-fns';
 import Hashids from 'hashids'
 // import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
@@ -37,6 +38,7 @@ export default function TimerScreen({ route, navigation }) {
   const [count, setCount] = useState(initialValue)
   const [total, setTotal] = useState(0)
   const [created, setCreated] = useState('')
+  const [ended, setEnded] = useState('')
   const [button, setButton] = useState('start')
   const [mood, setMood] = useState('')
   const [energy, setEnergy] = useState(50)
@@ -114,7 +116,8 @@ export default function TimerScreen({ route, navigation }) {
 
   const addTimer = (start) => {
     const NEWVALUE = {
-      created: dateCreator(),
+      created: new Date().toString(),
+      ended : ended,
       type: 'timer',
       project: projectKey,
       start: start,
@@ -135,6 +138,7 @@ export default function TimerScreen({ route, navigation }) {
   const updateTimer = (key, count) => {
     let value = {
       created: created,
+      ended : new Date().toString(),
       type: 'timer',
       project: projectKey,
       start: initialValue,
