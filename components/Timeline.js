@@ -5,21 +5,21 @@ import Icon from 'react-native-vector-icons/Feather';
 export function Timeline(props) {
     return (
         <View style={styles.listContainer}>
-            <Text>{props.day}</Text>
             <View>
-                <Text style={{
-                    paddingBottom: 20,
-                    paddingLeft: 10,
-                    marginTop: 6,
-                    fontSize: 15,
-                    fontWeight: 'bold',
-                    color: 'black',
-                    backgroundColor: props.color
-                }}
-                    onPress={props.onPress}>
+                <Text
+                    onPress={props.onEdit ? props.onEdit : ''}
+                    style={{
+                        paddingBottom: 20,
+                        marginTop: 6,
+                        fontSize: 15,
+                        fontWeight: 'bold',
+                        color: props.color,
+                    }}
+                    onPress={props.onPress}
+                >
                     {props.project} - Total : {props.total}  ({props.date})
                 </Text>
-                <Button title="Edit" style={{ backgroundColor : props.onEdit ? 'blue' : 'grey'}} onPress={props.onEdit ? props.onEdit : ''} />
+                {/* <Button title="Edit" onPress={props.onEdit ? props.onEdit : ''} /> */}
             </View>
         </View>
     );
@@ -36,27 +36,8 @@ const styles = StyleSheet.create({
     listContainer: {
         marginTop: '5%',
         flexDirection: 'row',
-        borderColor: '#aaaaaa',
-        borderBottomWidth: 1.5,
         width: '100%',
-        alignItems: 'stretch',
-        minHeight: 40
+        alignItems: 'flex-start',
+        padding: 10
     },
-    listItem: {
-        paddingBottom: 20,
-        paddingLeft: 10,
-        marginTop: 6,
-        borderColor: 'green',
-        fontSize: 17,
-        fontWeight: 'bold',
-        color: 'black'
-    },
-    verticalLine: {
-        borderBottomColor: 'green',
-        borderBottomWidth: 4,
-        marginLeft: 10,
-        width: '100%',
-        position: 'absolute',
-        marginTop: 15,
-    }
 });

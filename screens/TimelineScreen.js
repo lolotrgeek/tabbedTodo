@@ -5,7 +5,8 @@ import {
   Text,
   View,
   StyleSheet,
-  ScrollView
+  SafeAreaView,
+  SectionList,
 } from 'react-native';
 
 import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
@@ -49,10 +50,10 @@ export default function TimelineScreen({ navigation }) {
     }
   })
 
-  const dayHeaders = timers => new Promise((resolve, reject) => {
+  const dayHeaders = timerlist => new Promise((resolve, reject) => {
     const output = [] // [days...]
     // organize timers by day
-    const timerdays = timers.map(timer => {
+    const timerdays = timerlist.map(timer => {
       return { day: simpleDate(new Date(timer[1].created)), timer: timer }
     })
     // console.log(pagename + '- DAYHEADERS - TIMERDAYS : ', timerdays)
@@ -60,24 +61,25 @@ export default function TimelineScreen({ navigation }) {
       // first value if output is empty is always unique
       if (output.length === 0) {
         console.log(pagename + '- FIRST OUTPUT ENTRY :', timerday)
-        output.push({ day: timerday.day, timers: [timerday.timer] })
+        output.push({ title: timerday.day, data: [timerday.timer] })
       }
       else {
         // find and compare timerdays to outputs
-        const match = output.find(inOutput => inOutput.day === timerday.day)
+        const match = output.find(inOutput => inOutput.title === timerday.day)
         if (match) {
           console.log(pagename + '- MATCHING ENTRY :', match.day)
           // add timer to list of timers for matching day
-          match.timers = [...match.timers, timerday.timer]
+          match.data = [...match.data, timerday.timer]
         }
         else {
           console.log(pagename + '- NEW OUTPUT ENTRY :', timerday)
-          output.push({ day: timerday.day, timers: [timerday.timer] })
+          output.push({ title: timerday.day, data: [timerday.timer] })
         }
       }
     })
     console.log(pagename + '- DAYHEADERS - OUTPUT', output)
-    resolve(output)
+    if (output.length > 0) { resolve(output) }
+    else { reject([]) }
   })
 
   const setEntryState = async () => {
@@ -98,6 +100,14 @@ export default function TimelineScreen({ navigation }) {
   }, [])
 
   useEffect(() => {
+    // daysWithTimer.map(entry => {
+    //   console.log(entry.title)
+    //   entry.data.map(timer => projects.map(project => {
+    //     console.log(timer[1], project[1])
+    //   })
+    //   )
+    // }
+    // )
     console.log(daysWithTimer)
   }, [daysWithTimer])
 
@@ -117,60 +127,37 @@ export default function TimelineScreen({ navigation }) {
   }, [])
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={{ width: '100%' }}>
-        {
-          daysWithTimer.map(entry => {
-            entry.timers.map(timer => projects.map(project => {
-              if (project[0] === timer[1].project) {
-                return (<Timeline
-                  key={timer[0]}
-                  day={entry.day}
-                  date={timer[1].created}
-                  color={project[1].color}
-                  project={project[1].name}
-                  total={timer[1].total}
-                  onPress={() => navigation.navigate('Timer', {
-                    project: project,
-                    timer: timer,
-                    lastscreen: 'Timeline'
-                  })}
-                  onEdit={() => navigation.navigate('TimerLineEditor', {
-                    project: project,
-                    timer: timer,
-                    lastscreen: 'Timeline'
-                  })}
-                />)
-              }
-            }
-            ))
-          })
-          // timerView.map(timer => projects.map(project => {
-          //   if (project[0] === timer[1].project) {
-          //     return (<Timeline
-          //       key={timer[0]}
-          //       // day={new Date(timer[1].created).toString().split(' ')[0]}
-          //       date={timer[1].created}
-          //       color={project[1].color}
-          //       project={project[1].name}
-          //       total={timer[1].total}
-          //       onPress={() => navigation.navigate('Timer', {
-          //         project: project,
-          //         timer: timer,
-          //         lastscreen: 'Timeline'
-          //       })}
-          //       onEdit={() => navigation.navigate('TimerLineEditor', {
-          //         project: project,
-          //         timer: timer,
-          //         lastscreen: 'Timeline'
-          //       })}
-          //     />)
-          //   }
-          // }
-          // ))
+    <SafeAreaView style={styles.container}>
+      <SectionList style={{ width: '100%' }}
+        sections={daysWithTimer}
+        keyExtractor={(item, index) => item + index}
+        renderSectionHeader={({ section: { title } }) => {
+          return (<Text style={styles.header}>{title}</Text>)
+        }}
+        renderItem={({ item }) => projects.map(project => {
+          if (project[0] === item[1].project) {
+            return (<Timeline
+              key={item[0]}
+              date={item[1].created}
+              color={project[1].color}
+              project={project[1].name}
+              total={item[1].total}
+              onPress={() => navigation.navigate('Timer', {
+                project: project,
+                timer: item,
+                lastscreen: 'Timeline'
+              })}
+              onEdit={() => navigation.navigate('TimerLineEditor', {
+                project: project,
+                timer: item,
+                lastscreen: 'Timeline'
+              })}
+            />)
+          }
+        })
         }
-      </ScrollView>
-    </View>
+      />
+    </SafeAreaView >
   )
 }
 
