@@ -2,10 +2,6 @@ import React from 'react';
 import { StyleSheet, View, Text, Button, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
-export function TimerInput(props) {
-
-}
-
 export function Timer(props) {
 	return (
 		<View>
@@ -28,13 +24,6 @@ export function TimerList(props) {
 				<Text style={styles.listItem} onPress={props.onPress} >{props.date} - Start : {props.start} Stop : {props.stop} Total: {props.total}</Text>
 				<Button title='Edit' style={{ flex: 1, marginLeft: 'auto' }} onPress={props.onEdit} />
 			</View>
-			<Icon
-				name="trash-2"
-				size={30}
-				color="red"
-				style={{ marginLeft: 'auto' }}
-				onPress={props.deleteTimer}
-			/>
 
 		</View>
 	);

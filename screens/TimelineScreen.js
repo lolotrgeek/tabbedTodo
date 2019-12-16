@@ -24,19 +24,9 @@ export default function TimelineScreen({ navigation }) {
   const [matchedTimers, setMatchedTimers] = useState([]); // state of sorted timers matched with Projects list
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
 
-  const getProjects = (id) => {
-    timers.filter(timer => {
-      if (id === timer[1].project) {
-        console.log(pagename + '- MATCH - timer :' + id + ' to timer: ' + timer[1].project)
-        return true
-      }
-      else {
-        return false
-      }
-    })
-  }
-
-
+  const sortbydate = () => timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
+  const listDay = () => timers.map(timer => new Date(timer[1].created))
+  const simpleDate = date => date.getDate() + " " + date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear()
   const isValidTimer = value => value.type === 'timer' ? true : false
 
   // PAGE FUNCTIONS
@@ -89,11 +79,6 @@ export default function TimelineScreen({ navigation }) {
     const days = await dayHeaders(retrieved.timers)
     setDaysWithTimer(days)
   }
-
-
-  const sortbydate = () => timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
-  const listDay = () => timers.map(timer => new Date(timer[1].created))
-  const simpleDate = date => date.getDate() + " " + date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear()
 
   useEffect(() => {
     setEntryState()

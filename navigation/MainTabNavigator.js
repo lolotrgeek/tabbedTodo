@@ -25,11 +25,7 @@ const Tab = createBottomTabNavigator();
 export default function MainStack() {
   return (
     <Tab.Navigator>
-      <Tab.Screen
-        name='Timeline'
-        options={TimelineTab.options}
-        component={TimelineTab}
-      />
+
       <Tab.Screen
         name='Home'
         options={HomeTab.options}
@@ -37,7 +33,11 @@ export default function MainStack() {
       />
 
 
-
+      <Tab.Screen
+        name='Timeline'
+        options={TimelineTab.options}
+        component={TimelineTab}
+      />
 
       <Tab.Screen
         name='Settings'
