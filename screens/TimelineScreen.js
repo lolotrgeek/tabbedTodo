@@ -10,6 +10,7 @@ import {
 
 import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
 import { Timeline } from '../components/Timeline';
+import { compareAsc } from 'date-fns'
 
 export default function TimelineScreen({ navigation }) {
 
@@ -22,17 +23,6 @@ export default function TimelineScreen({ navigation }) {
   const [matchedTimers, setMatchedTimers] = useState([]); // state of sorted timers matched with Projects list
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
 
-  // PROJECT FUNCTIONS
-  const deleteProject = id => {
-    removeItem(id)
-    setTimers(
-      timers.filter(todo => {
-        if (todo[0] !== id) {
-          return true;
-        }
-      })
-    );
-  }
   const getProjects = (id) => {
     timers.filter(timer => {
       if (id === timer[1].project) {
@@ -47,17 +37,55 @@ export default function TimelineScreen({ navigation }) {
 
 
   const isValidTimer = value => value.type === 'timer' ? true : false
-  //&& typeof value.start === 'number' && typeof value.stop === 'number' && typeof value.total === 'number'
+
   // PAGE FUNCTIONS
-  const entries = async () => {
+  const entries = () => new Promise(async (resolve, reject) => {
     try {
       let timerEntries = await getAll(value => isValidTimer(value) ? true : false)
       let projectEntries = await getAll(value => value.type === 'project' ? true : false)
-      setTimers(timerEntries)
-      setProjects(projectEntries)
+      resolve({ timers: timerEntries, projects: projectEntries })
     } catch (error) {
-      console.log(error)
+      reject(error)
     }
+  })
+
+  const dayHeaders = timers => new Promise((resolve, reject) => {
+    const output = [] // [days...]
+    // organize timers by day
+    const timerdays = timers.map(timer => {
+      return { day: simpleDate(new Date(timer[1].created)), timer: timer }
+    })
+    // console.log(pagename + '- DAYHEADERS - TIMERDAYS : ', timerdays)
+    timerdays.forEach(timerday => {
+      // first value if output is empty is always unique
+      if (output.length === 0) {
+        console.log(pagename + '- FIRST OUTPUT ENTRY :', timerday)
+        output.push({ day: timerday.day, timers: [timerday.timer] })
+      }
+      else {
+        // find and compare timerdays to outputs
+        const match = output.find(inOutput => inOutput.day === timerday.day)
+        if (match) {
+          console.log(pagename + '- MATCHING ENTRY :', match.day)
+          // add timer to list of timers for matching day
+          match.timers = [...match.timers, timerday.timer]
+        }
+        else {
+          console.log(pagename + '- NEW OUTPUT ENTRY :', timerday)
+          output.push({ day: timerday.day, timers: [timerday.timer] })
+        }
+      }
+    })
+    console.log(pagename + '- DAYHEADERS - OUTPUT', output)
+    resolve(output)
+  })
+
+  const setEntryState = async () => {
+    const retrieved = await entries()
+    setTimers(retrieved.timers)
+    setProjects(retrieved.projects)
+    const days = await dayHeaders(retrieved.timers)
+    setDaysWithTimer(days)
   }
 
 
@@ -65,40 +93,13 @@ export default function TimelineScreen({ navigation }) {
   const listDay = () => timers.map(timer => new Date(timer[1].created))
   const simpleDate = date => date.getDate() + " " + date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear()
 
-  const dayHeaders = () => {
-    // organize timers by day
-    let timerday = timers.map(timer => {
-      return { day: simpleDate(new Date(timer[1].created)), timer: [timer] }
-    })
-
-    console.log(pagename + '- DAYHEADERS - TIMERDAY : ', timerday)
-
-    let output = []
-    timerday.forEach(entry => {
-      // first value if output is empty is always unique
-      if (output.length === 0) {
-        output.push(entry)
-      }
-      else {
-        // compare entries
-        output.find((out, i) => {
-          if (out.day === entry.day) {
-            output[i] = { day: out.day, timer: [...out.timer, entry.timer[0]] }
-          }
-          else {
-            console.log(pagename + '- OUTPUT ENTRY :', entry)
-            //TODO: add recursion here???
-            return [...output, entry]
-          }
-        })
-      }
-    })
-    console.log(pagename + '- DAYHEADERS - OUTPUT', output)
-  }
+  useEffect(() => {
+    setEntryState()
+  }, [])
 
   useEffect(() => {
-    entries()
-  }, [])
+    console.log(daysWithTimer)
+  }, [daysWithTimer])
 
   useEffect(() => {
     // sort by date
@@ -108,7 +109,7 @@ export default function TimelineScreen({ navigation }) {
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
       console.log('FOCUS - ' + pagename)
-      entries()
+      setEntryState()
     })
     const unfocused = navigation.addListener('blur', () => {
     })
@@ -117,33 +118,56 @@ export default function TimelineScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}> Timeline </Text>
       <ScrollView style={{ width: '100%' }}>
         {
-          timerView.map(timer => projects.map(project => {
-              if(project[0] === timer[1].project) {
+          daysWithTimer.map(entry => {
+            entry.timers.map(timer => projects.map(project => {
+              if (project[0] === timer[1].project) {
                 return (<Timeline
                   key={timer[0]}
-                  day={new Date(timer[1].created).toString().split(' ')[0]}
+                  day={entry.day}
                   date={timer[1].created}
                   color={project[1].color}
-                  project={project[1].name }
+                  project={project[1].name}
                   total={timer[1].total}
-                  // deleteTimer={() => deleteProject(timer[0])}
                   onPress={() => navigation.navigate('Timer', {
                     project: project,
                     timer: timer,
-                    lastscreen : 'Timeline'
+                    lastscreen: 'Timeline'
                   })}
                   onEdit={() => navigation.navigate('TimerLineEditor', {
                     project: project,
                     timer: timer,
-                    lastscreen : 'Timeline'
+                    lastscreen: 'Timeline'
                   })}
                 />)
               }
-          }
-          ))
+            }
+            ))
+          })
+          // timerView.map(timer => projects.map(project => {
+          //   if (project[0] === timer[1].project) {
+          //     return (<Timeline
+          //       key={timer[0]}
+          //       // day={new Date(timer[1].created).toString().split(' ')[0]}
+          //       date={timer[1].created}
+          //       color={project[1].color}
+          //       project={project[1].name}
+          //       total={timer[1].total}
+          //       onPress={() => navigation.navigate('Timer', {
+          //         project: project,
+          //         timer: timer,
+          //         lastscreen: 'Timeline'
+          //       })}
+          //       onEdit={() => navigation.navigate('TimerLineEditor', {
+          //         project: project,
+          //         timer: timer,
+          //         lastscreen: 'Timeline'
+          //       })}
+          //     />)
+          //   }
+          // }
+          // ))
         }
       </ScrollView>
     </View>
