@@ -89,8 +89,6 @@ export function TimerStopNotes(props) {
                     name="grin"
                     color="orange"
                     style={{
-                        paddingBottom: '10%',
-                        marginTop: '10%',
                         fontWeight: props.selected === 'great' ? 'bold': 'normal',
                         marginLeft: 'auto',
                         marginRight: 'auto',
@@ -103,8 +101,6 @@ export function TimerStopNotes(props) {
                     size={40}
                     color="green"
                     style={{
-                        paddingBottom: '10%',
-                        marginTop: '10%',
                         fontWeight: props.selected === 'good' ? 'bold': 'normal',
                         marginLeft: 'auto',
                         marginRight: 'auto',
@@ -117,8 +113,6 @@ export function TimerStopNotes(props) {
                     size={40}
                     color="purple"
                     style={{
-                        paddingBottom: '10%',
-                        marginTop: '10%',
                         fontWeight: props.selected === 'meh' ? 'bold': 'normal',
                         marginLeft: 'auto',
                         marginRight: 'auto',
@@ -131,8 +125,6 @@ export function TimerStopNotes(props) {
                     size={40}
                     color="blue"
                     style={{
-                        paddingBottom: '10%',
-                        marginTop: '10%',
                         fontWeight: props.selected === 'bad' ? 'bold': 'normal',
                         marginLeft: 'auto',
                         marginRight: 'auto',
@@ -145,8 +137,6 @@ export function TimerStopNotes(props) {
                     size={40}
                     color="grey"
                     style={{
-                        paddingBottom: '10%',
-                        marginTop: '10%',
                         fontWeight: props.selected === 'awful' ? 'bold': 'normal',
                         marginLeft: 'auto',
                         marginRight: 'auto',
@@ -156,7 +146,7 @@ export function TimerStopNotes(props) {
                 />
             </View >
             <View >
-                <Text style={styles.subheader}>Set Energy Level</Text>
+                <Text style={styles.subheader}>Energy Level</Text>
                 <PrettoSlider
                     valueLabelDisplay="auto"
                     aria-label="pretto slider"
@@ -187,7 +177,7 @@ export function TimerStartNotes(props) {
 }
 const styles = StyleSheet.create({
     header: {
-        marginTop: '15%',
+        marginTop: '10%',
         fontSize: 40,
         color: 'black',
         paddingBottom: 10
@@ -205,12 +195,13 @@ const styles = StyleSheet.create({
         alignContent: 'center'
     },
     listContainer: {
-        marginTop: '5%',
+        marginBottom: '10%',
+        marginTop: '10%',
         flexDirection: 'row',
         width: '100%',
         alignItems: 'center',
         alignContent: 'center',
-        minHeight: 60,
+        height: 60
     },
     listItem: {
         paddingBottom: '10%',

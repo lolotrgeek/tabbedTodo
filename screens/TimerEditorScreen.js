@@ -6,17 +6,19 @@ import {
     View,
     TextInput,
     Button,
+    TouchableOpacity
 } from 'react-native';
 import { updateItem } from '../constants/Store'
 import { TimerStopNotes } from '../components/TimerNotes'
 import { DatePicker, TimePicker } from '../components/DatePickers'
 import { addMinutes } from 'date-fns'
 // import { CommonActions } from '../node_modules/@react-navigation/native/lib/typescript/core/src'
+import { FontAwesome } from '@expo/vector-icons'
 
 export default function TimerEditorScreen({ route, navigation }) {
     const { timer, project } = route.params
 
-    console.log(timer)
+
     const timerKey = timer[0]
     const timerEntry = timer[1]
 
@@ -27,7 +29,7 @@ export default function TimerEditorScreen({ route, navigation }) {
     const [start, setStart] = useState('');
     const [stop, setStop] = useState('');
     const [mood, setMood] = useState('')
-    const [energy, setEnergy] = useState(0)
+    const [energy, setEnergy] = useState(timer[1].energy ? timer[1].energy : 0)
 
     const timerValid = () => Array.isArray(timer) && timerEntry.type === 'timer' ? true : false
     const createdValid = () => typeof timer[1].created.charAt(0) === 'number' ? true : false
@@ -63,44 +65,55 @@ export default function TimerEditorScreen({ route, navigation }) {
         if (key) {
             updateItem(key, timer[1])
         }
-        navigation.navigate()
+        navigation.navigate('Projects')
     }
 
     return (
         <View style={styles.container}>
-            <Text style={{
-                marginTop: '10%',
-                fontSize: 40,
+            {/* <Text style={{
+                marginTop: '5%',
+                fontSize: 20,
                 // color: color,
                 paddingBottom: 10
-            }}>{projectName}</Text>
-
-            <DatePicker
-                startdate={created}
-                onDateChange={newDate => setCreated(newDate)}
-            />
-
-            <Text style={{ fontSize: 20 }}>Start</Text>
+            }}>{projectName}</Text> */}
             <View style={styles.textInputContainer}>
-                {/* <Button title='-5' onPress={() => { setStart(start => start - 5) }}></Button> */}
-                <Button title='-5' onPress={() => { setCreated(time => addMinutes(new Date(time), -5)) }}></Button>
+                <Text style={styles.sideTitle}>Date </Text>
+
+                <DatePicker
+                    label=' '
+                    startdate={created}
+                    onDateChange={newDate => setCreated(newDate)}
+                />
+            </View>
+            <View style={styles.textInputContainer}>
+                <Text style={styles.sideTitle}>Start</Text>
+                <TouchableOpacity onPress={() => { setCreated(time => addMinutes(new Date(time), -5)) }}>
+                    <FontAwesome name="chevron-left" style={{ fontSize: 20, marginRight: 10 }} />
+                </TouchableOpacity>
                 <TimePicker
+                    label=' '
                     time={new Date(created)}
                     onTimeChange={newTime => setCreated(newTime)}
                 />
-                {/* <Button title='+5' onPress={() => { setStart(start => start + 5) }}></Button> */}
-                <Button title='+5' onPress={() => { setCreated(time => addMinutes(new Date(time), 5)) }}></Button>
+                <TouchableOpacity onPress={() => { setCreated(time => addMinutes(new Date(time), 5)) }}>
+                    <FontAwesome name="chevron-right" style={{ fontSize: 20, marginLeft: 10 }} />
+                </TouchableOpacity>
             </View>
-            <Text style={{ fontSize: 20 }}>Stop </Text>
-            <View style={styles.textInputContainer}>
 
-            <Button title='-5' onPress={() => { setEnded(time => addMinutes(new Date(time), -5)) }}></Button>
+            <View style={styles.textInputContainer}>
+                <Text style={styles.sideTitle}>End </Text>
+                <TouchableOpacity onPress={() => { setEnded(time => addMinutes(new Date(time), -5)) }}>
+                    <FontAwesome name="chevron-left" style={{ fontSize: 20, marginRight: 10 }} />
+                </TouchableOpacity>
 
                 <TimePicker
+                    label=' '
                     time={new Date(ended)}
                     onTimeChange={newTime => setEnded(newTime)}
                 />
-                <Button title='+5' onPress={() => { setEnded(time => addMinutes(new Date(time), 5)) }}></Button>
+                <TouchableOpacity onPress={() => { setEnded(time => addMinutes(new Date(time), 5)) }}>
+                    <FontAwesome name="chevron-right" style={{ fontSize: 20, marginLeft: 10 }} />
+                </TouchableOpacity>
 
             </View>
 
@@ -116,7 +129,7 @@ export default function TimerEditorScreen({ route, navigation }) {
             />
             <Button title='Done' onPress={() => handleComplete()}></Button>
 
-        </View>
+        </View >
     )
 }
 
@@ -125,7 +138,8 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF'
+        backgroundColor: '#F5FCFF',
+        padding: 10
     },
     header: {
         marginTop: '10%',
@@ -136,23 +150,13 @@ const styles = StyleSheet.create({
     textInputContainer: {
         flexDirection: 'row',
         alignItems: 'baseline',
-        borderColor: 'black',
-        borderBottomWidth: 1,
         paddingRight: 10,
         paddingBottom: 10
     },
-    textInput: {
-        flex: 1,
-        height: 20,
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: 'black',
-        paddingLeft: 10,
-        minHeight: '3%',
-        paddingBottom: 10
-    },
-    colorPicker: {
-        flex: 1,
-        marginTop: 10,
+    sideTitle: {
+        fontSize: 20,
+        width: 100,
+        marginRight: '1%',
+        marginLeft: '1%'
     }
 });
