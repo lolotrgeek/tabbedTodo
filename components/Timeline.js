@@ -5,19 +5,21 @@ import Icon from 'react-native-vector-icons/Feather';
 export function Timeline(props) {
     return (
         <View style={styles.listContainer}>
-            <View>
+            <View style={{flex: 1, flexDirection: 'column', width:'50%',}}>
                 <Text
-                    onPress={props.onEdit ? props.onEdit : ''}
-                    style={{
-                        paddingBottom: 20,
-                        marginTop: 6,
-                        fontSize: 15,
-                        fontWeight: 'bold',
-                        color: props.color,
-                    }}
+                    style={{ color: props.color, fontSize: 20 }}
                     onPress={props.onPress}
                 >
-                    {props.project} - Total : {props.total}  ({props.date})
+                    {props.project}
+                </Text>
+            </View>
+            <View style={{ flex: 1, flexDirection: 'column', width:'50%', }}>
+                <Text
+                    onPress={props.onEdit ? props.onEdit : ''}
+                    style={styles.listItem}
+                    onPress={props.onEdit}
+                >
+                    Total : {props.total}
                 </Text>
                 {/* <Button title="Edit" onPress={props.onEdit ? props.onEdit : ''} /> */}
             </View>
@@ -27,17 +29,19 @@ export function Timeline(props) {
 
 
 const styles = StyleSheet.create({
-    counter: {
-        marginTop: '15%',
-        fontSize: 40,
-        color: 'black',
-        paddingBottom: 10
-    },
     listContainer: {
+        flex:1,
         marginTop: '5%',
         flexDirection: 'row',
         width: '100%',
         alignItems: 'flex-start',
         padding: 10
     },
+    listItem: {
+        paddingBottom: 20,
+        marginTop: 6,
+        marginRight: 0,
+        fontSize: 15,
+        fontWeight: 'bold',
+    }
 });

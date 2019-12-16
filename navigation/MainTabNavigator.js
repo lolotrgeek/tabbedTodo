@@ -87,6 +87,7 @@ const TimelineTab = () => {
   return (
     <TimelineStack.Navigator>
       <TimelineStack.Screen name="Timeline" component={TimelineScreen} />
+      <TimelineStack.Screen name="TimerList" component={TimerListScreen} />
       <TimelineStack.Screen name="Timer" component={TimerScreen} />
       <TimelineStack.Screen name="TimerLineEditor" component={TimerEditorScreen} />
 

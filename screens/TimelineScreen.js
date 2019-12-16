@@ -142,7 +142,7 @@ export default function TimelineScreen({ navigation }) {
               color={project[1].color}
               project={project[1].name}
               total={item[1].total}
-              onPress={() => navigation.navigate('Timer', {
+              onPress={() => navigation.navigate('TimerList', {
                 project: project,
                 timer: item,
                 lastscreen: 'Timeline'
