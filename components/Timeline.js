@@ -21,14 +21,6 @@ export function Timeline(props) {
                 </Text>
                 <Button title="Edit" style={{ backgroundColor : props.onEdit ? 'blue' : 'grey'}} onPress={props.onEdit ? props.onEdit : ''} />
             </View>
-            <Icon
-                name="trash-2"
-                size={30}
-                color="red"
-                style={{ marginLeft: 'auto' }}
-                onPress={props.deleteTimer}
-            />
-
         </View>
     );
 }

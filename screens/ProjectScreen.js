@@ -97,8 +97,7 @@ export default function ProjectScreen({ route, navigation }) {
             color={project[1].color}
             deleteEntry={() => deleteProject(project[0])}
             onPress={() => navigation.navigate('Edit', {
-              project: project,
-              otherParam: 'anything you want here',
+              project: project
             })}
             onView={() => navigation.navigate('TimerList', {
               project : project,

@@ -8,15 +8,15 @@ import {
     Button,
     TouchableOpacity
 } from 'react-native';
-import { updateItem } from '../constants/Store'
+import { updateItem, removeItem } from '../constants/Store'
 import { TimerStopNotes } from '../components/TimerNotes'
 import { DatePicker, TimePicker } from '../components/DatePickers'
 import { addMinutes } from 'date-fns'
 // import { CommonActions } from '../node_modules/@react-navigation/native/lib/typescript/core/src'
-import { FontAwesome } from '@expo/vector-icons'
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 
 export default function TimerEditorScreen({ route, navigation }) {
-    const { timer, project } = route.params
+    const { timer, project, lastscreen } = route.params
 
 
     const timerKey = timer[0]
@@ -33,6 +33,14 @@ export default function TimerEditorScreen({ route, navigation }) {
 
     const timerValid = () => Array.isArray(timer) && timerEntry.type === 'timer' ? true : false
     const createdValid = () => typeof timer[1].created.charAt(0) === 'number' ? true : false
+
+    const deleteEntry = () => {
+        removeItem(timerKey)
+        // TODO: are you sure? modal
+        navigation.navigate(lastscreen ? lastscreen : 'Projects', {
+            project: project
+        })
+    }
 
     const handleRoutedParams = () => {
         if (timer && timerValid) {
@@ -65,7 +73,9 @@ export default function TimerEditorScreen({ route, navigation }) {
         if (key) {
             updateItem(key, timer[1])
         }
-        navigation.navigate('Projects')
+        navigation.navigate(lastscreen ? lastscreen : 'Projects', {
+            project: project
+        })
     }
 
     return (
@@ -128,6 +138,9 @@ export default function TimerEditorScreen({ route, navigation }) {
                 onEnergySet={(event, value) => setEnergy(value)}
             />
             <Button title='Done' onPress={() => handleComplete()}></Button>
+            <TouchableOpacity onPress={() => deleteEntry()}>
+                <FontAwesome5 name='trash-alt' color='red' style={styles.delete} />
+            </TouchableOpacity>
 
         </View >
     )
@@ -158,5 +171,9 @@ const styles = StyleSheet.create({
         width: 100,
         marginRight: '1%',
         marginLeft: '1%'
+    },
+    delete : {
+        fontSize: 20,
+        margin: '2%'
     }
 });

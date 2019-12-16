@@ -85,13 +85,13 @@ export default function TimerListScreen({ route, navigation }) {
             onPress={() => navigation.navigate('Timer', {
               projectKey: projectKey,
               projectName: projectName,
-              otherParam: 'anything you want here',
+              lastscreen: 'TimerList',
             })}
             onEdit={() => navigation.navigate('TimerEditor', {
               timer: timer,
               project: project,
               projectName: projectName,
-              otherParam: 'anything you want here',
+              lastscreen: 'TimerList',
             })}
           />)
         )}

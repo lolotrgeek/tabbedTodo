@@ -129,14 +129,16 @@ export default function TimelineScreen({ navigation }) {
                   color={project[1].color}
                   project={project[1].name }
                   total={timer[1].total}
-                  deleteTimer={() => deleteProject(timer[0])}
+                  // deleteTimer={() => deleteProject(timer[0])}
                   onPress={() => navigation.navigate('Timer', {
                     project: project,
                     timer: timer,
+                    lastscreen : 'Timeline'
                   })}
                   onEdit={() => navigation.navigate('TimerLineEditor', {
                     project: project,
-                    timer: timer
+                    timer: timer,
+                    lastscreen : 'Timeline'
                   })}
                 />)
               }
