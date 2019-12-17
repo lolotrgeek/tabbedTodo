@@ -5,8 +5,9 @@ import Icon from 'react-native-vector-icons/Feather';
 export function Timer(props) {
 	return (
 		<View>
-			{/* <Text style={styles.counter}>{props.days}:{props.hours}:{props.minutes}:{props.seconds}</Text> */}
-			<Text style={styles.counter}>{props.counter}</Text>
+			<View>
+				<Text style={styles.counter}>{props.counter}</Text>
+			</View>
 			<View style={{ display: props.hideStart }}>
 				<Button title='Start' style={{ marginLeft: 'auto' }} onPress={props.start} />
 			</View>
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
 	  },
 	counter: {
 		marginTop: '5%',
-		fontSize: 100,
+		fontSize: 70,
 		color: 'black',
 		paddingBottom: 10
 	},

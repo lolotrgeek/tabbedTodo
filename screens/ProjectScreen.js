@@ -1,34 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { ExpoLinksView } from '@expo/samples';
-import {
-  StyleSheet,
-  Button,
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-  ScrollView
-} from 'react-native';
-
-import Icon from 'react-native-vector-icons/Feather';
+import { StyleSheet, Button, View, ScrollView } from 'react-native';
 import ProjectList from '../components/ProjectList';
-import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
+import { getAll } from '../constants/Store'
 
 export default function ProjectScreen({ route, navigation }) {
+
   let pagename = 'Projects'
+
   // LOCAL STATE
   const [projects, setProject] = useState([]); // state of projects list
-
-  // PROJECT FUNCTIONS
-  const projectValid = () => Array.isArray(project) && project[1] === 'project' ? true : false
-  const nameValid = () => typeof project[1].name === 'string' ? true : false
-  const colorValid = () => typeof project[1].color === 'string' && project[1].color.charAt(0) === '#' ? true : false
-
-  const updateProject = (key, value) => {
-    setProject(projects.map(project => key === project[0] ? [key, value] : project))
-    console.log(pagename +'- STATE UPDATED - Projects : ', projects)
-  }
-
 
   // PAGE FUNCTIONS
   const entries = async () => {
@@ -39,30 +19,7 @@ export default function ProjectScreen({ route, navigation }) {
       console.log(error)
     }
   }
-  
-  const handleRoutedParams = () => {
-    if (route.params) {
-      console.log('PARAMS : ' + JSON.stringify(route.params))
-      const { project, update } = route.params
-      if (!projectValid) {
-        console.log(pagename +'- INVALID ROUTED PROJECT : ' + JSON.stringify(project))
-        return false
-      }
-      if (nameValid && colorValid) {
-        console.log(pagename +'- VALID ROUTED PROJECT : ' + project[0] + ',' + JSON.stringify(project[1]))
-        if (update) {
-          updateProject(project[0], project[1])
-          console.log(pagename +'- UPDATING ROUTED PROJECT : ' + JSON.stringify(project))
-        }
-        else {
-          console.log(pagename +'- ADDING ROUTED PROJECT : ' + JSON.stringify(project))
-          setProject([...projects, project])
-        }
-
-      }
-    }
-  }
-
+  // EFFECTS
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
       console.log('FOCUSED PAGE - ' + pagename)
@@ -76,10 +33,6 @@ export default function ProjectScreen({ route, navigation }) {
   useEffect(() => {
     entries()
   }, [])
-
-  // useEffect(() => {
-  //   handleRoutedParams()
-  // }, [route])
 
   return (
     <View style={styles.container}>
@@ -100,27 +53,21 @@ export default function ProjectScreen({ route, navigation }) {
               project: project
             })}
             onView={() => navigation.navigate('TimerList', {
-              project : project,
+              project: project,
               run: false,
             })}
             onStart={() => navigation.navigate('Timer', {
-              project : project,
+              project: project,
               run: true,
             })}
             onStop={() => navigation.navigate('Timer', {
-              project : project,
+              project: project,
               run: false,
             })}
           />
           ))}
 
       </ScrollView>
-      <TouchableOpacity onPress={() => removeAll(setProject)}>
-        <Icon name="minus" size={40} color="red" style={{ marginLeft: 10 }} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => getAll()}>
-        <Icon name="plus" size={40} color="blue" style={{ marginLeft: 10 }} />
-      </TouchableOpacity>
     </View>
   )
 }

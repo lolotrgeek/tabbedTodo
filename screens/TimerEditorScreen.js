@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ExpoLinksView } from '@expo/samples';
-import {
-    StyleSheet,
-    Text,
-    View,
-    TextInput,
-    Button,
-    TouchableOpacity
-} from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
 import { updateItem, removeItem } from '../constants/Store'
 import { TimerStopNotes } from '../components/TimerNotes'
 import { DatePicker, TimePicker } from '../components/DatePickers'
-import { addMinutes, compareAsc } from 'date-fns'
-// import { CommonActions } from '../node_modules/@react-navigation/native/lib/typescript/core/src'
+import { addMinutes } from 'date-fns'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
+import { timerValid, createdValid } from '../constants/Validators'
 
 export default function TimerEditorScreen({ route, navigation }) {
     const { timer, project, lastscreen } = route.params
@@ -30,12 +22,6 @@ export default function TimerEditorScreen({ route, navigation }) {
     const [mood, setMood] = useState('')
     const [energy, setEnergy] = useState(timer[1].energy ? timer[1].energy : 0)
 
-    const timerValid = () => Array.isArray(timer) && timerEntry.type === 'timer' ? true : false
-    const createdValid = () => typeof timer[1].created.charAt(0) === 'number' ? true : false
-    const timeRules = (created, ended) => {
-        // Compare the two dates and return 1 if the first date is after the second
-        return compareAsc(created, ended) === 1 ? false : true
-    }
 
     const deleteEntry = () => {
         removeItem(timerKey)
@@ -69,7 +55,7 @@ export default function TimerEditorScreen({ route, navigation }) {
             // MODAL HERE
             console.log('Cannot End before Start.')
             return false
-        } 
+        }
         timer[1].created = created
         timer[1].ended = ended
         timer[1].stop = stop
@@ -180,7 +166,7 @@ const styles = StyleSheet.create({
         marginRight: '1%',
         marginLeft: '1%'
     },
-    delete : {
+    delete: {
         fontSize: 20,
         margin: '2%'
     }

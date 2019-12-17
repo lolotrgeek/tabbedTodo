@@ -10,6 +10,8 @@ import {
   ScrollView
 } from 'react-native';
 import { updateItem, storeItem, removeItem } from '../constants/Store'
+import { projectValid, createdValid, nameValid, colorValid, timeValid } from '../constants/Validators'
+import { dateCreator, secondsToString } from '../constants/Functions'
 import Icon from 'react-native-vector-icons/Feather';
 import { CirclePicker } from 'react-color'
 import Hashids from 'hashids'
@@ -20,7 +22,7 @@ import NumPad from '../components/NumPad';
 
 export default function EditorScreen({ route, navigation }) {
   const { project } = route.params
-  
+
   const [key, setKey] = useState('')
   const [created, setCreated] = useState('')
   const [name, setName] = useState('');
@@ -28,12 +30,6 @@ export default function EditorScreen({ route, navigation }) {
   const [time, setTime] = useState('')
   // const [showtime, setShowTime] = useState([])
 
-  const projectValid = validate => Array.isArray(validate) && validate[1].type === 'project' ? true : false
-  const createdValid = validate => typeof validate[1].created.charAt(0) === 'number' ? true : false
-  const nameValid = validate => typeof validate[1].name === 'string' ? true : false
-  const colorValid = validate => typeof validate[1].color === 'string' && validate[1].color.charAt(0) === '#' ? true : false
-  const timeValid = validate => typeof parseInt(validate[1].time) === 'number' ? true : false 
-  
   const handleRoutedParams = () => {
     if (projectValid(project)) {
       console.log(project)
@@ -49,6 +45,7 @@ export default function EditorScreen({ route, navigation }) {
       }
       if (timeValid(project)) {
         setTime(project[1].time)
+        console.log(typeof time)
       }
     }
   }
@@ -66,12 +63,7 @@ export default function EditorScreen({ route, navigation }) {
     //todo are you sure notification        
     navigation.navigate('Projects')
   }
-  const dateCreator = () => {
-    const today = new Date();
-    const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    return date + ' ' + time;
-  }
+
 
   const handleSelectedColor = (color, event) => {
     console.log(color)
@@ -88,7 +80,7 @@ export default function EditorScreen({ route, navigation }) {
     }
     else {
       let newroute
-      let value = { created: created, type: 'project', name: name, color: color, time: time}
+      let value = { created: created, type: 'project', name: name, color: color, time: time }
       if (key) {
         console.log('Updating Project')
         updateItem(key, value)
@@ -114,17 +106,6 @@ export default function EditorScreen({ route, navigation }) {
     }
   }
 
-  const formatTime = t => {
-    if (typeof t !== 'string') return false
-    if (t.length === 0) return '00 : 00 : 00'
-    if (t.length === 1) return '00 : 00 : 0' + t.charAt(0)
-    if (t.length === 2) return '00 : 00 : ' + t.charAt(0) + t.charAt(1)
-    if (t.length === 3) return '00 : 0' + t.charAt(0) + ' : ' + t.charAt(1) + t.charAt(2)
-    if (t.length === 4) return '00 : ' + t.charAt(0) + t.charAt(1) + ' : ' + t.charAt(2) + t.charAt(3)
-    if (t.length === 5) return '0' + t.charAt(0) + ' : ' + t.charAt(1) + t.charAt(2) + ' : ' + t.charAt(3) + t.charAt(4)
-    if (t.length > 5) return t.charAt(0) + t.charAt(1) + ' : ' + t.charAt(2) + t.charAt(3) + ' : ' + t.charAt(4) + t.charAt(5)
-  }
-
   return (
     <View style={styles.container}>
       {/* <Text style={{
@@ -139,14 +120,14 @@ export default function EditorScreen({ route, navigation }) {
             height: 20,
             fontSize: 18,
             fontWeight: 'bold',
-            color: color ? color: "black",
+            color: color ? color : "black",
             paddingLeft: 10,
             minHeight: '3%',
             paddingBottom: 10
           }}
           multiline={false}
           placeholder="Enter Project Name?"
-          placeholderTextColor= {color ? color: "#abbabb"}
+          placeholderTextColor={color ? color : "#abbabb"}
           value={name}
           onChangeText={value => setName(value)}
         />
@@ -160,20 +141,20 @@ export default function EditorScreen({ route, navigation }) {
           onChangeComplete={handleSelectedColor}
         />
       </View>
-      <Text style={{fontSize: 20 }}>{  formatTime(time)}</Text>
+      <Text style={{ fontSize: 20 }}>{secondsToString(time)}</Text>
 
       <NumPad
-        onOne={() => { setTime(time+ '1'); console.log(time) }}
-        onTwo={() => { setTime(time+ '2'); console.log(time) }}
-        onThree={() => { setTime(time+ '3'); console.log(time) }}
-        onFour={() => { setTime(time+ '4'); console.log(time) }}
-        onFive={() => { setTime(time+ '5'); console.log(time) }}
-        onSix={() => { setTime(time+ '6'); console.log(time) }}
-        onSeven={() => { setTime(time+ '7'); console.log(time) }}
-        onEight={() => { setTime(time+ '8'); console.log(time) }}
-        onNine={() => { setTime(time+ '9'); console.log(time) }}
-        onZero={() => { setTime(time+ '0'); console.log(time) }}
-        onDel={() => {setTime(time.slice(1)) ; console.log(time.slice(1))}}
+        onOne={() => { setTime(time + '1'); console.log(time) }}
+        onTwo={() => { setTime(time + '2'); console.log(time) }}
+        onThree={() => { setTime(time + '3'); console.log(time) }}
+        onFour={() => { setTime(time + '4'); console.log(time) }}
+        onFive={() => { setTime(time + '5'); console.log(time) }}
+        onSix={() => { setTime(time + '6'); console.log(time) }}
+        onSeven={() => { setTime(time + '7'); console.log(time) }}
+        onEight={() => { setTime(time + '8'); console.log(time) }}
+        onNine={() => { setTime(time + '9'); console.log(time) }}
+        onZero={() => { setTime(time + '0'); console.log(time) }}
+        onDel={() => { setTime(time.slice(1)); console.log(time.slice(1)) }}
       />
       <View style={styles.doneButton}>
         <Button title="done" style={{ fontSize: 60 }} onPress={() => handleComplete()} />
@@ -189,7 +170,6 @@ export default function EditorScreen({ route, navigation }) {
         />) : <Text></Text>}
 
       </View>
-
     </View>
   )
 }

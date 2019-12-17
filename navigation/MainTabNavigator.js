@@ -5,11 +5,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import TabBarIcon from '../components/TabBarIcon';
-import HomeScreen from '../screens/HomeScreen';
 import ProjectScreen from '../screens/ProjectScreen';
 import TimerScreen from '../screens/TimerScreen'
 import TimerListScreen from '../screens/TimerListScreen'
-import JournalScreen from '../screens/JournalScreen';
 // import TodoScreen from '../screens/TodoScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import EditorScreen from '../screens/EditorScreen'
@@ -54,15 +52,18 @@ const HomeStack = createStackNavigator();
 const ProjectStack = createStackNavigator();
 const HomeTab = () => {
   return (
-    <HomeStack.Navigator>
-      <HomeStack.Screen name="Projects" component={ProjectScreen} />
-      <HomeStack.Screen name="Timer" component={TimerScreen} options={TimerScreen.options} />
-      <HomeStack.Screen name="TimerList" component={TimerListScreen} />
-      <HomeStack.Screen name="TimerEditor" component={TimerEditorScreen} />
-      <HomeStack.Screen name="Edit" component={EditorScreen} />
+    <HomeStack.Navigator
+      screenOptions={headerStyles}
+    >
+      <HomeStack.Screen name="Projects" component={ProjectScreen}  />
+      <HomeStack.Screen name="Timer" component={TimerScreen}  />
+      <HomeStack.Screen name="TimerList" component={TimerListScreen}  />
+      <HomeStack.Screen name="TimerEditor" component={TimerEditorScreen}  />
+      <HomeStack.Screen name="Edit" component={EditorScreen}  />
     </HomeStack.Navigator>
   )
 }
+
 HomeTab.options = {
   tabBarLabel: 'Projects',
   tabBarIcon: ({ focused }) => (
@@ -84,7 +85,7 @@ HomeTab.options = {
 const TimelineStack = createStackNavigator();
 const TimelineTab = () => {
   return (
-    <TimelineStack.Navigator>
+    <TimelineStack.Navigator screenOptions={headerStyles}>
       <TimelineStack.Screen name="Timeline" component={TimelineScreen} />
       <TimelineStack.Screen name="TimerList" component={TimerListScreen} />
       <TimelineStack.Screen name="Timer" component={TimerScreen} />
@@ -121,3 +122,17 @@ SettingsTab.options = {
     <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'} />
   ),
 };
+
+const headerStyles = {
+  headerStyle: {
+    backgroundColor: 'transparent',
+    backfaceVisibility : 'hidden',
+    borderBottomWidth: 0
+  },
+  headerTintColor: '#000',
+  headerTitleStyle: {
+    fontWeight: 'bold',
+    backgroundColor: 'transparent',
+    
+  },
+}

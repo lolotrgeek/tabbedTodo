@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ExpoLinksView } from '@expo/samples';
-import {
-  Button,
-  Text,
-  View,
-  StyleSheet,
-  SafeAreaView,
-  SectionList,
-} from 'react-native';
-import { getAll } from '../constants/Store'
+import { Text, StyleSheet, SafeAreaView, SectionList } from 'react-native';
 import { Timeline } from '../components/Timeline';
-import { compareAsc, differenceInSeconds } from 'date-fns'
+import { getAll } from '../constants/Store'
+import { secondsToString, simpleDate } from '../constants/Functions'
+import { timerValid } from '../constants/Validators'
 
 export default function TimelineScreen({ navigation }) {
 
@@ -20,12 +13,6 @@ export default function TimelineScreen({ navigation }) {
   const [projects, setProjects] = useState([]); // state of timers list
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
 
-  const sortbydate = () => timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
-  const listDay = () => timers.map(timer => new Date(timer[1].created))
-  const simpleDate = date => date.getDate() + " " + date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear()
-  const isValidTimer = value => value.type === 'timer' ? true : false
-  const secondstoString = seconds => new Date(seconds * 1000).toISOString().substr(11, 8) // hh: mm : ss
-
   const sumProjectTimers = dayheaders => {
     return dayheaders.map(day => {
       // return array of days by project with timers summed
@@ -34,7 +21,7 @@ export default function TimelineScreen({ navigation }) {
       day.data.map(timer => {
         // ... group timer entries by project
         if (projects.length === 0) {
-          projects.push({ project: timer[1].project, totals: [timer[1].total] , total : timer[1].total  })
+          projects.push({ project: timer[1].project, totals: [timer[1].total], total: timer[1].total })
         }
         const match = projects.find(inProjects => inProjects.project === timer[1].project)
         if (match) {
@@ -42,12 +29,12 @@ export default function TimelineScreen({ navigation }) {
           match.total = match.totals.reduce((acc, val) => acc + val) // sum the totals
         }
         else {
-          projects.push({ project: timer[1].project, totals: [timer[1].total], total : timer[1].total })
+          projects.push({ project: timer[1].project, totals: [timer[1].total], total: timer[1].total })
         }
 
       })
       // console.log({title: day.title , data : projects})
-      
+
       return { title: day.title, data: projects }
     })
 
@@ -55,7 +42,7 @@ export default function TimelineScreen({ navigation }) {
 
   const entries = () => new Promise(async (resolve, reject) => {
     try {
-      let timerEntries = await getAll(value => isValidTimer(value) ? true : false)
+      let timerEntries = await getAll(value => timerValid(value) ? true : false)
       let projectEntries = await getAll(value => value.type === 'project' ? true : false)
       resolve({ timers: timerEntries, projects: projectEntries })
     } catch (error) {
@@ -125,10 +112,6 @@ export default function TimelineScreen({ navigation }) {
     return focused, unfocused
   }, [])
 
-  useEffect(() => {
-    console.log(daysWithTimer)
-  }, [daysWithTimer])
-
   return (
     <SafeAreaView style={styles.container}>
       <SectionList style={{ width: '100%' }}
@@ -143,8 +126,7 @@ export default function TimelineScreen({ navigation }) {
               key={item.project}
               color={project[1].color}
               project={project[1].name}
-              // total={secondstoString(totalTime(item[1].created, item[1].ended))}
-              total={secondstoString(item.total)}
+              total={secondsToString(item.total)}
               onPress={() => navigation.navigate('TimerList', {
                 project: project,
                 lastscreen: 'Timeline'
@@ -161,6 +143,7 @@ export default function TimelineScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 0,
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#F5FCFF'

@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ExpoLinksView } from '@expo/samples';
-import {
-  Button,
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  SectionList,
-} from 'react-native';
-
+import { Button, Text, View, StyleSheet, SectionList } from 'react-native';
 import { getAll } from '../constants/Store'
 import { TimerList } from '../components/TimerList';
-import { differenceInSeconds, isDate } from 'date-fns';
+import { timerValid } from '../constants/Validators'
+import { simpleDate, secondsToString, totalTime, timeSpan } from '../constants/Functions'
 
 export default function TimerListScreen({ route, navigation }) {
 
@@ -23,18 +14,9 @@ export default function TimerListScreen({ route, navigation }) {
   let projectName = project[1].name
   let color = project[1].color
 
-  const [inputvalue, setValue] = useState(''); // state of text input
   const [timers, setTimers] = useState([]); // state of timers list
-  const [timerView, setTimerView] = useState([])
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
 
-  const isValidTimer = value => value.type === 'timer' ? true : false
-  const simpleDate = date => date.getDate() + " " + date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear()
-  const timeString = date => isDate(date) ? date.toTimeString().split(' ')[0] : date
-  const secondstoString = seconds => new Date(seconds * 1000).toISOString().substr(11, 8) // hh: mm : ss
-  const totalTime = (start, end) => differenceInSeconds(new Date(end), new Date(start))
-  const timeSpan = (start, end) => timeString(new Date(start)) + ' - ' + timeString(new Date(end))
-  
   const moodMap = mood => {
     if (mood === '') return { name: 'times', color: 'black' }
     if (mood === 'great') return { name: 'grin', color: 'orange' }
@@ -47,7 +29,7 @@ export default function TimerListScreen({ route, navigation }) {
   // PAGE FUNCTIONS
   const entries = () => new Promise(async (resolve, reject) => {
     try {
-      let timerEntries = await getAll(value => isValidTimer(value) ? true : false)
+      let timerEntries = await getAll(value => timerValid(value) ? true : false)
       resolve({ timers: timerEntries })
     } catch (error) {
       reject(error)
@@ -107,10 +89,6 @@ export default function TimerListScreen({ route, navigation }) {
     return focused, unfocused
   }, [])
 
-  useEffect(() => {
-    setTimerView(timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created)))
-  }, [timers])
-
   return (
     <View style={styles.container}>
       <Text
@@ -142,7 +120,7 @@ export default function TimerListScreen({ route, navigation }) {
             mood={moodMap(item[1].mood)}
             energy={item[1].energy}
             project={timeSpan(item[1].created, item[1].ended)}
-            total={secondstoString(totalTime(item[1].created, item[1].ended))}
+            total={secondsToString(totalTime(item[1].created, item[1].ended))}
             onPress={() => navigation.navigate('TimerEditor', {
               project: project,
               timer: item,

@@ -1,24 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  StyleSheet,
-  Button,
-  Text,
-  View
-} from 'react-native';
-import useCounter from '../constants/Hooks';
+import {StyleSheet, Text, View} from 'react-native';
 import { Timer } from '../components/Timer';
 import { TimerStartNotes, TimerStopNotes } from '../components/TimerNotes';
-import { useStopwatch, useTimer } from 'react-timer-hook';
 import Grid from '@material-ui/core/Grid';
-import { compareAsc, format } from 'date-fns'
-import DateFnsUtils from '@date-io/date-fns';
 import Hashids from 'hashids'
 // import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
-// import * as CommonActions from '@react-navigation/native' 
-import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
-import { set } from 'date-fns';
-import { useSafeArea } from 'react-native-safe-area-context';
-
+import { storeItem, updateItem } from '../constants/Store'
 
 export default function TimerScreen({ route, navigation }) {
 
@@ -29,7 +16,7 @@ export default function TimerScreen({ route, navigation }) {
   let projectKey = project[0]
   let projectName = project[1].name
 
-  // navigation.dispatch(CommonActions.setParams({ title: projectName }))
+  useEffect(() => navigation.setOptions({ title: projectName }) , [])
 
   // LOCAL STATE
   const [connection, setConnection] = useState()
@@ -96,7 +83,7 @@ export default function TimerScreen({ route, navigation }) {
   // PAGE FUNCTIONS
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
-
+      console.log('FOCUS - ' + pagename)
     })
     const unfocused = navigation.addListener('blur', () => {
       console.log('attempting stop...')
@@ -159,10 +146,30 @@ export default function TimerScreen({ route, navigation }) {
   }, [mood, energy])
 
 
+  const formatTime = t => {
+    if (t > 0) return new Date(t * 1000).toISOString().substr(11, 8)  // hh : mm : ss
+    else {
+      t = Math.abs(t)
+      t = t.toString()
+      if (t.length === 0) return '-00:00:00'
+      if (t.length === 1) return '-00:00:0' + t.charAt(0)
+      if (t.length === 2) return '-00:00:' + t.charAt(0) + t.charAt(1)
+      if (t.length === 3) return '-00:0' + t.charAt(0) + ':' + t.charAt(1) + t.charAt(2)
+      if (t.length === 4) return '-00:' + t.charAt(0) + t.charAt(1) + ':' + t.charAt(2) + t.charAt(3)
+      if (t.length === 5) return '-0' + t.charAt(0) + ':' + t.charAt(1) + t.charAt(2) + ':' + t.charAt(3) + t.charAt(4)
+      if (t.length > 5) return '-'+t.charAt(0) + t.charAt(1) + ':' + t.charAt(2) + t.charAt(3) + ':' + t.charAt(4) + t.charAt(5)
+    }
+  }
+
   // TIMER VIEW
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>{projectName}</Text>
+      <Text style={{
+        marginTop: '5%',
+        fontSize: 40,
+        color: project[1].color,
+        paddingBottom: 10
+      }}>{projectName}</Text>
       {/* <Text style={styles.subheader}>{initialValue} </Text>
       <Text >{projectKey} </Text>
       <Text> Total: {total} </Text> */}
@@ -181,7 +188,7 @@ export default function TimerScreen({ route, navigation }) {
         }}
         hideStop={button === 'stop' ? 'flex' : 'none'}
         hideStart={button === 'start' ? 'flex' : 'none'}
-        counter={count}
+        counter={formatTime(count)}
       />
       <TimerStopNotes
         onGreat={() => setMood('great')}
