@@ -15,13 +15,10 @@ export function Timeline(props) {
             </View>
             <View style={{ flex: 1, flexDirection: 'column', width:'50%' }}>
                 <Text
-                    onPress={props.onEdit ? props.onEdit : ''}
                     style={styles.listItem}
-                    onPress={props.onEdit}
                 >
                     {props.total}
                 </Text>
-                {/* <Button title="Edit" onPress={props.onEdit ? props.onEdit : ''} /> */}
             </View>
         </View>
     );

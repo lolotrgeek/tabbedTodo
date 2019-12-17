@@ -32,62 +32,32 @@ export default function TimelineScreen({ navigation }) {
   const totalTime = (start, end) => differenceInSeconds(new Date(end), new Date(start))
 
   const sumProjectTimers = dayheaders => {
-    const projects = []
-    const dayProjectTotals = dayheaders.map(day => day.data.map(timer => {
-      return { project: timer[1].project, total: timer[1].total }
-    }))
-    console.log(dayProjectTotals)
-    dayProjectTotals.forEach(entry => {
-      if (projects.length === 0) {
-        console.log(pagename + '- FIRST OUTPUT ENTRY :', entry)
-        projects.push({ project: entry.project, totals: [entry.total] })
-      }
-      else {
-        const match = projects.find(inProjects => inProjects.project === entry.project)
-        console.log()
+    return dayheaders.map(day => {
+      // return array of days by project with timers summed
+      let projects = []
+      // for each day...
+      day.data.map(timer => {
+        // ... group timer entries by project
+        if (projects.length === 0) {
+          projects.push({ project: timer[1].project, totals: [timer[1].total] , total : timer[1].total  })
+        }
+        const match = projects.find(inProjects => inProjects.project === timer[1].project)
         if (match) {
-          console.log(pagename + '- MATCHING ENTRY :', match.project)
-          match.totals = [...match.totals, entry.total]
+          match.totals = [...match.totals, timer[1].total]
+          match.total = match.totals.reduce((acc, val) => acc + val) // sum the totals
         }
         else {
-          console.log(pagename + '- NEW OUTPUT ENTRY :', entry)
-          projects.push({ project: entry.project, totals: [entry.total] })
+          projects.push({ project: timer[1].project, totals: [timer[1].total], total : timer[1].total })
         }
-      }
+
+      })
+      // console.log({title: day.title , data : projects})
+      
+      return { title: day.title, data: projects }
     })
-    if (projects.length > 0) return projects
-    else return []
+
   }
 
-  const dayHeaderTotals = dayheaders => new Promise((resolve, reject) => {
-    const output = [] // [days...]
-    const timerdays = dayheaders.map(day => day.data.map(timer => {
-      return { project: timer[1].project , total: timer[1].total }
-    }))
-    timerdays.forEach(timerday => {
-      if (output.length === 0) {
-        output.push({ title: timerday.day, data: [timerday.data] })
-      }
-      else {
-        const match = output.find(inOutput => inOutput.project === timerday.project)
-        if (match) {
-          
-          const projectMatch = output.find(inOutput => inOutput.data === timerday.project)
-          console.log(projectMatch)
-          match.data = [...match.data, timerday.timer]
-        }
-        else {
-          //console.log(pagename + '- NEW OUTPUT ENTRY :', timerday)
-          output.push({ title: timerday.day, data: [timerday.timer] })
-        }
-      }
-    })
-    //console.log(pagename + '- DAYHEADERS - OUTPUT', output)
-    if (output.length > 0) { resolve(output) }
-    else { reject([]) }
-  })
-
-  // PAGE FUNCTIONS
   const entries = () => new Promise(async (resolve, reject) => {
     try {
       let timerEntries = await getAll(value => isValidTimer(value) ? true : false)
@@ -137,10 +107,9 @@ export default function TimelineScreen({ navigation }) {
     const sortedTimers = retrieved.timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
     try {
       const days = await dayHeaders(sortedTimers)
-      // const sumTimers = sumProjectTimers(days)
-      const totals = await dayHeaderTotals(days)
-      console.log(totals)
-      setDaysWithTimer(days)
+      const summed = sumProjectTimers(days)
+      console.log(summed)
+      setDaysWithTimer(summed)
     } catch (err) {
       console.log(err)
     }
@@ -179,21 +148,15 @@ export default function TimelineScreen({ navigation }) {
           return (<Text style={styles.header}>{title}</Text>)
         }}
         renderItem={({ item }) => projects.map(project => {
-          if (project[0] === item[1].project) {
+          if (project[0] === item.project) {
             return (<Timeline
-              key={item[0]}
-              date={item[1].created}
+              key={item.project}
               color={project[1].color}
               project={project[1].name}
-              total={secondstoString(totalTime(item[1].created, item[1].ended))}
+              // total={secondstoString(totalTime(item[1].created, item[1].ended))}
+              total={secondstoString(item.total)}
               onPress={() => navigation.navigate('TimerList', {
                 project: project,
-                timer: item,
-                lastscreen: 'Timeline'
-              })}
-              onEdit={() => navigation.navigate('TimerLineEditor', {
-                project: project,
-                timer: item,
                 lastscreen: 'Timeline'
               })}
             />)
