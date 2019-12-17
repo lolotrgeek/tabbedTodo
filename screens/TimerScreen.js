@@ -147,6 +147,7 @@ export default function TimerScreen({ route, navigation }) {
       mood: mood,
       energy: energy,
     }
+    console.log(value)
     setCurrentTimer([key, value])
     updateItem(key, value)
   }
@@ -174,6 +175,7 @@ export default function TimerScreen({ route, navigation }) {
           stop(count)
           updateTimer(currentTimer[0], count)
           setTotal(0)
+          setCount(0)
           setButton('start')
         }}
         hideStop={button === 'stop' ? 'flex' : 'none'}

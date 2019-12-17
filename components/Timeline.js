@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/Feather';
 export function Timeline(props) {
     return (
         <View style={styles.listContainer}>
-            <View style={{flex: 1, flexDirection: 'column', width:'50%',}}>
+            <View style={{flex: 1, flexDirection: 'column', width:'50%'}}>
                 <Text
                     style={{ color: props.color, fontSize: 20 }}
                     onPress={props.onPress}
@@ -13,13 +13,13 @@ export function Timeline(props) {
                     {props.project}
                 </Text>
             </View>
-            <View style={{ flex: 1, flexDirection: 'column', width:'50%', }}>
+            <View style={{ flex: 1, flexDirection: 'column', width:'50%' }}>
                 <Text
                     onPress={props.onEdit ? props.onEdit : ''}
                     style={styles.listItem}
                     onPress={props.onEdit}
                 >
-                    Total : {props.total}
+                    {props.total}
                 </Text>
                 {/* <Button title="Edit" onPress={props.onEdit ? props.onEdit : ''} /> */}
             </View>

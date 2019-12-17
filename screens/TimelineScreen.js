@@ -11,7 +11,7 @@ import {
 
 import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
 import { Timeline } from '../components/Timeline';
-import { compareAsc } from 'date-fns'
+import { compareAsc, differenceInSeconds } from 'date-fns'
 
 export default function TimelineScreen({ navigation }) {
 
@@ -28,6 +28,64 @@ export default function TimelineScreen({ navigation }) {
   const listDay = () => timers.map(timer => new Date(timer[1].created))
   const simpleDate = date => date.getDate() + " " + date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear()
   const isValidTimer = value => value.type === 'timer' ? true : false
+  const secondstoString = seconds => new Date(seconds * 1000).toISOString().substr(11, 8) // hh: mm : ss
+  const totalTime = (start, end) => differenceInSeconds(new Date(end), new Date(start))
+
+  const sumProjectTimers = dayheaders => {
+    const projects = []
+    const dayProjectTotals = dayheaders.map(day => day.data.map(timer => {
+      return { project: timer[1].project, total: timer[1].total }
+    }))
+    console.log(dayProjectTotals)
+    dayProjectTotals.forEach(entry => {
+      if (projects.length === 0) {
+        console.log(pagename + '- FIRST OUTPUT ENTRY :', entry)
+        projects.push({ project: entry.project, totals: [entry.total] })
+      }
+      else {
+        const match = projects.find(inProjects => inProjects.project === entry.project)
+        console.log()
+        if (match) {
+          console.log(pagename + '- MATCHING ENTRY :', match.project)
+          match.totals = [...match.totals, entry.total]
+        }
+        else {
+          console.log(pagename + '- NEW OUTPUT ENTRY :', entry)
+          projects.push({ project: entry.project, totals: [entry.total] })
+        }
+      }
+    })
+    if (projects.length > 0) return projects
+    else return []
+  }
+
+  const dayHeaderTotals = dayheaders => new Promise((resolve, reject) => {
+    const output = [] // [days...]
+    const timerdays = dayheaders.map(day => day.data.map(timer => {
+      return { project: timer[1].project , total: timer[1].total }
+    }))
+    timerdays.forEach(timerday => {
+      if (output.length === 0) {
+        output.push({ title: timerday.day, data: [timerday.data] })
+      }
+      else {
+        const match = output.find(inOutput => inOutput.project === timerday.project)
+        if (match) {
+          
+          const projectMatch = output.find(inOutput => inOutput.data === timerday.project)
+          console.log(projectMatch)
+          match.data = [...match.data, timerday.timer]
+        }
+        else {
+          //console.log(pagename + '- NEW OUTPUT ENTRY :', timerday)
+          output.push({ title: timerday.day, data: [timerday.timer] })
+        }
+      }
+    })
+    //console.log(pagename + '- DAYHEADERS - OUTPUT', output)
+    if (output.length > 0) { resolve(output) }
+    else { reject([]) }
+  })
 
   // PAGE FUNCTIONS
   const entries = () => new Promise(async (resolve, reject) => {
@@ -46,28 +104,28 @@ export default function TimelineScreen({ navigation }) {
     const timerdays = timerlist.map(timer => {
       return { day: simpleDate(new Date(timer[1].created)), timer: timer }
     })
-    // console.log(pagename + '- DAYHEADERS - TIMERDAYS : ', timerdays)
+    // //console.log(pagename + '- DAYHEADERS - TIMERDAYS : ', timerdays)
     timerdays.forEach(timerday => {
       // first value if output is empty is always unique
       if (output.length === 0) {
-        console.log(pagename + '- FIRST OUTPUT ENTRY :', timerday)
+        //console.log(pagename + '- FIRST OUTPUT ENTRY :', timerday)
         output.push({ title: timerday.day, data: [timerday.timer] })
       }
       else {
         // find and compare timerdays to outputs
         const match = output.find(inOutput => inOutput.title === timerday.day)
         if (match) {
-          console.log(pagename + '- MATCHING ENTRY :', match.day)
+          //console.log(pagename + '- MATCHING ENTRY :', match.title)
           // add timer to list of timers for matching day
           match.data = [...match.data, timerday.timer]
         }
         else {
-          console.log(pagename + '- NEW OUTPUT ENTRY :', timerday)
+          //console.log(pagename + '- NEW OUTPUT ENTRY :', timerday)
           output.push({ title: timerday.day, data: [timerday.timer] })
         }
       }
     })
-    console.log(pagename + '- DAYHEADERS - OUTPUT', output)
+    //console.log(pagename + '- DAYHEADERS - OUTPUT', output)
     if (output.length > 0) { resolve(output) }
     else { reject([]) }
   })
@@ -76,25 +134,22 @@ export default function TimelineScreen({ navigation }) {
     const retrieved = await entries()
     setTimers(retrieved.timers)
     setProjects(retrieved.projects)
-    const days = await dayHeaders(retrieved.timers)
-    setDaysWithTimer(days)
+    const sortedTimers = retrieved.timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
+    try {
+      const days = await dayHeaders(sortedTimers)
+      // const sumTimers = sumProjectTimers(days)
+      const totals = await dayHeaderTotals(days)
+      console.log(totals)
+      setDaysWithTimer(days)
+    } catch (err) {
+      console.log(err)
+    }
+
   }
 
   useEffect(() => {
     setEntryState()
   }, [])
-
-  useEffect(() => {
-    // daysWithTimer.map(entry => {
-    //   console.log(entry.title)
-    //   entry.data.map(timer => projects.map(project => {
-    //     console.log(timer[1], project[1])
-    //   })
-    //   )
-    // }
-    // )
-    console.log(daysWithTimer)
-  }, [daysWithTimer])
 
   useEffect(() => {
     // sort by date
@@ -103,13 +158,17 @@ export default function TimelineScreen({ navigation }) {
 
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
-      console.log('FOCUS - ' + pagename)
+      //console.log('FOCUS - ' + pagename)
       setEntryState()
     })
     const unfocused = navigation.addListener('blur', () => {
     })
     return focused, unfocused
   }, [])
+
+  useEffect(() => {
+    console.log(daysWithTimer)
+  }, [daysWithTimer])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -126,7 +185,7 @@ export default function TimelineScreen({ navigation }) {
               date={item[1].created}
               color={project[1].color}
               project={project[1].name}
-              total={item[1].total}
+              total={secondstoString(totalTime(item[1].created, item[1].ended))}
               onPress={() => navigation.navigate('TimerList', {
                 project: project,
                 timer: item,

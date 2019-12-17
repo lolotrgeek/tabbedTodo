@@ -31,10 +31,11 @@ export default function TimerListScreen({ route, navigation }) {
   const isValidTimer = value => value.type === 'timer' ? true : false
   const simpleDate = date => date.getDate() + " " + date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear()
   const timeString = date => date.toTimeString().split(' ')[0]
-  const secondstoString = seconds => new Date(seconds * 1000).toISOString().substr(11, 8)
+  const secondstoString = seconds => new Date(seconds * 1000).toISOString().substr(11, 8) // hh: mm : ss
   const totalTime = (start, end) => differenceInSeconds(new Date(end), new Date(start))
   const timeSpan = (start, end) => timeString(new Date(start)) + ' - ' + timeString(new Date(end))
   const moodMap = mood => {
+    if(mood === '') return {name : 'times', color : 'black' }
     if(mood === 'great') return { name: 'grin', color : 'orange'}
     if(mood === 'good') return { name: 'smile', color : 'green'}
     if(mood === 'meh') return { name: 'meh', color : 'purple'}
@@ -87,7 +88,8 @@ export default function TimerListScreen({ route, navigation }) {
   const setEntryState = async () => {
     const retrieved = await entries()
     setTimers(retrieved.timers)
-    const days = await dayHeaders(retrieved.timers)
+    const sortedTimers = retrieved.timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
+    const days = await dayHeaders(sortedTimers)
     setDaysWithTimer(days)
   }
   useEffect(() => {
