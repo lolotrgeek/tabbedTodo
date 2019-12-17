@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, SafeAreaView, SectionList } from 'react-native';
+import { Text,  SafeAreaView, SectionList } from 'react-native';
 import { Timeline } from '../components/Timeline';
 import { getAll } from '../constants/Store'
 import { secondsToString, simpleDate } from '../constants/Functions'
 import { timerValid } from '../constants/Validators'
+import styles from '../constants/Styles'
 
 export default function TimelineScreen({ navigation }) {
 
@@ -139,36 +140,3 @@ export default function TimelineScreen({ navigation }) {
     </SafeAreaView >
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 0,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF'
-  },
-  header: {
-    marginTop: '15%',
-    fontSize: 40,
-    color: 'black',
-    paddingBottom: 10
-  },
-  textInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    borderColor: 'black',
-    borderBottomWidth: 1,
-    paddingRight: 10,
-    paddingBottom: 10
-  },
-  textInput: {
-    flex: 1,
-    height: 20,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
-    paddingLeft: 10,
-    minHeight: '3%'
-  }
-});

@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ExpoLinksView } from '@expo/samples';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-  Button,
-  ScrollView
-} from 'react-native';
+import { Text, View, TouchableOpacity, TextInput, Button, } from 'react-native';
 import { updateItem, storeItem, removeItem } from '../constants/Store'
 import { projectValid, createdValid, nameValid, colorValid, timeValid } from '../constants/Validators'
 import { dateCreator, secondsToString } from '../constants/Functions'
@@ -16,6 +7,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { CirclePicker } from 'react-color'
 import Hashids from 'hashids'
 import NumPad from '../components/NumPad';
+import styles from '../constants/Styles'
 
 // Color picking
 //https://casesandberg.github.io/react-color/
@@ -173,55 +165,3 @@ export default function EditorScreen({ route, navigation }) {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-    width: '100%'
-  },
-  header: {
-    marginTop: '10%',
-    fontSize: 40,
-    color: 'black',
-    paddingBottom: 10
-  },
-  textInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    borderColor: 'black',
-    borderBottomWidth: 1,
-    marginTop: '5%',
-    paddingRight: 10,
-    paddingBottom: 10
-  },
-  textInput: {
-    height: 20,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
-    paddingLeft: 10,
-    minHeight: '3%',
-    paddingBottom: 10
-  },
-  colorPicker: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: '5%',
-    marginBottom: '5%'
-  },
-  deleteButton: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginTop: '5%',
-    marginBottom: '5%'
-  },
-  doneButton: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginTop: '5%',
-    marginBottom: '5%'
-  }
-});

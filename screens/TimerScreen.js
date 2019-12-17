@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import { Text, View} from 'react-native';
 import { Timer } from '../components/Timer';
 import { TimerStartNotes, TimerStopNotes } from '../components/TimerNotes';
+import styles from '../constants/Styles'
 import Grid from '@material-ui/core/Grid';
 import Hashids from 'hashids'
 // import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
@@ -203,39 +204,3 @@ export default function TimerScreen({ route, navigation }) {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF'
-  },
-  header: {
-    marginTop: '5%',
-    fontSize: 40,
-    color: 'black',
-    paddingBottom: 10
-  },
-  subheader: {
-    fontSize: 20,
-    color: 'black',
-  },
-  textInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    borderColor: 'black',
-    borderBottomWidth: 1,
-    paddingRight: 10,
-    paddingBottom: 10
-  },
-  textInput: {
-    flex: 1,
-    height: 20,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
-    paddingLeft: 10,
-    minHeight: '3%'
-  }
-});

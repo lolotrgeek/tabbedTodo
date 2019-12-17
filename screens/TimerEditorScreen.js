@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
+import {  Text, View, Button, TouchableOpacity } from 'react-native';
 import { updateItem, removeItem } from '../constants/Store'
 import { TimerStopNotes } from '../components/TimerNotes'
 import { DatePicker, TimePicker } from '../components/DatePickers'
 import { addMinutes } from 'date-fns'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { timerValid, createdValid } from '../constants/Validators'
+import styles from '../constants/Styles'
 
 export default function TimerEditorScreen({ route, navigation }) {
     const { timer, project, lastscreen } = route.params
@@ -139,35 +140,3 @@ export default function TimerEditorScreen({ route, navigation }) {
         </View >
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
-        padding: 10
-    },
-    header: {
-        marginTop: '10%',
-        fontSize: 40,
-        color: 'black',
-        paddingBottom: 10
-    },
-    textInputContainer: {
-        flexDirection: 'row',
-        alignItems: 'baseline',
-        paddingRight: 10,
-        paddingBottom: 10
-    },
-    sideTitle: {
-        fontSize: 20,
-        width: 100,
-        marginRight: '1%',
-        marginLeft: '1%'
-    },
-    delete: {
-        fontSize: 20,
-        margin: '2%'
-    }
-});

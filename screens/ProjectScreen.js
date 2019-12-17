@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Button, View, ScrollView } from 'react-native';
+import {  Button, View, ScrollView } from 'react-native';
 import ProjectList from '../components/ProjectList';
 import { getAll } from '../constants/Store'
+import styles from '../constants/Styles'
 
 export default function ProjectScreen({ route, navigation }) {
 
@@ -71,34 +72,3 @@ export default function ProjectScreen({ route, navigation }) {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF'
-  },
-  header: {
-    marginTop: '15%',
-    fontSize: 40,
-    color: 'white',
-    paddingBottom: 10
-  },
-  addButton: {
-    width: '100%',
-    marginTop: '10%',
-    paddingBottom: 20,
-    borderColor: '#aaaaaa',
-    borderBottomWidth: 1.5,
-  },
-  textInput: {
-    flex: 1,
-    height: 20,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
-    paddingLeft: 10,
-    minHeight: '3%'
-  }
-});

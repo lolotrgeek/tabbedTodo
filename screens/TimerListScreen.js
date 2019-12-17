@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Text, View, StyleSheet, SectionList } from 'react-native';
+import { Button, Text, View,  SectionList } from 'react-native';
 import { getAll } from '../constants/Store'
 import { TimerList } from '../components/TimerList';
 import { timerValid } from '../constants/Validators'
 import { simpleDate, secondsToString, totalTime, timeSpan } from '../constants/Functions'
+import styles from '../constants/Styles'
 
 export default function TimerListScreen({ route, navigation }) {
 
@@ -110,7 +111,7 @@ export default function TimerListScreen({ route, navigation }) {
         sections={daysWithTimer}
         keyExtractor={(item, index) => item + index}
         renderSectionHeader={({ section: { title } }) => {
-          return (<Text style={styles.header}>{title}</Text>)
+          return (<Text style={styles.subheader}>{title}</Text>)
         }}
         renderItem={({ item }) => {
           return (<TimerList
@@ -139,35 +140,3 @@ export default function TimerListScreen({ route, navigation }) {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF'
-  },
-  header: {
-    marginTop: '15%',
-    fontSize: 40,
-    color: 'black',
-    paddingBottom: 10
-  },
-  textInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    borderColor: 'black',
-    borderBottomWidth: 1,
-    paddingRight: 10,
-    paddingBottom: 10
-  },
-  textInput: {
-    flex: 1,
-    height: 20,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
-    paddingLeft: 10,
-    minHeight: '3%'
-  }
-});
