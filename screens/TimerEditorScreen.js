@@ -11,13 +11,12 @@ import {
 import { updateItem, removeItem } from '../constants/Store'
 import { TimerStopNotes } from '../components/TimerNotes'
 import { DatePicker, TimePicker } from '../components/DatePickers'
-import { addMinutes } from 'date-fns'
+import { addMinutes, compareAsc } from 'date-fns'
 // import { CommonActions } from '../node_modules/@react-navigation/native/lib/typescript/core/src'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 
 export default function TimerEditorScreen({ route, navigation }) {
     const { timer, project, lastscreen } = route.params
-
 
     const timerKey = timer[0]
     const timerEntry = timer[1]
@@ -33,6 +32,10 @@ export default function TimerEditorScreen({ route, navigation }) {
 
     const timerValid = () => Array.isArray(timer) && timerEntry.type === 'timer' ? true : false
     const createdValid = () => typeof timer[1].created.charAt(0) === 'number' ? true : false
+    const timeRules = (created, ended) => {
+        // Compare the two dates and return 1 if the first date is after the second
+        return compareAsc(created, ended) === 1 ? false : true
+    }
 
     const deleteEntry = () => {
         removeItem(timerKey)
@@ -62,6 +65,11 @@ export default function TimerEditorScreen({ route, navigation }) {
     }, [])
 
     const handleComplete = () => {
+        if (!timeRules(created, ended)) {
+            // MODAL HERE
+            console.log('Cannot End before Start.')
+            return false
+        } 
         timer[1].created = created
         timer[1].ended = ended
         timer[1].stop = stop

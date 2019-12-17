@@ -21,7 +21,7 @@ import NumPad from '../components/NumPad';
 
 export default function EditorScreen({ route, navigation }) {
   const { project } = route.params
-
+  
   const [key, setKey] = useState('')
   const [created, setCreated] = useState('')
   const [name, setName] = useState('');
@@ -32,21 +32,22 @@ export default function EditorScreen({ route, navigation }) {
   const createdValid = () => typeof project[1].created.charAt(0) === 'number' ? true : false
   const nameValid = () => typeof project[1].name === 'string' ? true : false
   const colorValid = () => typeof project[1].color === 'string' && project[1].color.charAt(0) === '#' ? true : false
-  const timeValid = () => true
+  const timeValid = () => Array.isArray(project[1].time) ? true : false 
 
   const handleRoutedParams = () => {
+    console.log(project)
     if (project && projectValid) {
       setKey(project[0])
-      if (createdValid) {
+      if (createdValid === true) {
         setCreated(project[1].created)
       }
-      if (nameValid) {
+      if (nameValid === true) {
         setName(project[1].name)
       }
-      if (colorValid) {
+      if (colorValid === true) {
         setColor(project[1].color)
       }
-      if (timeValid) {
+      if (timeValid === true) {
         setTime(project[1].time)
       }
     }
@@ -115,14 +116,14 @@ export default function EditorScreen({ route, navigation }) {
 
   // const formatTime = () => time[0].toString() + time[1].toString() + ':' + time[2].toString() + time[3].toString() + ':' + time[4].toString() + time[5].toString()
   const formatTime = t => {
-    if (!Array.isArray(t)) return t
+    if (!Array.isArray(t)) return false
     if (t.length === 0) return '00 : 00 : 00'
     if (t.length === 1) return '00 : 00 : 0' + t[0].toString()
-    if (t.length === 2) return '00 : 00 : ' + t[1].toString() + t[0].toString()
-    if (t.length === 3) return '00 : 0' + t[2].toString() + ' : ' + t[1].toString() + t[0].toString()
-    if (t.length === 4) return '00 :' + t[3].toString() + t[2].toString() + ' : ' + t[1].toString() + t[0].toString()
-    if (t.length === 5) return '0' + t[4].toString() + ' : ' + t[3].toString() + t[2].toString() + ' : ' + t[1].toString() + t[0].toString()
-    if (t.length > 5) return t[5].toString() + t[4].toString() + ' : ' + t[3].toString() + t[2].toString() + ' : ' + t[1].toString() + t[0].toString()
+    if (t.length === 2) return '00 : 00 : ' + t[0].toString() + t[1].toString()
+    if (t.length === 3) return '00 : 0' + t[0].toString() + ' : ' + t[1].toString() + t[2].toString()
+    if (t.length === 4) return '00 : ' + t[0].toString() + t[1].toString() + ' : ' + t[2].toString() + t[3].toString()
+    if (t.length === 5) return '0' + t[0].toString() + ' : ' + t[1].toString() + t[2].toString() + ' : ' + t[3].toString() + t[4].toString()
+    if (t.length > 5) return t[0].toString() + t[1].toString() + ' : ' + t[2].toString() + t[3].toString() + ' : ' + t[4].toString() + t[5].toString()
   }
   return (
     <View style={styles.container}>
@@ -162,7 +163,7 @@ export default function EditorScreen({ route, navigation }) {
       <Text style={{fontSize: 20 }}>{  formatTime(time)}</Text>
 
       <NumPad
-        onOne={() => { console.log(time); setTime([...time, 1]) }}
+        onOne={() => { console.log(time); setTime([ ...time, 1]) }}
         onTwo={() => { console.log(time); setTime([...time, 2]) }}
         onThree={() => { console.log(time); setTime([...time, 3]) }}
         onFour={() => { console.log(time); setTime([...time, 4]) }}
