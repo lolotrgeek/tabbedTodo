@@ -5,7 +5,6 @@ import {
   Text,
   View
 } from 'react-native';
-
 import useCounter from '../constants/Hooks';
 import { Timer } from '../components/Timer';
 import { TimerStartNotes, TimerStopNotes } from '../components/TimerNotes';
@@ -24,6 +23,8 @@ import { useSafeArea } from 'react-native-safe-area-context';
 export default function TimerScreen({ route, navigation }) {
 
   const { project, run } = route.params
+
+  let pagename = 'TimerScreen'
 
   let projectKey = project[0]
   let projectName = project[1].name
@@ -117,7 +118,7 @@ export default function TimerScreen({ route, navigation }) {
   const addTimer = (start) => {
     const NEWVALUE = {
       created: new Date().toString(),
-      ended : ended,
+      ended: ended,
       type: 'timer',
       project: projectKey,
       start: start,
@@ -138,7 +139,7 @@ export default function TimerScreen({ route, navigation }) {
   const updateTimer = (key, count) => {
     let value = {
       created: created,
-      ended : new Date().toString(),
+      ended: new Date().toString(),
       type: 'timer',
       project: projectKey,
       start: initialValue,
@@ -175,7 +176,7 @@ export default function TimerScreen({ route, navigation }) {
           stop(count)
           updateTimer(currentTimer[0], count)
           setTotal(0)
-          setCount(0)
+          setCount(initialValue)
           setButton('start')
         }}
         hideStop={button === 'stop' ? 'flex' : 'none'}

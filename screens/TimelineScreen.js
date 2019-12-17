@@ -8,8 +8,7 @@ import {
   SafeAreaView,
   SectionList,
 } from 'react-native';
-
-import { getAll, storeItem, updateItem, removeItem, removeAll } from '../constants/Store'
+import { getAll } from '../constants/Store'
 import { Timeline } from '../components/Timeline';
 import { compareAsc, differenceInSeconds } from 'date-fns'
 
@@ -19,9 +18,6 @@ export default function TimelineScreen({ navigation }) {
 
   const [timers, setTimers] = useState([]); // state of timers list
   const [projects, setProjects] = useState([]); // state of timers list
-  const [matches, setMatches] = useState([]) // timer/project pairs
-  const [timerView, setTimerView] = useState([]); // state of sorted timers list
-  const [matchedTimers, setMatchedTimers] = useState([]); // state of sorted timers matched with Projects list
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
 
   const sortbydate = () => timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
@@ -29,7 +25,6 @@ export default function TimelineScreen({ navigation }) {
   const simpleDate = date => date.getDate() + " " + date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear()
   const isValidTimer = value => value.type === 'timer' ? true : false
   const secondstoString = seconds => new Date(seconds * 1000).toISOString().substr(11, 8) // hh: mm : ss
-  const totalTime = (start, end) => differenceInSeconds(new Date(end), new Date(start))
 
   const sumProjectTimers = dayheaders => {
     return dayheaders.map(day => {
@@ -119,11 +114,6 @@ export default function TimelineScreen({ navigation }) {
   useEffect(() => {
     setEntryState()
   }, [])
-
-  useEffect(() => {
-    // sort by date
-    setTimerView(timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created)))
-  }, [timers])
 
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {

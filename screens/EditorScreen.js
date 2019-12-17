@@ -12,7 +12,6 @@ import {
 import { updateItem, storeItem, removeItem } from '../constants/Store'
 import Icon from 'react-native-vector-icons/Feather';
 import { CirclePicker } from 'react-color'
-import { keyToTestName } from 'jest-snapshot/build/utils';
 import Hashids from 'hashids'
 import NumPad from '../components/NumPad';
 
@@ -26,28 +25,29 @@ export default function EditorScreen({ route, navigation }) {
   const [created, setCreated] = useState('')
   const [name, setName] = useState('');
   const [color, setColor] = useState('');
-  const [time, setTime] = useState([])
+  const [time, setTime] = useState('')
+  // const [showtime, setShowTime] = useState([])
 
-  const projectValid = () => Array.isArray(project) && project[1] === 'project' ? true : false
-  const createdValid = () => typeof project[1].created.charAt(0) === 'number' ? true : false
-  const nameValid = () => typeof project[1].name === 'string' ? true : false
-  const colorValid = () => typeof project[1].color === 'string' && project[1].color.charAt(0) === '#' ? true : false
-  const timeValid = () => Array.isArray(project[1].time) ? true : false 
-
+  const projectValid = validate => Array.isArray(validate) && validate[1].type === 'project' ? true : false
+  const createdValid = validate => typeof validate[1].created.charAt(0) === 'number' ? true : false
+  const nameValid = validate => typeof validate[1].name === 'string' ? true : false
+  const colorValid = validate => typeof validate[1].color === 'string' && validate[1].color.charAt(0) === '#' ? true : false
+  const timeValid = validate => typeof parseInt(validate[1].time) === 'number' ? true : false 
+  
   const handleRoutedParams = () => {
-    console.log(project)
-    if (project && projectValid) {
+    if (projectValid(project)) {
+      console.log(project)
       setKey(project[0])
-      if (createdValid === true) {
+      if (createdValid(project)) {
         setCreated(project[1].created)
       }
-      if (nameValid === true) {
+      if (nameValid(project)) {
         setName(project[1].name)
       }
-      if (colorValid === true) {
+      if (colorValid(project)) {
         setColor(project[1].color)
       }
-      if (timeValid === true) {
+      if (timeValid(project)) {
         setTime(project[1].time)
       }
     }
@@ -88,7 +88,7 @@ export default function EditorScreen({ route, navigation }) {
     }
     else {
       let newroute
-      let value = { created: created, type: 'project', name: name, color: color, time: time }
+      let value = { created: created, type: 'project', name: name, color: color, time: time}
       if (key) {
         console.log('Updating Project')
         updateItem(key, value)
@@ -114,17 +114,17 @@ export default function EditorScreen({ route, navigation }) {
     }
   }
 
-  // const formatTime = () => time[0].toString() + time[1].toString() + ':' + time[2].toString() + time[3].toString() + ':' + time[4].toString() + time[5].toString()
   const formatTime = t => {
-    if (!Array.isArray(t)) return false
+    if (typeof t !== 'string') return false
     if (t.length === 0) return '00 : 00 : 00'
-    if (t.length === 1) return '00 : 00 : 0' + t[0].toString()
-    if (t.length === 2) return '00 : 00 : ' + t[0].toString() + t[1].toString()
-    if (t.length === 3) return '00 : 0' + t[0].toString() + ' : ' + t[1].toString() + t[2].toString()
-    if (t.length === 4) return '00 : ' + t[0].toString() + t[1].toString() + ' : ' + t[2].toString() + t[3].toString()
-    if (t.length === 5) return '0' + t[0].toString() + ' : ' + t[1].toString() + t[2].toString() + ' : ' + t[3].toString() + t[4].toString()
-    if (t.length > 5) return t[0].toString() + t[1].toString() + ' : ' + t[2].toString() + t[3].toString() + ' : ' + t[4].toString() + t[5].toString()
+    if (t.length === 1) return '00 : 00 : 0' + t.charAt(0)
+    if (t.length === 2) return '00 : 00 : ' + t.charAt(0) + t.charAt(1)
+    if (t.length === 3) return '00 : 0' + t.charAt(0) + ' : ' + t.charAt(1) + t.charAt(2)
+    if (t.length === 4) return '00 : ' + t.charAt(0) + t.charAt(1) + ' : ' + t.charAt(2) + t.charAt(3)
+    if (t.length === 5) return '0' + t.charAt(0) + ' : ' + t.charAt(1) + t.charAt(2) + ' : ' + t.charAt(3) + t.charAt(4)
+    if (t.length > 5) return t.charAt(0) + t.charAt(1) + ' : ' + t.charAt(2) + t.charAt(3) + ' : ' + t.charAt(4) + t.charAt(5)
   }
+
   return (
     <View style={styles.container}>
       {/* <Text style={{
@@ -163,19 +163,18 @@ export default function EditorScreen({ route, navigation }) {
       <Text style={{fontSize: 20 }}>{  formatTime(time)}</Text>
 
       <NumPad
-        onOne={() => { console.log(time); setTime([ ...time, 1]) }}
-        onTwo={() => { console.log(time); setTime([...time, 2]) }}
-        onThree={() => { console.log(time); setTime([...time, 3]) }}
-        onFour={() => { console.log(time); setTime([...time, 4]) }}
-        onFive={() => { console.log(time); setTime([...time, 5]) }}
-        onSix={() => { console.log(time); setTime([...time, 6]) }}
-        onSeven={() => { console.log(time); setTime([...time, 7]) }}
-        onEight={() => { console.log(time); setTime([...time, 8]) }}
-        onNine={() => { console.log(time); setTime([...time, 9]) }}
-        onZero={() => { console.log(time); setTime([...time, 0]) }}
-        onDel={() => { console.log(time.slice(1)); setTime(time.slice(1)) }}
+        onOne={() => { setTime(time+ '1'); console.log(time) }}
+        onTwo={() => { setTime(time+ '2'); console.log(time) }}
+        onThree={() => { setTime(time+ '3'); console.log(time) }}
+        onFour={() => { setTime(time+ '4'); console.log(time) }}
+        onFive={() => { setTime(time+ '5'); console.log(time) }}
+        onSix={() => { setTime(time+ '6'); console.log(time) }}
+        onSeven={() => { setTime(time+ '7'); console.log(time) }}
+        onEight={() => { setTime(time+ '8'); console.log(time) }}
+        onNine={() => { setTime(time+ '9'); console.log(time) }}
+        onZero={() => { setTime(time+ '0'); console.log(time) }}
+        onDel={() => {setTime(time.slice(1)) ; console.log(time.slice(1))}}
       />
-
       <View style={styles.doneButton}>
         <Button title="done" style={{ fontSize: 60 }} onPress={() => handleComplete()} />
 

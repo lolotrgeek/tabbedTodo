@@ -12,7 +12,7 @@ import {
 
 import { getAll } from '../constants/Store'
 import { TimerList } from '../components/TimerList';
-import { differenceInSeconds } from 'date-fns';
+import { differenceInSeconds, isDate } from 'date-fns';
 
 export default function TimerListScreen({ route, navigation }) {
 
@@ -30,17 +30,18 @@ export default function TimerListScreen({ route, navigation }) {
 
   const isValidTimer = value => value.type === 'timer' ? true : false
   const simpleDate = date => date.getDate() + " " + date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear()
-  const timeString = date => date.toTimeString().split(' ')[0]
+  const timeString = date => isDate(date) ? date.toTimeString().split(' ')[0] : date
   const secondstoString = seconds => new Date(seconds * 1000).toISOString().substr(11, 8) // hh: mm : ss
   const totalTime = (start, end) => differenceInSeconds(new Date(end), new Date(start))
   const timeSpan = (start, end) => timeString(new Date(start)) + ' - ' + timeString(new Date(end))
+  
   const moodMap = mood => {
-    if(mood === '') return {name : 'times', color : 'black' }
-    if(mood === 'great') return { name: 'grin', color : 'orange'}
-    if(mood === 'good') return { name: 'smile', color : 'green'}
-    if(mood === 'meh') return { name: 'meh', color : 'purple'}
-    if(mood === 'bad') return { name: 'frown', color : 'blue'}
-    if(mood === 'dizzy') return { name: 'awful', color : 'grey'}
+    if (mood === '') return { name: 'times', color: 'black' }
+    if (mood === 'great') return { name: 'grin', color: 'orange' }
+    if (mood === 'good') return { name: 'smile', color: 'green' }
+    if (mood === 'meh') return { name: 'meh', color: 'purple' }
+    if (mood === 'bad') return { name: 'frown', color: 'blue' }
+    if (mood === 'dizzy') return { name: 'awful', color: 'grey' }
   }
 
   // PAGE FUNCTIONS
@@ -112,17 +113,19 @@ export default function TimerListScreen({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={{
-        marginTop: '5%',
-        fontSize: 40,
-        color: color,
-        paddingBottom: 10
-      }}>{projectName}</Text>
+      <Text
+        onPress={() => navigation.navigate('Edit', { project: project })}
+        style={{
+          marginTop: '5%',
+          fontSize: 40,
+          color: color,
+          paddingBottom: 10
+        }}>{projectName}</Text>
 
       <View style={styles.addButton}>
         <Button
           title='New Entry'
-          onPress={() => navigation.navigate('Timer', { projectKey: projectKey, name: '', color: '' })}
+          onPress={() => navigation.navigate('Timer', { project: project })}
         />
       </View>
       <SectionList style={{ width: '100%' }}
@@ -139,7 +142,7 @@ export default function TimerListScreen({ route, navigation }) {
             mood={moodMap(item[1].mood)}
             energy={item[1].energy}
             project={timeSpan(item[1].created, item[1].ended)}
-            total={secondstoString( totalTime(item[1].created, item[1].ended))}
+            total={secondstoString(totalTime(item[1].created, item[1].ended))}
             onPress={() => navigation.navigate('TimerEditor', {
               project: project,
               timer: item,
