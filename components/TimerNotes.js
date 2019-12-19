@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Button, TextInput } from 'react-native';
+import {View, Text, Button, TextInput } from 'react-native';
 // import Slider from '@react-native-community/slider';
 import PropTypes from 'prop-types';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
@@ -7,6 +7,7 @@ import Slider from '@material-ui/core/Slider';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import { FontAwesome5 } from '@expo/vector-icons'
+import {styles} from '../constants/Styles'
 
 //https://material-ui.com/components/slider/
 
@@ -84,7 +85,7 @@ export function TimerStopNotes(props) {
     const classes = useStyles();
     return (
         <View style={styles.container}>
-            <View style={styles.listContainer}>
+            <View style={styles.moodContainer}>
                 <FontAwesome5
                     name="grin"
                     color="orange"
@@ -145,7 +146,7 @@ export function TimerStopNotes(props) {
                     onPress={props.onAwful}
                 />
             </View >
-            <View >
+            <View style={styles.energyBar}>
                 <Text style={styles.subheader}>Energy Level</Text>
                 <PrettoSlider
                     valueLabelDisplay="auto"
@@ -175,39 +176,3 @@ export function TimerStartNotes(props) {
         </View >
     );
 }
-const styles = StyleSheet.create({
-    header: {
-        marginTop: '10%',
-        fontSize: 40,
-        color: 'black',
-        paddingBottom: 10
-    },
-    subheader: {
-        fontSize: 20,
-        color: 'black',
-        alignContent: 'center',
-        marginLeft: 'auto',
-        marginRight: 'auto'
-
-    },
-    container: {
-        width: '80%',
-        alignContent: 'center'
-    },
-    listContainer: {
-        marginBottom: '10%',
-        marginTop: '10%',
-        flexDirection: 'row',
-        width: '100%',
-        alignItems: 'center',
-        alignContent: 'center',
-        height: 60
-    },
-    listItem: {
-        paddingBottom: '10%',
-        marginTop: '10%',
-        fontWeight: 'bold',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-    }
-});

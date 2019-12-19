@@ -4,7 +4,7 @@ import { Timeline } from '../components/Timeline';
 import { getAll } from '../constants/Store'
 import { secondsToString, simpleDate } from '../constants/Functions'
 import { timerValid } from '../constants/Validators'
-import styles from '../constants/Styles'
+import {styles} from '../constants/Styles'
 
 export default function TimelineScreen({ navigation }) {
 

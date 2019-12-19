@@ -4,7 +4,7 @@ import { getAll } from '../constants/Store'
 import { TimerList } from '../components/TimerList';
 import { timerValid } from '../constants/Validators'
 import { simpleDate, secondsToString, totalTime, timeSpan } from '../constants/Functions'
-import styles from '../constants/Styles'
+import {styles} from '../constants/Styles'
 
 export default function TimerListScreen({ route, navigation }) {
 
@@ -134,8 +134,6 @@ export default function TimerListScreen({ route, navigation }) {
             })}
           />)
         }}
-
-
       />
     </View>
   )

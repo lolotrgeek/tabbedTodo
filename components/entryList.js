@@ -30,15 +30,7 @@ export default function EntryList(props) {
 }
 
 const styles = StyleSheet.create({
-	listContainer: {
-		marginTop: '5%',
-		flexDirection: 'row',
-		borderColor: '#aaaaaa',
-		borderBottomWidth: 1.5,
-		width: '100%',
-		alignItems: 'stretch',
-		minHeight: 40
-	},
+
 	listItem: {
 		paddingBottom: 20,
 		paddingLeft: 10,

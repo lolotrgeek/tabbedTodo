@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Text, View} from 'react-native';
 import { Timer } from '../components/Timer';
 import { TimerStartNotes, TimerStopNotes } from '../components/TimerNotes';
-import styles from '../constants/Styles'
+import {styles} from '../constants/Styles'
 import Grid from '@material-ui/core/Grid';
 import Hashids from 'hashids'
 // import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';

@@ -53,9 +53,9 @@ const ProjectStack = createStackNavigator();
 const HomeTab = () => {
   return (
     <HomeStack.Navigator
-      screenOptions={headerStyles}
+      screenOptions={stackOptions}
     >
-      <HomeStack.Screen name="Projects" component={ProjectScreen}  />
+      <HomeStack.Screen name="Projects" component={ProjectScreen}   />
       <HomeStack.Screen name="Timer" component={TimerScreen}  />
       <HomeStack.Screen name="TimerList" component={TimerListScreen}  />
       <HomeStack.Screen name="TimerEditor" component={TimerEditorScreen}  />
@@ -85,7 +85,7 @@ HomeTab.options = {
 const TimelineStack = createStackNavigator();
 const TimelineTab = () => {
   return (
-    <TimelineStack.Navigator screenOptions={headerStyles}>
+    <TimelineStack.Navigator screenOptions={stackOptions}>
       <TimelineStack.Screen name="Timeline" component={TimelineScreen} />
       <TimelineStack.Screen name="TimerList" component={TimerListScreen} />
       <TimelineStack.Screen name="Timer" component={TimerScreen} />
@@ -123,10 +123,14 @@ SettingsTab.options = {
   ),
 };
 
-const headerStyles = {
+const stackOptions = {
+  headerTitle: '',
+  headerShown: true,
+  headerHideShadow : true,
+  headerLargeTitle : true,
+  headerTranslucent: true,
   headerStyle: {
     backgroundColor: 'transparent',
-    backfaceVisibility : 'hidden',
     borderBottomWidth: 0
   },
   headerTintColor: '#000',

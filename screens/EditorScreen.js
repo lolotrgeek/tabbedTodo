@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { CirclePicker } from 'react-color'
 import Hashids from 'hashids'
 import NumPad from '../components/NumPad';
-import styles from '../constants/Styles'
+import {styles} from '../constants/Styles'
 
 // Color picking
 //https://casesandberg.github.io/react-color/

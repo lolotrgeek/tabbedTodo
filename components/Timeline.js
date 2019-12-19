@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Text, Button, TextInput } from 'react-native';
+import { View, Text, Button, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import {styles} from '../constants/Styles'
 
 export function Timeline(props) {
     return (
@@ -23,22 +24,3 @@ export function Timeline(props) {
         </View>
     );
 }
-
-
-const styles = StyleSheet.create({
-    listContainer: {
-        flex:1,
-        marginTop: '5%',
-        flexDirection: 'row',
-        width: '100%',
-        alignItems: 'flex-start',
-        padding: 10
-    },
-    listItem: {
-        paddingBottom: 20,
-        marginTop: 6,
-        marginRight: 0,
-        fontSize: 15,
-        fontWeight: 'bold',
-    }
-});

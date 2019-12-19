@@ -6,7 +6,7 @@ import { DatePicker, TimePicker } from '../components/DatePickers'
 import { addMinutes } from 'date-fns'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { timerValid, createdValid } from '../constants/Validators'
-import styles from '../constants/Styles'
+import {styles} from '../constants/Styles'
 
 export default function TimerEditorScreen({ route, navigation }) {
     const { timer, project, lastscreen } = route.params

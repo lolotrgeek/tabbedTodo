@@ -1,8 +1,8 @@
 import { StyleSheet } from 'react-native';
 
-export default StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
-    width:'100%',
+    width: '100%',
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -19,6 +19,26 @@ export default StyleSheet.create({
     marginTop: '2%',
     fontSize: 20,
     color: 'black',
+    alignContent: 'center',
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  },
+  listContainer: {
+    flex: 1,
+    marginTop: '5%',
+    flexDirection: 'row',
+    borderColor: '#aaaaaa',
+    // borderBottomWidth: 1.5,
+    width: '100%',
+    alignItems: 'flex-start',
+    padding: 10,
+    minHeight: 40
+  },
+  listItem: {
+    paddingLeft: 5,
+    marginTop: 6,
+    fontSize: 15,
+    color: 'black'
   },
   textInputContainer: {
     flexDirection: 'row',
@@ -36,6 +56,14 @@ export default StyleSheet.create({
     color: 'black',
     paddingLeft: 10,
     minHeight: '3%'
+  },
+  verticalLine: {
+    borderBottomColor: 'green',
+    borderBottomWidth: 4,
+    marginLeft: 10,
+    width: '100%',
+    position: 'absolute',
+    marginTop: 15,
   },
   sideTitle: {
     fontSize: 20,
@@ -71,5 +99,28 @@ export default StyleSheet.create({
     flexDirection: 'row',
     marginTop: '5%',
     marginBottom: '5%'
+  },
+  counter: {
+    marginTop: '5%',
+    fontSize: 70,
+    color: 'black',
+    paddingBottom: 10
+  },
+  moodContainer: {
+    maxWidth:500,
+    marginTop: '5%',
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    alignContent: 'center',
+    minHeight: 60
+  },
+  energyBar: {
+    width: '80%',
+    marginBottom: '5%',
+    marginTop: '5%',
+    fontWeight: 'bold',
+    marginLeft: 'auto',
+    marginRight: 'auto',
   }
 });
