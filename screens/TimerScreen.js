@@ -101,7 +101,7 @@ export default function TimerScreen({ route, navigation }) {
   const addTimer = (start) => {
     const NEWVALUE = {
       created: new Date().toString(),
-      ended: ended,
+      ended: new Date().toString(),
       type: 'timer',
       project: projectKey,
       start: start,

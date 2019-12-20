@@ -133,12 +133,11 @@ export const removeItem = async key => {
  *  Delete entire async Storage
  * @param {function} state
  */
-export const removeAll = async state => {
+export const removeAll = async () => {
     try {
-        //console.info('ASYNC STORAGE - REMOVING ALL')
-        state([])
+        console.info('ASYNC STORAGE - REMOVING ALL')
         await AsyncStorage.clear()
     } catch (error) {
-        //console.error(error)
+        console.error(error)
     }
 }

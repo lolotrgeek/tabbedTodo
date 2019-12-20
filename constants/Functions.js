@@ -17,3 +17,10 @@ export const timeSpan = (start, end) => timeString(new Date(start)) + ' - ' + ti
 export const totalOver = (start, end) => Math.sign(end) === -1 ? start + end : 0
 
 export const totalProjectTime = timers => timers.reduce((acc, timer) => acc + timer.total )
+
+// TODO:
+export const sayRunning = timer => timer[1].ended === timer[1].created ? 'running' : timer[1].ended
+export const showCountInline = timer => {
+    let value = differenceInSeconds(new Date(timer[1].created), new Date())
+    // need timer 'ticking' functions to be global
+}

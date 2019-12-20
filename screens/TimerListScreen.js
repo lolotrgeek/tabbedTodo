@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Text, View,  SectionList } from 'react-native';
 import { getAll } from '../constants/Store'
 import { TimerList } from '../components/TimerList';
-import { timerValid } from '../constants/Validators'
+import { timerValid, justtimeValid } from '../constants/Validators'
 import { simpleDate, secondsToString, totalTime, timeSpan } from '../constants/Functions'
 import {styles} from '../constants/Styles'
 

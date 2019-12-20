@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {  Button, View, ScrollView } from 'react-native';
 import ProjectList from '../components/ProjectList';
-import { getAll } from '../constants/Store'
-import { totalProjectTime } from '../constants/Functions'
+import { getAll, removeAll } from '../constants/Store'
 import {styles} from '../constants/Styles'
 
 export default function ProjectScreen({ route, navigation }) {
@@ -42,7 +41,11 @@ export default function ProjectScreen({ route, navigation }) {
         <Button
           title='Add Project'
           onPress={() => navigation.navigate('Edit', { name: '', color: '' })}
-        />
+        />        
+        {/* <Button
+        title='Delete All'
+        onPress={() => removeAll()}
+      /> */}
       </View>
       <ScrollView style={{ width: '100%' }}>
         {projects.map((project, i) =>
