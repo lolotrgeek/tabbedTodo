@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { CirclePicker } from 'react-color'
 import Hashids from 'hashids'
 import NumPad from '../components/NumPad';
-import {styles} from '../constants/Styles'
+import { styles } from '../constants/Styles'
 
 // Color picking
 //https://casesandberg.github.io/react-color/
@@ -71,6 +71,7 @@ export default function EditorScreen({ route, navigation }) {
       console.warn('Give a Valid Color')
     }
     else {
+      // REFACTOR AS A FUNCTION
       let newroute
       let value = { created: created, type: 'project', name: name, color: color, time: time }
       if (key) {
@@ -82,6 +83,7 @@ export default function EditorScreen({ route, navigation }) {
         }
       }
       if (!key || key === '') {
+        // REFACTOR AS A FUNCTION
         value.created = dateCreator()
         const hashids = new Hashids()
         const newkey = hashids.encode(Date.now())
@@ -96,6 +98,17 @@ export default function EditorScreen({ route, navigation }) {
       }
       navigation.navigate('Projects', newroute)
     }
+  }
+
+  const formatTime = t => {
+    if (typeof t !== 'string') return false
+    if (t.length === 0) return '00 : 00 : 00'
+    if (t.length === 1) return '00 : 00 : 0' + t.charAt(0)
+    if (t.length === 2) return '00 : 00 : ' + t.charAt(0) + t.charAt(1)
+    if (t.length === 3) return '00 : 0' + t.charAt(0) + ' : ' + t.charAt(1) + t.charAt(2)
+    if (t.length === 4) return '00 : ' + t.charAt(0) + t.charAt(1) + ' : ' + t.charAt(2) + t.charAt(3)
+    if (t.length === 5) return '0' + t.charAt(0) + ' : ' + t.charAt(1) + t.charAt(2) + ' : ' + t.charAt(3) + t.charAt(4)
+    if (t.length > 5) return t.charAt(0) + t.charAt(1) + ' : ' + t.charAt(2) + t.charAt(3) + ' : ' + t.charAt(4) + t.charAt(5)
   }
 
   return (
@@ -133,7 +146,7 @@ export default function EditorScreen({ route, navigation }) {
           onChangeComplete={handleSelectedColor}
         />
       </View>
-      <Text style={{ fontSize: 20 }}>{secondsToString(time)}</Text>
+      <Text style={{ fontSize: 20 }}>{formatTime(time)}</Text>
 
       <NumPad
         onOne={() => { setTime(time + '1'); console.log(time) }}
@@ -146,7 +159,7 @@ export default function EditorScreen({ route, navigation }) {
         onEight={() => { setTime(time + '8'); console.log(time) }}
         onNine={() => { setTime(time + '9'); console.log(time) }}
         onZero={() => { setTime(time + '0'); console.log(time) }}
-        onDel={() => { setTime(time.slice(1)); console.log(time.slice(1)) }}
+        onDel={() => { setTime(time.substring(0, time.length - 1)); console.log(time.substring(0, time.length - 1)) }}
       />
       <View style={styles.doneButton}>
         <Button title="done" style={{ fontSize: 60 }} onPress={() => handleComplete()} />

@@ -13,16 +13,11 @@ export default function ProjectList(props) {
 				style={{ marginRight: 5, marginTop: 5 }}
 			/>
 
-			<Text style={styles.listItem} onPress={props.onPress}>{props.text}</Text>
+			<Text style={styles.listItem} onPress={props.onView}>{props.text}</Text>
 
 			<Button
 				title='View'
 				onPress={props.onView}
-				style={{ marginLeft: 20, paddingBottom: 30 }}
-			/>
-			<Button
-				title='Edit'
-				onPress={props.onPress}
 				style={{ marginLeft: 20, paddingBottom: 30 }}
 			/>
 			<Button

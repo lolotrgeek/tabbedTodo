@@ -93,16 +93,6 @@ export default function TimerScreen({ route, navigation }) {
     return focused, unfocused
   }, [])
 
-
-
-  // STORAGE FUNCTIONS
-  const dateCreator = () => {
-    const today = new Date();
-    const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    return date + ' ' + time;
-  }
-
   const addTimer = (start) => {
     const NEWVALUE = {
       created: new Date().toString(),
