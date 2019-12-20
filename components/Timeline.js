@@ -15,9 +15,7 @@ export function Timeline(props) {
                 </Text>
             </View>
             <View style={{ flex: 1, flexDirection: 'column', width:'50%' }}>
-                <Text
-                    style={styles.listItem}
-                >
+                <Text style={styles.listItem} onPress={props.onStart}>
                     {props.total}
                 </Text>
             </View>

@@ -132,6 +132,11 @@ export default function TimelineScreen({ navigation }) {
                 project: project,
                 lastscreen: 'Timeline'
               })}
+              onStart={() => navigation.navigate('Timer', {
+                project: project,
+                lastscreen: 'Timeline',
+                run: true,
+              })}
             />)
           }
         })

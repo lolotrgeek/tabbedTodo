@@ -14,17 +14,6 @@ export default function ProjectList(props) {
 			/>
 
 			<Text style={styles.listItem} onPress={props.onView}>{props.text}</Text>
-
-			<Button
-				title='View'
-				onPress={props.onView}
-				style={{ marginLeft: 20, paddingBottom: 30 }}
-			/>
-			<Button
-				title='Start'
-				onPress={props.onStart}
-				style={{ marginLeft: 20, paddingBottom: 30 }}
-			/>
 		</View>
 	);
 }

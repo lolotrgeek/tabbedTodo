@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Text, View} from 'react-native';
+import { Text, View } from 'react-native';
 import { Timer } from '../components/Timer';
 import { TimerStartNotes, TimerStopNotes } from '../components/TimerNotes';
-import {styles} from '../constants/Styles'
+import { styles } from '../constants/Styles'
 import Grid from '@material-ui/core/Grid';
 import Hashids from 'hashids'
 // import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
@@ -17,7 +17,7 @@ export default function TimerScreen({ route, navigation }) {
   let projectKey = project[0]
   let projectName = project[1].name
 
-  useEffect(() => navigation.setOptions({ title: projectName }) , [])
+  useEffect(() => navigation.setOptions({ title: projectName }), [])
 
   // LOCAL STATE
   const [connection, setConnection] = useState()
@@ -85,6 +85,11 @@ export default function TimerScreen({ route, navigation }) {
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
       console.log('FOCUS - ' + pagename)
+      if (run === true) {
+        start(1000, initialValue, initialValue > 0 ? true : false)
+        addTimer(initialValue)
+        setButton('stop')
+      }
     })
     const unfocused = navigation.addListener('blur', () => {
       console.log('attempting stop...')
@@ -148,7 +153,7 @@ export default function TimerScreen({ route, navigation }) {
       if (t.length === 3) return '-00:0' + t.charAt(0) + ':' + t.charAt(1) + t.charAt(2)
       if (t.length === 4) return '-00:' + t.charAt(0) + t.charAt(1) + ':' + t.charAt(2) + t.charAt(3)
       if (t.length === 5) return '-0' + t.charAt(0) + ':' + t.charAt(1) + t.charAt(2) + ':' + t.charAt(3) + t.charAt(4)
-      if (t.length > 5) return '-'+t.charAt(0) + t.charAt(1) + ':' + t.charAt(2) + t.charAt(3) + ':' + t.charAt(4) + t.charAt(5)
+      if (t.length > 5) return '-' + t.charAt(0) + t.charAt(1) + ':' + t.charAt(2) + t.charAt(3) + ':' + t.charAt(4) + t.charAt(5)
     }
   }
 

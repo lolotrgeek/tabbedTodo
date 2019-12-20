@@ -15,3 +15,5 @@ export const timeString = date => isDate(date) ? date.toTimeString().split(' ')[
 export const totalTime = (start, end) => differenceInSeconds(new Date(end), new Date(start))
 export const timeSpan = (start, end) => timeString(new Date(start)) + ' - ' + timeString(new Date(end))
 export const totalOver = (start, end) => Math.sign(end) === -1 ? start + end : 0
+
+export const totalProjectTime = timers => timers.reduce((acc, timer) => acc + timer.total )

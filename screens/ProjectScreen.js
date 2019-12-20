@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {  Button, View, ScrollView } from 'react-native';
 import ProjectList from '../components/ProjectList';
 import { getAll } from '../constants/Store'
+import { totalProjectTime } from '../constants/Functions'
 import {styles} from '../constants/Styles'
 
 export default function ProjectScreen({ route, navigation }) {
@@ -57,10 +58,6 @@ export default function ProjectScreen({ route, navigation }) {
             onStart={() => navigation.navigate('Timer', {
               project: project,
               run: true,
-            })}
-            onStop={() => navigation.navigate('Timer', {
-              project: project,
-              run: false,
             })}
           />
           ))}
