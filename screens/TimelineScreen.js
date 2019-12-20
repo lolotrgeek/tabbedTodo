@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text,  SafeAreaView, SectionList } from 'react-native';
 import { Timeline } from '../components/Timeline';
 import { getAll } from '../constants/Store'
-import { secondsToString, simpleDate } from '../constants/Functions'
+import { secondsToString, simpleDate, sayDay} from '../constants/Functions'
 import { timerValid } from '../constants/Validators'
 import {styles} from '../constants/Styles'
 
@@ -119,7 +119,7 @@ export default function TimelineScreen({ navigation }) {
         sections={daysWithTimer}
         keyExtractor={(item, index) => item + index}
         renderSectionHeader={({ section: { title } }) => {
-          return (<Text style={styles.header}>{title}</Text>)
+          return (<Text style={styles.subheader}>{sayDay(new Date(title))}</Text>)
         }}
         renderItem={({ item }) => projects.map(project => {
           if (project[0] === item.project) {

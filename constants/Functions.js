@@ -1,4 +1,4 @@
-import { isDate, differenceInSeconds, compareAsc } from 'date-fns'
+import { isDate, differenceInSeconds, compareAsc, isToday, isYesterday } from 'date-fns'
 
 export const dateCreator = () => {
     const today = new Date();
@@ -17,6 +17,8 @@ export const timeSpan = (start, end) => timeString(new Date(start)) + ' - ' + ti
 export const totalOver = (start, end) => Math.sign(end) === -1 ? start + end : 0
 
 export const totalProjectTime = timers => timers.reduce((acc, timer) => acc + timer.total )
+
+export const sayDay = date => isToday(date) ? 'Today' : isYesterday(date) ? 'Yesterday' : date 
 
 // TODO:
 export const sayRunning = timer => timer[1].ended === timer[1].created ? 'running' : timer[1].ended
