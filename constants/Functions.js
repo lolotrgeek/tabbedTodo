@@ -1,5 +1,4 @@
 import { isDate, differenceInSeconds, compareAsc, isToday, isYesterday } from 'date-fns'
-import { timerValid } from '../constants/Validators'
 
 // TIME FUNCTIONS
 export const dateCreator = () => {
@@ -20,11 +19,12 @@ export const totalOver = (start, end) => Math.sign(end) === -1 ? start + end : 0
 export const totalProjectTime = timers => timers.reduce((acc, timer) => acc + timer.total)
 export const sayDay = date => isToday(date) ? 'Today' : isYesterday(date) ? 'Yesterday' : date
 
-// TODO:
+// TIMER FUNCTIONS - WIP
 export const sayRunning = timer => timer[1].ended === timer[1].created ? 'running' : timer[1].ended
+export const isRunning = timer => timer[1].status === 'running' ? start() : timer[1].ended
 export const showCountInline = timer => {
     let value = differenceInSeconds(new Date(timer[1].created), new Date())
-    // need timer 'ticking' functions to be global
+    // TODO : need timer 'ticking' functions to be global
 }
 
 

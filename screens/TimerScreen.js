@@ -7,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Hashids from 'hashids'
 // import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
 import { storeItem, updateItem } from '../constants/Store'
+import {useCounter} from '../constants/Hooks'
 
 export default function TimerScreen({ route, navigation }) {
 
@@ -22,16 +23,15 @@ export default function TimerScreen({ route, navigation }) {
   // LOCAL STATE
   const [connection, setConnection] = useState()
   const [currentTimer, setCurrentTimer] = useState('')
-  // const { count, start, stop, reset } = useCounter(0, ms)
-  const [initialValue, setInitialValue] = useState(project[1].time > 0 ? project[1].time : 0)
-  const [count, setCount] = useState(initialValue)
-  const [total, setTotal] = useState(0)
+  const [initialCount, setInitialCount] = useState(project[1].time > 0 ? project[1].time : 0)
+  const [direction, setDirection] = useState(initialCount > 0 ? true : false)
+  const { count, total, setCount, setTotal, start, stop } = useCounter(1000, initialCount, direction)
+  // const [count, setCount] = useState(initialCount)
+  // const [total, setTotal] = useState(0)
   const [created, setCreated] = useState('')
-  const [ended, setEnded] = useState('')
   const [button, setButton] = useState('start')
   const [mood, setMood] = useState('')
   const [energy, setEnergy] = useState(50)
-  const intervalRef = useRef(null);
 
   // useEffect(() => {
   //   startSocketIO()
@@ -46,66 +46,48 @@ export default function TimerScreen({ route, navigation }) {
   //   emitTickSocketIO([currentTimer[0], count])
   // },[count])
 
-  /**
-   * Timer - start
-   */
-  const start = useCallback((ms, value, countdown) => {
-    if (intervalRef.current !== null) {
-      return;
-    }
-    if (countdown) {
-      setCount(value)
-      intervalRef.current = setInterval(() => {
-        setCount(c => c - 1)
-        setTotal(c => c + 1)
-      }, ms)
+  // /**
+  //  * Timer - start
+  //  */
+  // const start = useCallback((ms, value, countdown) => {
+  //   if (intervalRef.current !== null) {
+  //     return;
+  //   }
+  //   if (countdown) {
+  //     setCount(value)
+  //     intervalRef.current = setInterval(() => {
+  //       setCount(c => c - 1)
+  //       setTotal(c => c + 1)
+  //     }, ms)
 
-    }
-    else {
-      intervalRef.current = setInterval(() => {
-        setCount(c => c + 1)
-        setTotal(c => c + 1)
-      }, ms)
-    }
-  }, []);
+  //   }
+  //   else {
+  //     intervalRef.current = setInterval(() => {
+  //       setCount(c => c + 1)
+  //       setTotal(c => c + 1)
+  //     }, ms)
+  //   }
+  // }, []);
 
-  /**
-   * Timer - Stop
-   */
-  const stop = useCallback((value) => {
-    if (intervalRef.current === null) {
-      return;
-    }
-    clearInterval(intervalRef.current);
-    intervalRef.current = null;
-  }, []);
+  // /**
+  //  * Timer - Stop
+  //  */
+  // const stop = useCallback(() => {
+  //   if (intervalRef.current === null) {
+  //     return;
+  //   }
+  //   clearInterval(intervalRef.current);
+  //   intervalRef.current = null;
+  // }, []);
 
-
-  // PAGE FUNCTIONS
-  useEffect(() => {
-    const focused = navigation.addListener('focus', () => {
-      console.log('FOCUS - ' + pagename)
-      if (run === true) {
-        start(1000, initialValue, initialValue > 0 ? true : false)
-        addTimer(initialValue)
-        setButton('stop')
-      }
-    })
-    const unfocused = navigation.addListener('blur', () => {
-      console.log('attempting stop...')
-      stop()
-    })
-    return focused, unfocused
-  }, [])
-
-  const addTimer = (start) => {
+  const addTimer = () => {
     const NEWVALUE = {
       created: new Date().toString(),
       ended: new Date().toString(),
       type: 'timer',
       project: projectKey,
-      status : 'running',
-      start: start,
+      status: 'running',
+      start: initialCount,
       stop: count,
       total: total,
       mood: mood,
@@ -127,7 +109,7 @@ export default function TimerScreen({ route, navigation }) {
       type: 'timer',
       project: projectKey,
       status: 'done',
-      start: initialValue,
+      start: initialCount,
       stop: count,
       total: total,
       mood: mood,
@@ -138,12 +120,28 @@ export default function TimerScreen({ route, navigation }) {
     updateItem(key, value)
   }
 
+  // useEffect(() => {
+  //   console.log(mood)
+  //   console.log(energy)
+  // }, [mood, energy])
+
+  // PAGE FUNCTIONS
   useEffect(() => {
-    console.log(mood)
-    console.log(energy)
-  }, [mood, energy])
-
-
+    const focused = navigation.addListener('focus', () => {
+      console.log('FOCUS - ' + pagename)
+      if (run === true) {
+        // start(1000, initialCount, initialCount > 0 ? true : false)
+        start()
+        addTimer()
+        setButton('stop')
+      }
+    })
+    const unfocused = navigation.addListener('blur', () => {
+      console.log('attempting stop...')
+      stop()
+    })
+    return focused, unfocused
+  }, [])
   const formatTime = t => {
     if (t > 0) return new Date(t * 1000).toISOString().substr(11, 8)  // hh : mm : ss
     else {
@@ -168,20 +166,21 @@ export default function TimerScreen({ route, navigation }) {
         color: project[1].color,
         paddingBottom: 10
       }}>{projectName}</Text>
-      {/* <Text style={styles.subheader}>{initialValue} </Text>
+      {/* <Text style={styles.subheader}>{initialCount} </Text>
       <Text >{projectKey} </Text>
       <Text> Total: {total} </Text> */}
       <Timer
         start={() => {
-          start(1000, initialValue, initialValue > 0 ? true : false)
-          addTimer(initialValue)
+          // start(1000, initialCount, initialCount > 0 ? true : false)
+          start()
+          addTimer()
           setButton('stop')
         }}
         stop={() => {
-          stop(count)
+          stop()
           updateTimer(currentTimer[0], count)
           setTotal(0)
-          setCount(initialValue)
+          setCount(initialCount)
           setButton('start')
         }}
         hideStop={button === 'stop' ? 'flex' : 'none'}

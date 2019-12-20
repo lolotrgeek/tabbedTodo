@@ -24,17 +24,17 @@ export default function MainStack() {
   return (
     <Tab.Navigator>
 
-      <Tab.Screen
-        name='Home'
-        options={HomeTab.options}
-        component={HomeTab}
-      />
+
       <Tab.Screen
         name='Timeline'
         options={TimelineTab.options}
         component={TimelineTab}
       />
-
+      <Tab.Screen
+        name='Home'
+        options={HomeTab.options}
+        component={HomeTab}
+      />
 
       <Tab.Screen
         name='Settings'

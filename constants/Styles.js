@@ -119,7 +119,6 @@ export const styles = StyleSheet.create({
     width: '80%',
     marginBottom: '5%',
     marginTop: '5%',
-    fontWeight: 'bold',
     marginLeft: 'auto',
     marginRight: 'auto',
   }

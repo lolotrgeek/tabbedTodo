@@ -12,9 +12,6 @@ export default function TimelineScreen({ navigation }) {
   const [projects, setProjects] = useState([]); // state of timers list
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
 
-  /**
-   * get all entries from database
-   */
   const getEntries = () => new Promise(async (resolve, reject) => {
     try {
       let timerEntries = await getAll(value => timerValid(value) ? true : false)
@@ -24,9 +21,6 @@ export default function TimelineScreen({ navigation }) {
       reject(error)
     }
   })
-  /**
-   * set state by getting and sorting all entries
-   */
   const setEntryState = async () => {
     const retrieved = await getEntries()
     setTimers(retrieved.timers)
@@ -43,7 +37,7 @@ export default function TimelineScreen({ navigation }) {
 
   }
   useEffect(() => {
-    // setEntryState()
+    setEntryState()
     const focused = navigation.addListener('focus', () => {
       //console.log('FOCUS - ' + pagename)
       setEntryState()
@@ -52,7 +46,7 @@ export default function TimelineScreen({ navigation }) {
     })
     return focused, unfocused
   }, [])
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <SectionList style={{ width: '100%' }}

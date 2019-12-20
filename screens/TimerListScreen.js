@@ -12,7 +12,7 @@ export default function TimerListScreen({ route, navigation }) {
   let projectKey = project[0]
   let projectName = project[1].name
   let color = project[1].color
-  
+
   const [timers, setTimers] = useState([]); // state of timers list
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
 
@@ -33,6 +33,8 @@ export default function TimerListScreen({ route, navigation }) {
     const days = await dayHeaders(sortedTimers)
     setDaysWithTimer(days)
   }
+
+
 
   useEffect(() => {
     // setEntryState()
