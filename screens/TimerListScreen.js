@@ -3,32 +3,21 @@ import { Button, Text, View,  SectionList } from 'react-native';
 import { getAll } from '../constants/Store'
 import { TimerList } from '../components/TimerList';
 import { timerValid, justtimeValid } from '../constants/Validators'
-import { simpleDate, secondsToString, totalTime, timeSpan } from '../constants/Functions'
+import { simpleDate, secondsToString, totalTime, timeSpan, sayDay, dayHeaders, moodMap } from '../constants/Functions'
 import {styles} from '../constants/Styles'
 
 export default function TimerListScreen({ route, navigation }) {
-
-  let pagename = 'TimerList'
-
+  const pagename = 'TimerList'
   const { project, timer, update } = route.params
   let projectKey = project[0]
   let projectName = project[1].name
   let color = project[1].color
-
+  
   const [timers, setTimers] = useState([]); // state of timers list
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
 
-  const moodMap = mood => {
-    if (mood === '') return { name: 'times', color: 'black' }
-    if (mood === 'great') return { name: 'grin', color: 'orange' }
-    if (mood === 'good') return { name: 'smile', color: 'green' }
-    if (mood === 'meh') return { name: 'meh', color: 'purple' }
-    if (mood === 'bad') return { name: 'frown', color: 'blue' }
-    if (mood === 'dizzy') return { name: 'awful', color: 'grey' }
-  }
-
   // PAGE FUNCTIONS
-  const entries = () => new Promise(async (resolve, reject) => {
+  const getEntries = () => new Promise(async (resolve, reject) => {
     try {
       let timerEntries = await getAll(value => timerValid(value) ? true : false)
       resolve({ timers: timerEntries })
@@ -37,50 +26,16 @@ export default function TimerListScreen({ route, navigation }) {
     }
   })
 
-  const dayHeaders = timerlist => new Promise((resolve, reject) => {
-    const output = [] // [days...]
-    // organize timers by day
-    const timerdays = timerlist.map(timer => {
-      return { day: simpleDate(new Date(timer[1].created)), timer: timer }
-    })
-    // console.log(pagename + '- DAYHEADERS - TIMERDAYS : ', timerdays)
-    timerdays.forEach(timerday => {
-      // first value if output is empty is always unique
-      if (output.length === 0) {
-        console.log(pagename + '- FIRST OUTPUT ENTRY :', timerday)
-        output.push({ title: timerday.day, data: [timerday.timer] })
-      }
-      else {
-        // find and compare timerdays to outputs
-        const match = output.find(inOutput => inOutput.title === timerday.day)
-        if (match) {
-          console.log(pagename + '- MATCHING ENTRY :', match.day)
-          // add timer to list of timers for matching day
-          match.data = [...match.data, timerday.timer]
-        }
-        else {
-          console.log(pagename + '- NEW OUTPUT ENTRY :', timerday)
-          output.push({ title: timerday.day, data: [timerday.timer] })
-        }
-      }
-    })
-    console.log(pagename + '- DAYHEADERS - OUTPUT', output)
-    if (output.length > 0) { resolve(output) }
-    else { reject([]) }
-  })
-
   const setEntryState = async () => {
-    const retrieved = await entries()
+    const retrieved = await getEntries()
     setTimers(retrieved.timers)
     const sortedTimers = retrieved.timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
     const days = await dayHeaders(sortedTimers)
     setDaysWithTimer(days)
   }
-  useEffect(() => {
-    setEntryState()
-  }, [])
 
   useEffect(() => {
+    // setEntryState()
     const focused = navigation.addListener('focus', () => {
       console.log('FOCUS - ' + pagename)
       setEntryState()
@@ -111,7 +66,7 @@ export default function TimerListScreen({ route, navigation }) {
         sections={daysWithTimer}
         keyExtractor={(item, index) => item + index}
         renderSectionHeader={({ section: { title } }) => {
-          return (<Text style={styles.subheader}>{title}</Text>)
+          return (<Text style={styles.subheader}>{sayDay(new Date(title))}</Text>)
         }}
         renderItem={({ item }) => {
           return (<TimerList

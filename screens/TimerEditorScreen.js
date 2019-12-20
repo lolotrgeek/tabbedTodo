@@ -9,13 +9,10 @@ import { timerValid, createdValid } from '../constants/Validators'
 import {timeRules } from '../constants/Functions'
 import {styles} from '../constants/Styles'
 
-
 export default function TimerEditorScreen({ route, navigation }) {
     const { timer, project, lastscreen } = route.params
-
     const timerKey = timer[0]
     const timerEntry = timer[1]
-
     const [key, setKey] = useState('')
     const [created, setCreated] = useState('')
     const [ended, setEnded] = useState('')
@@ -24,7 +21,6 @@ export default function TimerEditorScreen({ route, navigation }) {
     const [stop, setStop] = useState('');
     const [mood, setMood] = useState('')
     const [energy, setEnergy] = useState(timer[1].energy ? timer[1].energy : 0)
-
 
     const deleteEntry = () => {
         removeItem(timerKey)
@@ -48,7 +44,6 @@ export default function TimerEditorScreen({ route, navigation }) {
             }
         }
     }
-
     useEffect(() => {
         handleRoutedParams()
     }, [])
@@ -85,7 +80,6 @@ export default function TimerEditorScreen({ route, navigation }) {
             }}>{projectName}</Text> */}
             <View style={styles.textInputContainer}>
                 <Text style={styles.sideTitle}>Date </Text>
-
                 <DatePicker
                     label=' '
                     startdate={created}
