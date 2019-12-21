@@ -2,15 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { Text, SafeAreaView, SectionList } from 'react-native';
 import { Timeline } from '../components/Timeline';
 import { getAll } from '../constants/Store'
-import { secondsToString, sayDay, sumProjectTimers, dayHeaders, isRunning } from '../constants/Functions'
+import { secondsToString, sayDay, sumProjectTimers, dayHeaders, isRunning, findRunning, elapsedTime } from '../constants/Functions'
 import { timerValid } from '../constants/Validators'
 import { styles } from '../constants/Styles'
+import { useCounter } from '../constants/Hooks'
+
 
 export default function TimelineScreen({ navigation }) {
   let pagename = 'TIMELINE'
   const [timers, setTimers] = useState([]); // state of timers list
   const [projects, setProjects] = useState([]); // state of timers list
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
+  const [runningTimer, setRunningTimer] = useState([])
+  const [currentTick, setCurrentTick] = useState()
+  const [direction, setDirection] = useState()
+  const { count, total, setCount, setTotal, start, stop } = useCounter(1000, true )
 
   const getEntries = () => new Promise(async (resolve, reject) => {
     try {
@@ -31,6 +37,9 @@ export default function TimelineScreen({ navigation }) {
       const summed = sumProjectTimers(days)
       console.log(summed)
       setDaysWithTimer(summed)
+      const found = await findRunning(retrieved.timers)
+      setRunningTimer(found[0])
+      setCurrentTick(elapsedTime(found[0]))
     } catch (err) {
       console.log(err)
     }
@@ -47,8 +56,21 @@ export default function TimelineScreen({ navigation }) {
     return focused, unfocused
   }, [])
 
+  useEffect(() => {
+    setCount(currentTick)
+    console.log(count)
+    start()
+  }, [currentTick])
+
+  useEffect(() => {
+    console.log('running: ' , runningTimer)
+    // let elapsed = elapsedTime(runningTimer)
+    // console.log('elpased: ', elapsed)
+  }, [runningTimer])
+
   return (
     <SafeAreaView style={styles.container}>
+      {/* <Text>{runningTimer && runningTimer.length > 0 ? runningTimer : 'name'} : {count ? count : 'count'}</Text> */}
       <SectionList style={{ width: '100%' }}
         sections={daysWithTimer}
         keyExtractor={(item, index) => item + index}

@@ -43,6 +43,7 @@ export default function EditorScreen({ route, navigation }) {
   }
 
   useEffect(() => handleRoutedParams(), [])
+  useEffect(() => navigation.setOptions({ title: name, headerStyle: {backgroundColor: color} }), [color])
 
   const addProject = (NEWKEY, NEWVALUE) => {
     if (name.length > 0) {

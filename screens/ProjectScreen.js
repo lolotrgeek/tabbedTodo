@@ -8,6 +8,9 @@ export default function ProjectScreen({ route, navigation }) {
 
   let pagename = 'Projects'
 
+  useEffect(() => navigation.setOptions({ title: pagename }), [])
+
+
   // LOCAL STATE
   const [projects, setProject] = useState([]); // state of projects list
 

@@ -13,14 +13,18 @@ export default function TimerEditorScreen({ route, navigation }) {
     const { timer, project, lastscreen } = route.params
     const timerKey = timer[0]
     const timerEntry = timer[1]
+    let color = project[1].color
+    const projectName = project[1].name
+    
     const [key, setKey] = useState('')
     const [created, setCreated] = useState('')
     const [ended, setEnded] = useState('')
-    const [projectName, setProjectName] = useState('')
     const [start, setStart] = useState('');
     const [stop, setStop] = useState('');
     const [mood, setMood] = useState('')
-    const [energy, setEnergy] = useState(timer[1].energy ? timer[1].energy : 0)
+    const [energy, setEnergy] = useState(projectName ? timer[1].energy : 0)
+
+    useEffect(() => navigation.setOptions({ title: projectName + ' - Timer Entry', headerStyle: {backgroundColor: color} }), [])
 
     const deleteEntry = () => {
         removeItem(timerKey)
@@ -37,7 +41,6 @@ export default function TimerEditorScreen({ route, navigation }) {
             setStop(timer[1].stop)
             setMood(timer[1].mood)
             setEnergy(timer[1].energy)
-            setProjectName(project[1].name)
             if (createdValid) {
                 setCreated(timer[1].created)
                 setEnded(timer[1].ended)
@@ -87,12 +90,6 @@ export default function TimerEditorScreen({ route, navigation }) {
 
     return (
         <View style={styles.container}>
-            {/* <Text style={{
-                marginTop: '5%',
-                fontSize: 20,
-                // color: color,
-                paddingBottom: 10
-            }}>{projectName}</Text> */}
             <View style={styles.textInputContainer}>
                 <Text style={styles.sideTitle}>Date </Text>
                 <DatePicker

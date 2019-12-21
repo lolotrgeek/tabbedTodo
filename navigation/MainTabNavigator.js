@@ -124,7 +124,7 @@ SettingsTab.options = {
 };
 
 const stackOptions = {
-  headerTitle: '',
+  // headerTitle: '',
   headerShown: true,
   headerHideShadow : true,
   headerLargeTitle : true,

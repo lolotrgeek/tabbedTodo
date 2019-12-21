@@ -14,19 +14,23 @@ export default function TimerScreen({ route, navigation }) {
   let pagename = 'TimerScreen'
   let projectKey = project[0]
   let projectName = project[1].name
+  let color = project[1].color
 
-  useEffect(() => navigation.setOptions({ title: projectName }), [])
+
+  useEffect(() => navigation.setOptions({ title: projectName, headerStyle: {backgroundColor: color} }), [])
 
   // LOCAL STATE
   const [connection, setConnection] = useState()
   const [currentTimer, setCurrentTimer] = useState('')
-  const [initialCount, setInitialCount] = useState(project[1].time > 0 ? project[1].time : 0)
-  const [direction, setDirection] = useState(initialCount > 0 ? true : false)
-  const { count, total, setCount, setTotal, start, stop } = useCounter(1000, direction)
   const [created, setCreated] = useState('')
   const [button, setButton] = useState('start')
   const [mood, setMood] = useState('')
   const [energy, setEnergy] = useState(50)
+  
+  const initialCount = project[1].time > 0 ? project[1].time : 0
+  const direction = initialCount > 0 ? true : false
+  const { count, total, setCount, setTotal, start, stop } = useCounter(1000, direction)
+  useEffect(() => setCount(initialCount), [])
 
   // useEffect(() => {
   //   startSocketIO()
@@ -91,7 +95,6 @@ export default function TimerScreen({ route, navigation }) {
     const focused = navigation.addListener('focus', () => {
       console.log('FOCUS - ' + pagename)
       if (run === true) {
-        // start(1000, initialCount, initialCount > 0 ? true : false)
         setCount(initialCount)
         start()
         addTimer()
