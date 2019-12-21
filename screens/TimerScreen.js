@@ -10,6 +10,7 @@ import Hashids from 'hashids'
 import { timerValid } from '../constants/Validators'
 import { storeItem, updateItem, getAll } from '../constants/Store'
 import { useCounter } from '../constants/Hooks'
+import { arrayIncludes } from '@material-ui/pickers/_helpers/utils';
 
 export default function TimerScreen({ route, navigation }) {
   const { project, run } = route.params
@@ -87,11 +88,6 @@ export default function TimerScreen({ route, navigation }) {
     updateItem(key, value)
   }
 
-  // useEffect(() => {
-  //   console.log(mood)
-  //   console.log(energy)
-  // }, [mood, energy])
-
   // PAGE FUNCTIONS
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
@@ -110,10 +106,19 @@ export default function TimerScreen({ route, navigation }) {
     return focused, unfocused
   }, [])
 
-  // useEffect(() => {
-  //   timer[1].mood = mood
-  //   updateItem(timer[0], timer[1])
-  // }, [mood])
+  useEffect(() => {
+    if (Array.isArray(currentTimer) && currentTimer.length === 2) {
+      currentTimer[1].mood = mood
+      updateItem(currentTimer[0], currentTimer[1])
+    }
+  }, [mood])
+
+  useEffect(() => {
+    if (Array.isArray(currentTimer) && currentTimer.length === 2) {
+      currentTimer[1].energy = energy
+      updateItem(currentTimer[0], currentTimer[1])
+    }
+  }, [energy])
   const setEntryState = async () => {
     try {
       const timerEntries = await getAll(value => timerValid(value) ? true : false)
@@ -121,11 +126,11 @@ export default function TimerScreen({ route, navigation }) {
         const found = await findRunning(timerEntries)
         // clear running timers
         found.map(timer => {
-          if(timer[0] === currentTimer[0]) return;
+          if (timer[0] === currentTimer[0]) return;
           timer[1].ended = new Date().toString()
           timer[1].status = 'done'
           updateItem(timer[0], timer[1])
-          console.log('cleared :' , found[0])
+          console.log('cleared :', found[0])
         })
       } catch (error) {
         console.log(error)

@@ -66,8 +66,10 @@ export default function TimerListScreen({ route, navigation }) {
     item[1].status = 'done'
     item[1].ended = new Date().toString()
     updateItem(item[0], item[1])
+    setTotal(0)
     setCount(0)
     setRunningTimer([])
+    console.log('updated : ' , [item[0], item[1]])
   }
 
   const startandUpdate = item => {

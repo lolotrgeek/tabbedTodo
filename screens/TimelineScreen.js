@@ -13,6 +13,7 @@ export default function TimelineScreen({ navigation }) {
   let pagename = 'TIMELINE'
   const [timers, setTimers] = useState([]); // state of timers list
   const [projects, setProjects] = useState([]); // state of timers list
+  const [dayList, setDayList] = useState([])
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
   const [runningTimer, setRunningTimer] = useState([])
   const [direction, setDirection] = useState(Boolean)
@@ -36,6 +37,7 @@ export default function TimelineScreen({ navigation }) {
     const sortedTimers = retrieved.timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
     try {
       const days = await dayHeaders(sortedTimers)
+      setDayList(days)
       const summed = sumProjectTimers(days)
       console.log(summed)
       setDaysWithTimer(summed)
@@ -61,8 +63,10 @@ export default function TimelineScreen({ navigation }) {
     item[1].status = 'done'
     item[1].ended = new Date().toString()
     updateItem(item[0], item[1])
+    setTotal(0)
     setCount(0)
     setRunningTimer([])
+    console.log('updated : ' , [item[0], item[1]])
   }
 
   const startandUpdate = project => {
@@ -117,7 +121,7 @@ export default function TimelineScreen({ navigation }) {
   }, [timers])
 
   useEffect(() => {
-    if (runningTimer && runningTimer !== undefined && Array.isArray(runningTimer) && runningTimer.length > 0) {
+    if (runningTimer && runningTimer !== undefined && Array.isArray(runningTimer) && runningTimer.length === 2) {
       console.log('running : ', runningTimer)
       setDirection(runningTimer[1].start > 0 ? true : false)
       setCount(elapsedTime(runningTimer))
@@ -126,8 +130,8 @@ export default function TimelineScreen({ navigation }) {
   }, [runningTimer])
 
   useEffect(() => {
-    console.log(count)
-  }, [count])
+    console.log(total)
+  }, [total])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -143,21 +147,20 @@ export default function TimelineScreen({ navigation }) {
         }}
         renderItem={({ item }) => projects.map(project => {
           if (project[0] === item.project) {
-            console.log('project: ' , project)
             return (<Timeline
               key={item.project}
               color={project[1].color}
               project={project[1].name}
-              total={secondsToString(item.total)}
-              // total={runningValid(runningTimer) && item.project === runningTimer[1].project ? formatTime(count) : secondsToString(item.total)}
-              onPress={() => navigation.navigate('TimerList', {project: project, lastscreen: 'Timeline'})}
+              // total={secondsToString(item.total)}
+              total={runningValid(runningTimer) && item.project === runningTimer[1].project ? secondsToString(item.total + total) : secondsToString(item.total)}
+              onPress={() => navigation.navigate('TimerList', { project: project, lastscreen: 'Timeline' })}
               onStart={() => startandUpdate(project)}
             />)
           }
         })
         }
       />
-      <Button title="Projects" onPress={() => navigation.navigate('Projects', {lastscreen: 'Timeline'})} />
+      <Button title="Projects" onPress={() => navigation.navigate('Projects', { lastscreen: 'Timeline' })} />
     </SafeAreaView >
   )
 }
