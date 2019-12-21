@@ -18,16 +18,34 @@ export const timeSpan = (start, end) => timeString(new Date(start)) + ' - ' + ti
 export const totalOver = (start, end) => Math.sign(end) === -1 ? start + end : 0
 export const totalProjectTime = timers => timers.reduce((acc, timer) => acc + timer.total)
 export const sayDay = date => isToday(date) ? 'Today' : isYesterday(date) ? 'Yesterday' : date
+export const formatTime = t => {
+    if (t > 0) return new Date(t * 1000).toISOString().substr(11, 8)  // hh : mm : ss
+    else {
+      t = Math.abs(t)
+      t = t.toString()
+      if (t.length === 0) return '00:00:00'
+      if (t.length === 1) return '-00:00:0' + t.charAt(0)
+      if (t.length === 2) return '-00:00:' + t.charAt(0) + t.charAt(1)
+      if (t.length === 3) return '-00:0' + t.charAt(0) + ':' + t.charAt(1) + t.charAt(2)
+      if (t.length === 4) return '-00:' + t.charAt(0) + t.charAt(1) + ':' + t.charAt(2) + t.charAt(3)
+      if (t.length === 5) return '-0' + t.charAt(0) + ':' + t.charAt(1) + t.charAt(2) + ':' + t.charAt(3) + t.charAt(4)
+      if (t.length > 5) return '-' + t.charAt(0) + t.charAt(1) + ':' + t.charAt(2) + t.charAt(3) + ':' + t.charAt(4) + t.charAt(5)
+    }
+  }
+
 
 // TIMER FUNCTIONS - WIP
 export const sayRunning = timer => timer[1].ended === timer[1].created ? 'running' : timer[1].ended
-export const isRunning = timer => timer[1].status === 'running' ? start() : timer[1].ended
-export const showCountInline = timer => {
-    let value = differenceInSeconds(new Date(timer[1].created), new Date())
-    // TODO : need timer 'ticking' functions to be global
-}
-
-
+export const isRunning = timer => timer[1].status === 'running' ? true : false
+export const elapsedTime = timer => differenceInSeconds(new Date(), new Date(timer[1].created))
+export const findRunning = async timers => new Promise ((resolve, reject) => {
+    let found = timers.filter(timer => isRunning(timer) ? timer : false)
+    found.length > 0 ? resolve(found) : reject([])
+}) 
+export const runningFind = async days => new Promise ((resolve, reject) => {
+    let found = days.map(day => day.data.map(timers => timers.filter(timer => isRunning(timer) ? timer : false)))
+    found.length > 0 ? resolve(found) : reject([])
+}) 
 // STYLE FUNCTIONS
 export const moodMap = mood => {
     if (mood === '') return { name: 'times', color: 'black' }

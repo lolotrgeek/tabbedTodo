@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import {  Text, View, Button, TouchableOpacity } from 'react-native';
+import { Text, View, Button, TouchableOpacity } from 'react-native';
 import { updateItem, removeItem } from '../constants/Store'
 import { TimerStopNotes } from '../components/TimerNotes'
 import { DatePicker, TimePicker } from '../components/DatePickers'
 import { addMinutes } from 'date-fns'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { timerValid, createdValid } from '../constants/Validators'
-import {timeRules } from '../constants/Functions'
-import {styles} from '../constants/Styles'
+import { timeRules } from '../constants/Functions'
+import { styles } from '../constants/Styles'
 
 export default function TimerEditorScreen({ route, navigation }) {
     const { timer, project, lastscreen } = route.params
@@ -47,6 +47,21 @@ export default function TimerEditorScreen({ route, navigation }) {
     useEffect(() => {
         handleRoutedParams()
     }, [])
+
+    useEffect (() => {
+        timer[1].mood = mood
+        updateItem(timer[0], timer[1])
+    }, [mood])
+
+    useEffect (() => {
+        timer[1].created = created
+        updateItem(timer[0], timer[1])
+    }, [created])
+
+    useEffect (() => {
+        timer[1].ended = ended
+        updateItem(timer[0], timer[1])
+    }, [ended])
 
     const handleComplete = () => {
         if (!timeRules(created, ended)) {

@@ -6,8 +6,8 @@ import React, { useState, useCallback, useRef } from 'react';
  * @param {number} value current tick value
  * @param {boolean} countdown sets direction of the timer 
  */
-export function useCounter(ms, value, countdown) {
-  const [count, setCount] = useState(value)
+export function useCounter(ms, countdown) {
+  const [count, setCount] = useState()
   const [total, setTotal] = useState(0)
   const intervalRef = useRef(null);
 
@@ -15,8 +15,8 @@ export function useCounter(ms, value, countdown) {
     if (intervalRef.current !== null) {
       return;
     }
+
     if (countdown) {
-      setCount(value)
       intervalRef.current = setInterval(() => {
         setCount(c => c - 1)
         setTotal(t => t + 1)

@@ -7,14 +7,14 @@ export function Timeline(props) {
     return (
         <View style={styles.listContainer}>
             <View style={{flex: 1, flexDirection: 'column', width:'50%'}}>
-                <Text
-                    style={{ color: props.color, fontSize: 20 }}
-                    onPress={props.onPress}
-                >
+                <Text style={{ color: props.color, fontSize: 20 }} onPress={props.onPress}>
                     {props.project}
                 </Text>
             </View>
             <View style={{ flex: 1, flexDirection: 'column', width:'50%' }}>
+                <Text style={styles.listItem}>
+                {props.status}    
+                </Text>
                 <Text style={styles.listItem} onPress={props.onStart}>
                     {props.total}
                 </Text>

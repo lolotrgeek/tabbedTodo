@@ -19,15 +19,3 @@ export function Timer(props) {
 		</View >
 	);
 }
-
-export function TimerList(props) {
-	return (
-		<View style={styles.listContainer}>
-			<View>
-				<Text style={styles.listItem} onPress={props.onPress} >{props.date} - Start : {props.start} Stop : {props.stop} Total: {props.total}</Text>
-				<Button title='Edit' style={{ flex: 1, marginLeft: 'auto' }} onPress={props.onEdit} />
-			</View>
-
-		</View>
-	);
-}

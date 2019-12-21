@@ -55,13 +55,12 @@ export default function ProjectScreen({ route, navigation }) {
             color={project[1].color}
             deleteEntry={() => deleteProject(project[0])}
             onView={() => navigation.navigate('TimerList', {
-              project: project,
-              run: false,
+              project: project
             })}
-            onStart={() => navigation.navigate('Timer', {
-              project: project,
-              run: true,
-            })}
+            // onStart={() => navigation.navigate('Timer', {
+            //   project: project,
+            //   run: true,
+            // })}
           />
           ))}
 

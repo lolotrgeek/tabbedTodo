@@ -7,14 +7,11 @@ import Grid from '@material-ui/core/Grid';
 import Hashids from 'hashids'
 // import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
 import { storeItem, updateItem } from '../constants/Store'
-import {useCounter} from '../constants/Hooks'
+import { useCounter } from '../constants/Hooks'
 
 export default function TimerScreen({ route, navigation }) {
-
   const { project, run } = route.params
-
   let pagename = 'TimerScreen'
-
   let projectKey = project[0]
   let projectName = project[1].name
 
@@ -25,9 +22,7 @@ export default function TimerScreen({ route, navigation }) {
   const [currentTimer, setCurrentTimer] = useState('')
   const [initialCount, setInitialCount] = useState(project[1].time > 0 ? project[1].time : 0)
   const [direction, setDirection] = useState(initialCount > 0 ? true : false)
-  const { count, total, setCount, setTotal, start, stop } = useCounter(1000, initialCount, direction)
-  // const [count, setCount] = useState(initialCount)
-  // const [total, setTotal] = useState(0)
+  const { count, total, setCount, setTotal, start, stop } = useCounter(1000, direction)
   const [created, setCreated] = useState('')
   const [button, setButton] = useState('start')
   const [mood, setMood] = useState('')
@@ -45,40 +40,6 @@ export default function TimerScreen({ route, navigation }) {
   // useEffect(() => {
   //   emitTickSocketIO([currentTimer[0], count])
   // },[count])
-
-  // /**
-  //  * Timer - start
-  //  */
-  // const start = useCallback((ms, value, countdown) => {
-  //   if (intervalRef.current !== null) {
-  //     return;
-  //   }
-  //   if (countdown) {
-  //     setCount(value)
-  //     intervalRef.current = setInterval(() => {
-  //       setCount(c => c - 1)
-  //       setTotal(c => c + 1)
-  //     }, ms)
-
-  //   }
-  //   else {
-  //     intervalRef.current = setInterval(() => {
-  //       setCount(c => c + 1)
-  //       setTotal(c => c + 1)
-  //     }, ms)
-  //   }
-  // }, []);
-
-  // /**
-  //  * Timer - Stop
-  //  */
-  // const stop = useCallback(() => {
-  //   if (intervalRef.current === null) {
-  //     return;
-  //   }
-  //   clearInterval(intervalRef.current);
-  //   intervalRef.current = null;
-  // }, []);
 
   const addTimer = () => {
     const NEWVALUE = {
@@ -102,7 +63,7 @@ export default function TimerScreen({ route, navigation }) {
     setCurrentTimer(NEWENTRY)
   }
 
-  const updateTimer = (key, count) => {
+  const updateTimer = (key) => {
     let value = {
       created: created,
       ended: new Date().toString(),
@@ -131,6 +92,7 @@ export default function TimerScreen({ route, navigation }) {
       console.log('FOCUS - ' + pagename)
       if (run === true) {
         // start(1000, initialCount, initialCount > 0 ? true : false)
+        setCount(initialCount)
         start()
         addTimer()
         setButton('stop')
@@ -142,12 +104,18 @@ export default function TimerScreen({ route, navigation }) {
     })
     return focused, unfocused
   }, [])
+
+  // useEffect(() => {
+  //   timer[1].mood = mood
+  //   updateItem(timer[0], timer[1])
+  // }, [mood])
+
   const formatTime = t => {
-    if (t > 0) return new Date(t * 1000).toISOString().substr(11, 8)  // hh : mm : ss
+    if (t >= 0) return new Date(t * 1000).toISOString().substr(11, 8)  // hh : mm : ss
     else {
       t = Math.abs(t)
       t = t.toString()
-      if (t.length === 0) return '-00:00:00'
+      if (t.length === 0) return '00:00:00'
       if (t.length === 1) return '-00:00:0' + t.charAt(0)
       if (t.length === 2) return '-00:00:' + t.charAt(0) + t.charAt(1)
       if (t.length === 3) return '-00:0' + t.charAt(0) + ':' + t.charAt(1) + t.charAt(2)
@@ -178,7 +146,7 @@ export default function TimerScreen({ route, navigation }) {
         }}
         stop={() => {
           stop()
-          updateTimer(currentTimer[0], count)
+          updateTimer(currentTimer[0])
           setTotal(0)
           setCount(initialCount)
           setButton('start')
