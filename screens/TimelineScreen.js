@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Text, SafeAreaView, SectionList } from 'react-native';
+import { Text, SafeAreaView, SectionList, Button } from 'react-native';
 import { Timeline } from '../components/Timeline';
-import { getAll, storeItem, updateItem} from '../constants/Store'
+import { getAll, storeItem, updateItem } from '../constants/Store'
 import { timeString, secondsToString, sumProjectTimers, totalTime, timeSpan, sayDay, dayHeaders, isRunning, elapsedTime, findRunning, runningFind, formatTime } from '../constants/Functions'
-import { timerValid, timersValid, runningValid} from '../constants/Validators'
+import { timerValid, timersValid, runningValid } from '../constants/Validators'
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
 import Hashids from 'hashids'
@@ -105,13 +105,13 @@ export default function TimelineScreen({ navigation }) {
     if (timers && Array.isArray(timers) && timers.length > 0) {
       // let found = timers.filter(timer => timer[1].status === 'running' ? true : false)
       const found = timers.filter(timer => {
-        if(timer[1].status === 'running') {
+        if (timer[1].status === 'running') {
           return true
         } else {
           return false
         }
       })
-      console.log('found: ' ,found)
+      console.log('found: ', found)
       setRunningTimer(found[0])
     }
   }, [timers])
@@ -131,6 +131,7 @@ export default function TimelineScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.subheader}> {runningValid(runningTimer) ? 'Tracking' : ''}</Text>
       <Text onPress={() => stopAndUpdate(runningTimer)}>
         {runningValid(runningTimer) ? formatTime(count) : ''}
       </Text>
@@ -142,22 +143,21 @@ export default function TimelineScreen({ navigation }) {
         }}
         renderItem={({ item }) => projects.map(project => {
           if (project[0] === item.project) {
+            console.log('project: ' , project)
             return (<Timeline
               key={item.project}
               color={project[1].color}
               project={project[1].name}
               total={secondsToString(item.total)}
               // total={runningValid(runningTimer) && item.project === runningTimer[1].project ? formatTime(count) : secondsToString(item.total)}
-              onPress={() => navigation.navigate('TimerList', {
-                project: project,
-                lastscreen: 'Timeline'
-              })}
-              onStart={() => startandUpdate(project) }
+              onPress={() => navigation.navigate('TimerList', {project: project, lastscreen: 'Timeline'})}
+              onStart={() => startandUpdate(project)}
             />)
           }
         })
         }
       />
+      <Button title="Projects" onPress={() => navigation.navigate('Projects', {lastscreen: 'Timeline'})} />
     </SafeAreaView >
   )
 }
