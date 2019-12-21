@@ -76,11 +76,14 @@ export const styles = StyleSheet.create({
     margin: '2%'
   },
   addButton: {
-    width: '100%',
-    marginTop: '10%',
+    width: '80%',
+    marginTop: '5%',
     paddingBottom: 20,
     // borderColor: '#aaaaaa',
     // borderBottomWidth: 1.5,
+  },
+  runningTimer : {
+    
   },
   colorPicker: {
     flexDirection: 'row',

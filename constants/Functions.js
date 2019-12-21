@@ -21,31 +21,32 @@ export const sayDay = date => isToday(date) ? 'Today' : isYesterday(date) ? 'Yes
 export const formatTime = t => {
     if (t > 0) return new Date(t * 1000).toISOString().substr(11, 8)  // hh : mm : ss
     else {
-      t = Math.abs(t)
-      t = t.toString()
-      if (t.length === 0) return '00:00:00'
-      if (t.length === 1) return '-00:00:0' + t.charAt(0)
-      if (t.length === 2) return '-00:00:' + t.charAt(0) + t.charAt(1)
-      if (t.length === 3) return '-00:0' + t.charAt(0) + ':' + t.charAt(1) + t.charAt(2)
-      if (t.length === 4) return '-00:' + t.charAt(0) + t.charAt(1) + ':' + t.charAt(2) + t.charAt(3)
-      if (t.length === 5) return '-0' + t.charAt(0) + ':' + t.charAt(1) + t.charAt(2) + ':' + t.charAt(3) + t.charAt(4)
-      if (t.length > 5) return '-' + t.charAt(0) + t.charAt(1) + ':' + t.charAt(2) + t.charAt(3) + ':' + t.charAt(4) + t.charAt(5)
+        t = Math.abs(t)
+        t = t.toString()
+        if (t.length === 0) return '00:00:00'
+        if (t.length === 1) return '-00:00:0' + t.charAt(0)
+        if (t.length === 2) return '-00:00:' + t.charAt(0) + t.charAt(1)
+        if (t.length === 3) return '-00:0' + t.charAt(0) + ':' + t.charAt(1) + t.charAt(2)
+        if (t.length === 4) return '-00:' + t.charAt(0) + t.charAt(1) + ':' + t.charAt(2) + t.charAt(3)
+        if (t.length === 5) return '-0' + t.charAt(0) + ':' + t.charAt(1) + t.charAt(2) + ':' + t.charAt(3) + t.charAt(4)
+        if (t.length > 5) return '-' + t.charAt(0) + t.charAt(1) + ':' + t.charAt(2) + t.charAt(3) + ':' + t.charAt(4) + t.charAt(5)
     }
-  }
+}
 
 
 // TIMER FUNCTIONS - WIP
 export const sayRunning = timer => timer[1].ended === timer[1].created ? 'running' : timer[1].ended
 export const isRunning = timer => timer[1].status === 'running' ? true : false
 export const elapsedTime = timer => differenceInSeconds(new Date(), new Date(timer[1].created))
-export const findRunning = async timers => new Promise ((resolve, reject) => {
+export const findRunning = async timers => new Promise((resolve, reject) => {
     let found = timers.filter(timer => isRunning(timer) ? timer : false)
     found.length > 0 ? resolve(found) : reject([])
-}) 
-export const runningFind = async days => new Promise ((resolve, reject) => {
+})
+export const runningFind = async days => new Promise((resolve, reject) => {
     let found = days.map(day => day.data.filter(timers => isRunning(timers) ? timers : false))
     found.length > 0 ? resolve(found) : reject([])
-}) 
+})
+
 // STYLE FUNCTIONS
 export const moodMap = mood => {
     if (mood === '') return { name: 'times', color: 'black' }

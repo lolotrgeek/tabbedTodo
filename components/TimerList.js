@@ -9,12 +9,12 @@ export function TimerList(props) {
     return (
         <View style={styles.listContainer}>
             <View style={{ flexDirection: 'column', alignItems: 'center', width: '50%' }}>
-                <Text style={styles.listItem} onPress={props.onPress}>
+                <Text style={styles.listItem} onPress={props.onEdit}>
                     {props.project}
                 </Text>
             </View>
             <View style={{ flexDirection: 'column', alignItems: 'center', width: '20%' }}>
-                <Text style={styles.listItem} onPress={props.onEdit}>
+                <Text style={styles.listItem} onPress={props.onPress}>
                     {props.total}
                 </Text>
             </View>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Text, View, SafeAreaView, SectionList } from 'react-native';
-import { getAll, updateItem } from '../constants/Store'
+import { getAll, updateItem, storeItem } from '../constants/Store'
 import { TimerList } from '../components/TimerList';
 import { timerValid, runningValid, justtimeValid } from '../constants/Validators'
 import { timeString, secondsToString, totalTime, timeSpan, sayDay, dayHeaders, moodMap, isRunning, elapsedTime, findRunning, runningFind, formatTime } from '../constants/Functions'
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
-
+import Hashids from 'hashids'
 
 export default function TimerListScreen({ route, navigation }) {
   const pagename = 'TimerList'
@@ -19,7 +19,8 @@ export default function TimerListScreen({ route, navigation }) {
 
   const [daysWithTimer, setDaysWithTimer] = useState([]); // display the timers within each day
   const [runningTimer, setRunningTimer] = useState([])
-  const { count, total, setCount, setTotal, start, stop } = useCounter(1000, NaN, project[1].start > 0 ? true : false)
+  const [direction, setDirection] = useState(true)
+  const { count, total, setCount, setTotal, start, stop } = useCounter(1000, direction)
 
 
   // PAGE FUNCTIONS
@@ -52,8 +53,8 @@ export default function TimerListScreen({ route, navigation }) {
   const foundRunning = async () => {
     try {
       let found = await runningFind(daysWithTimer)
-      console.log(found[0])
-      setRunningTimer(found[0])
+      console.log('found: ', found[0][0])
+      setRunningTimer(found[0][0])
     }
     catch (error) {
       console.log(error)
@@ -61,10 +62,29 @@ export default function TimerListScreen({ route, navigation }) {
   }
 
   const stopAndUpdate = item => {
-    stop() 
+    stop()
     item[1].status = 'done'
     item[1].ended = new Date().toString()
     updateItem(item[0], item[1])
+    setCount(0)
+    setRunningTimer([])
+  }
+
+  const startandUpdate = item => {
+    if (runningValid(runningTimer)) {
+      stopAndUpdate(runningTimer)
+    }
+    const hashids = new Hashids()
+    let key = hashids.encode(Date.now().toString())
+    let value = item[1]
+    value.created = new Date().toString()
+    value.ended = new Date().toString()
+    value.status = 'running'
+    console.log('new: ', [key, value])
+    storeItem(key, value)
+    setCount(value.start)
+    setRunningTimer([key, value])
+    start()
   }
 
   useEffect(() => {
@@ -86,8 +106,9 @@ export default function TimerListScreen({ route, navigation }) {
 
   useEffect(() => {
     if (runningTimer && Array.isArray(runningTimer) && runningTimer.length > 0) {
-      console.log(runningTimer[0])
-      setCount(elapsedTime(runningTimer[0]))
+      console.log('running : ', runningTimer)
+      setDirection(runningTimer[1].start > 0 ? true : false)
+      setCount(elapsedTime(runningTimer))
       start()
     }
   }, [runningTimer])
@@ -109,6 +130,10 @@ export default function TimerListScreen({ route, navigation }) {
           paddingBottom: 10
         }}>{projectName}</Text>
 
+      <Text onPress={() => stopAndUpdate(runningTimer)}>
+        {runningValid(runningTimer) ? formatTime(count) : ''}
+      </Text>
+
       <View style={styles.addButton}>
         <Button
           title='New Entry'
@@ -129,7 +154,9 @@ export default function TimerListScreen({ route, navigation }) {
             mood={moodMap(item[1].mood)}
             energy={item[1].energy}
             project={isRunning(item) ? timeString(new Date(item[1].created)) + ' - ' + item[1].status : timeSpan(item[1].created, item[1].ended)}
+            // project={timeSpan(item[1].created, item[1].ended)}
             total={isRunning(item) && runningValid(runningTimer) ? formatTime(count) : secondsToString(totalTime(item[1].created, item[1].ended))}
+            // total={secondsToString(totalTime(item[1].created, item[1].ended))}
             onPress={() => isRunning(item) ? stopAndUpdate(item) : navigation.navigate('TimerEditor', {
               project: project,
               timer: item,
@@ -141,6 +168,7 @@ export default function TimerListScreen({ route, navigation }) {
               lastscreen: pagename
             })}
           />)
+
 
         }
         }

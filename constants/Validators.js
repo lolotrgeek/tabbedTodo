@@ -8,3 +8,4 @@ export const timerValid = value => value.type === 'timer' ? true : false
 export const justtimeValid = time => typeof parseInt(time) === 'number' ? true : false 
 
 export const runningValid = validate => validate && Array.isArray(validate) && validate.length > 0 ? true : false
+export const timersValid = validate => validate && Array.isArray(validate) && validate.length > 0 ? true : false
