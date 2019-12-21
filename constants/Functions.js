@@ -43,7 +43,7 @@ export const findRunning = async timers => new Promise ((resolve, reject) => {
     found.length > 0 ? resolve(found) : reject([])
 }) 
 export const runningFind = async days => new Promise ((resolve, reject) => {
-    let found = days.map(day => day.data.map(timers => timers.filter(timer => isRunning(timer) ? timer : false)))
+    let found = days.map(day => day.data.filter(timers => isRunning(timers) ? timers : false))
     found.length > 0 ? resolve(found) : reject([])
 }) 
 // STYLE FUNCTIONS

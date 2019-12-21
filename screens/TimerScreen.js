@@ -3,10 +3,12 @@ import { Text, View } from 'react-native';
 import { Timer } from '../components/Timer';
 import { TimerStartNotes, TimerStopNotes } from '../components/TimerNotes';
 import { styles } from '../constants/Styles'
+import { findRunning } from '../constants/Functions'
 import Grid from '@material-ui/core/Grid';
 import Hashids from 'hashids'
 // import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
-import { storeItem, updateItem } from '../constants/Store'
+import { timerValid } from '../constants/Validators'
+import { storeItem, updateItem, getAll } from '../constants/Store'
 import { useCounter } from '../constants/Hooks'
 
 export default function TimerScreen({ route, navigation }) {
@@ -17,7 +19,7 @@ export default function TimerScreen({ route, navigation }) {
   let color = project[1].color
 
 
-  useEffect(() => navigation.setOptions({ title: projectName, headerStyle: {backgroundColor: color} }), [])
+  useEffect(() => navigation.setOptions({ title: projectName, headerStyle: { backgroundColor: color } }), [])
 
   // LOCAL STATE
   const [connection, setConnection] = useState()
@@ -26,7 +28,7 @@ export default function TimerScreen({ route, navigation }) {
   const [button, setButton] = useState('start')
   const [mood, setMood] = useState('')
   const [energy, setEnergy] = useState(50)
-  
+
   const initialCount = project[1].time > 0 ? project[1].time : 0
   const direction = initialCount > 0 ? true : false
   const { count, total, setCount, setTotal, start, stop } = useCounter(1000, direction)
@@ -112,6 +114,29 @@ export default function TimerScreen({ route, navigation }) {
   //   timer[1].mood = mood
   //   updateItem(timer[0], timer[1])
   // }, [mood])
+  const setEntryState = async () => {
+    try {
+      const timerEntries = await getAll(value => timerValid(value) ? true : false)
+      try {
+        const found = await findRunning(timerEntries)
+        // clear running timers
+        found.map(timer => {
+          if(timer[0] === currentTimer[0]) return;
+          timer[1].ended = new Date().toString()
+          timer[1].status = 'done'
+          updateItem(timer[0], timer[1])
+          console.log('cleared :' , found[0])
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  useEffect(() => {
+    setEntryState()
+  }, [currentTimer])
 
   const formatTime = t => {
     if (t >= 0) return new Date(t * 1000).toISOString().substr(11, 8)  // hh : mm : ss

@@ -6,3 +6,5 @@ export const timeValid = validate => typeof parseInt(validate[1].time) === 'numb
 export const timerValid = value => value.type === 'timer' ? true : false
 
 export const justtimeValid = time => typeof parseInt(time) === 'number' ? true : false 
+
+export const runningValid = validate => validate && Array.isArray(validate) && validate.length > 0 ? true : false

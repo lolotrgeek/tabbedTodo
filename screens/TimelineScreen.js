@@ -38,8 +38,8 @@ export default function TimelineScreen({ navigation }) {
       console.log(summed)
       setDaysWithTimer(summed)
       const found = await findRunning(retrieved.timers)
-      setRunningTimer(found[0])
-      setCurrentTick(elapsedTime(found[0]))
+      setRunningTimer(found)
+      setCurrentTick(elapsedTime(found))
     } catch (err) {
       console.log(err)
     }
