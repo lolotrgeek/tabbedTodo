@@ -17,7 +17,7 @@ export const totalTime = (start, end) => differenceInSeconds(new Date(end), new 
 export const timeSpan = (start, end) => timeString(new Date(start)) + ' - ' + timeString(new Date(end))
 export const totalOver = (start, end) => Math.sign(end) === -1 ? start + end : 0
 export const totalProjectTime = timers => timers.reduce((acc, timer) => acc + timer.total)
-export const sayDay = date => isToday(date) ? 'Today' : isYesterday(date) ? 'Yesterday' : date
+export const sayDay = datestring => isToday(new Date(datestring)) ? 'Today' : isYesterday(new Date(datestring)) ? 'Yesterday' : datestring
 export const formatTime = t => {
     if (t > 0) return new Date(t * 1000).toISOString().substr(11, 8)  // hh : mm : ss
     else {
@@ -107,14 +107,20 @@ export const sumProjectTimers = dayheaders => {
         day.data.map(timer => {
             // ... group timer entries by project
             if (projects.length === 0) {
+                timer[1].total = totalTime(timer[1].created, timer[1].ended)
                 projects.push({ project: timer[1].project, totals: [timer[1].total], total: timer[1].total })
             }
+            // for each project get all timer entries and sum the totals
             const match = projects.find(inProjects => inProjects.project === timer[1].project)
+            console.log('projects : ', projects)
             if (match) {
-                match.totals = [...match.totals, timer[1].total]
+                let total = totalTime(timer[1].created, timer[1].ended)
+                match.totals = [...match.totals, total]
+                console.log('match : ', match)
                 match.total = match.totals.reduce((acc, val) => acc + val) // sum the totals
             }
             else {
+                timer[1].total = totalTime(timer[1].created, timer[1].ended)
                 projects.push({ project: timer[1].project, totals: [timer[1].total], total: timer[1].total })
             }
 

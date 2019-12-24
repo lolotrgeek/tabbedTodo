@@ -62,6 +62,7 @@ export default function TimelineScreen({ navigation }) {
     stop()
     item[1].status = 'done'
     item[1].ended = new Date().toString()
+    item[1].total = total
     updateItem(item[0], item[1])
     setTotal(0)
     setCount(0)
@@ -101,6 +102,8 @@ export default function TimelineScreen({ navigation }) {
       setEntryState()
     })
     const unfocused = navigation.addListener('blur', () => {
+      console.log('attempting stop...')
+      stop()
     })
     return focused, unfocused
   }, [])
@@ -129,9 +132,9 @@ export default function TimelineScreen({ navigation }) {
     }
   }, [runningTimer])
 
-  useEffect(() => {
-    console.log(total)
-  }, [total])
+  // useEffect(() => {
+  //   console.log(total)
+  // }, [total])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -143,7 +146,9 @@ export default function TimelineScreen({ navigation }) {
         sections={daysWithTimer}
         keyExtractor={(item, index) => item + index}
         renderSectionHeader={({ section: { title } }) => {
-          return (<Text style={styles.subheader}>{sayDay(new Date(title))}</Text>)
+          // return (<Text style={styles.subheader}>{sayDay(new Date(title))}</Text>)
+          return (<Text style={styles.subheader}>{sayDay(title)}</Text>)
+          // return (<Text style={styles.subheader}>{title}</Text>)
         }}
         renderItem={({ item }) => projects.map(project => {
           if (project[0] === item.project) {

@@ -65,6 +65,7 @@ export default function TimerListScreen({ route, navigation }) {
     stop()
     item[1].status = 'done'
     item[1].ended = new Date().toString()
+    item[1].total = total
     updateItem(item[0], item[1])
     setTotal(0)
     setCount(0)
@@ -72,16 +73,24 @@ export default function TimerListScreen({ route, navigation }) {
     console.log('updated : ' , [item[0], item[1]])
   }
 
-  const startandUpdate = item => {
+  const startandUpdate = project => {
     if (runningValid(runningTimer)) {
       stopAndUpdate(runningTimer)
     }
     const hashids = new Hashids()
     let key = hashids.encode(Date.now().toString())
-    let value = item[1]
-    value.created = new Date().toString()
-    value.ended = new Date().toString()
-    value.status = 'running'
+    let value = {
+      created: new Date().toString(),
+      ended: new Date().toString(),
+      type: 'timer',
+      project: project[0],
+      status: 'running',
+      start: project[1].time,
+      stop: count,
+      total: total,
+      mood: 'good',
+      energy: 50,
+    }
     console.log('new: ', [key, value])
     storeItem(key, value)
     setCount(value.start)
@@ -96,6 +105,8 @@ export default function TimerListScreen({ route, navigation }) {
       setEntryState()
     })
     const unfocused = navigation.addListener('blur', () => {
+      console.log('attempting stop...')
+      stop()
     })
     return focused, unfocused
   }, [])
@@ -146,7 +157,7 @@ export default function TimerListScreen({ route, navigation }) {
         sections={daysWithTimer}
         keyExtractor={(item, index) => item + index}
         renderSectionHeader={({ section: { title } }) => {
-          return (<Text style={styles.subheader}>{sayDay(new Date(title))}</Text>)
+          return (<Text style={styles.subheader}>{sayDay(title)}</Text>)
         }}
         renderItem={({ item }) => {
           return (<TimerList
