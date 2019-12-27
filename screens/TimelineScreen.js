@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Text, SafeAreaView, SectionList, Button } from 'react-native';
 import { Timeline } from '../components/Timeline';
-import { getAll, storeItem, updateItem } from '../constants/Store'
-import { timeString, secondsToString, sumProjectTimers, totalTime, timeSpan, sayDay, dayHeaders, isRunning, elapsedTime, findRunning, runningFind, formatTime } from '../constants/Functions'
-import { timerValid, timersValid, runningValid } from '../constants/Validators'
+import { getAll, storeItem, updateItem, removeAll } from '../constants/Store'
+import { secondsToString, sumProjectTimers, sayDay, dayHeaders, elapsedTime, findRunning, formatTime } from '../constants/Functions'
+import { timerValid, runningValid } from '../constants/Validators'
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
 import Hashids from 'hashids'
-
 
 export default function TimelineScreen({ navigation }) {
   let pagename = 'TIMELINE'
@@ -16,6 +15,7 @@ export default function TimelineScreen({ navigation }) {
   const [dayList, setDayList] = useState([])
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
   const [runningTimer, setRunningTimer] = useState([])
+  const [runningProject, setRunningProject] = useState([])
   const [direction, setDirection] = useState(Boolean)
   const { count, total, setCount, setTotal, start, stop } = useCounter(1000, direction)
 
@@ -39,23 +39,12 @@ export default function TimelineScreen({ navigation }) {
       const days = await dayHeaders(sortedTimers)
       setDayList(days)
       const summed = sumProjectTimers(days)
-      console.log(summed)
+      // console.log(summed)
       setDaysWithTimer(summed)
     } catch (err) {
       console.log(err)
     }
 
-  }
-
-  const foundRunning = async () => {
-    try {
-      let found = await findRunning(timers)
-      console.log('found: ', found)
-      setRunningTimer(found)
-    }
-    catch (error) {
-      console.log(error)
-    }
   }
 
   const stopAndUpdate = item => {
@@ -66,8 +55,11 @@ export default function TimelineScreen({ navigation }) {
     updateItem(item[0], item[1])
     setTotal(0)
     setCount(0)
+    setDirection(Boolean)
     setRunningTimer([])
-    console.log('updated : ' , [item[0], item[1]])
+    setRunningProject([])
+    console.log('updated : ', [item[0], item[1]])
+    setEntryState()
   }
 
   const startandUpdate = project => {
@@ -90,9 +82,10 @@ export default function TimelineScreen({ navigation }) {
     }
     console.log('new: ', [key, value])
     storeItem(key, value)
+    setDirection(value.start > 0 ? true : false)
     setCount(value.start)
     setRunningTimer([key, value])
-    start()
+    setRunningProject(project)
   }
 
   useEffect(() => {
@@ -100,6 +93,9 @@ export default function TimelineScreen({ navigation }) {
     const focused = navigation.addListener('focus', () => {
       //console.log('FOCUS - ' + pagename)
       setEntryState()
+      if (runningTimer && runningTimer !== undefined && Array.isArray(runningTimer) && runningTimer.length === 2) {
+        startandUpdate()
+      }
     })
     const unfocused = navigation.addListener('blur', () => {
       console.log('attempting stop...')
@@ -111,34 +107,50 @@ export default function TimelineScreen({ navigation }) {
   useEffect(() => {
     if (timers && Array.isArray(timers) && timers.length > 0) {
       // let found = timers.filter(timer => timer[1].status === 'running' ? true : false)
-      const found = timers.filter(timer => {
+      const foundTimer = timers.filter(timer => {
         if (timer[1].status === 'running') {
           return true
         } else {
           return false
         }
       })
-      console.log('found: ', found)
-      setRunningTimer(found[0])
+      
+      if(foundTimer && start.length > 0 || start > 0) {
+        console.log('foundTimer: ', foundTimer)
+        setRunningTimer(foundTimer[0])
+        // setDirection(foundTimer[1].start > 0 ? true : false)
+        setCount(foundTimer[1].start)
+      } else {
+        console.log('foundTimer : no valid : ', foundTimer )
+      }
     }
   }, [timers])
 
   useEffect(() => {
     if (runningTimer && runningTimer !== undefined && Array.isArray(runningTimer) && runningTimer.length === 2) {
-      console.log('running : ', runningTimer)
-      setDirection(runningTimer[1].start > 0 ? true : false)
-      setCount(elapsedTime(runningTimer))
+      // console.log(runningTimer)
       start()
     }
   }, [runningTimer])
 
-  // useEffect(() => {
-  //   console.log(total)
-  // }, [total])
+  useEffect(() => {
+    let startState = {
+      direction: direction,
+      runningProject: runningProject,
+      runningTimer: runningTimer,
+      count: count,
+      total: total
+    }
+    console.log('startState : ', runningTimer.length > 0 ? startState : 'no valid running timer')
+  }, [runningProject])
 
   return (
     <SafeAreaView style={styles.container}>
+
       <Text style={styles.subheader}> {runningValid(runningTimer) ? 'Tracking' : ''}</Text>
+      <Text onPress={() => stopAndUpdate(runningTimer)}>
+        {runningValid(runningProject) ? runningProject[1].name : ''}
+      </Text>
       <Text onPress={() => stopAndUpdate(runningTimer)}>
         {runningValid(runningTimer) ? formatTime(count) : ''}
       </Text>
@@ -156,8 +168,8 @@ export default function TimelineScreen({ navigation }) {
               key={item.project}
               color={project[1].color}
               project={project[1].name}
-              // total={secondsToString(item.total)}
-              total={runningValid(runningTimer) && item.project === runningTimer[1].project ? secondsToString(item.total + total) : secondsToString(item.total)}
+              total={secondsToString(item.total)}
+              // total={runningValid(runningTimer) && item.project === runningTimer[1].project ? secondsToString(item.total + total) : secondsToString(item.total)}
               onPress={() => navigation.navigate('TimerList', { project: project, lastscreen: 'Timeline' })}
               onStart={() => startandUpdate(project)}
             />)

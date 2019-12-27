@@ -47,6 +47,8 @@ export const runningFind = async days => new Promise((resolve, reject) => {
     found.length > 0 ? resolve(found) : reject([])
 })
 
+
+
 // STYLE FUNCTIONS
 export const moodMap = mood => {
     if (mood === '') return { name: 'times', color: 'black' }
@@ -112,11 +114,11 @@ export const sumProjectTimers = dayheaders => {
             }
             // for each project get all timer entries and sum the totals
             const match = projects.find(inProjects => inProjects.project === timer[1].project)
-            console.log('projects : ', projects)
+            // console.log('projects : ', projects)
             if (match) {
                 let total = totalTime(timer[1].created, timer[1].ended)
                 match.totals = [...match.totals, total]
-                console.log('match : ', match)
+                // console.log('match : ', match)
                 match.total = match.totals.reduce((acc, val) => acc + val) // sum the totals
             }
             else {

@@ -122,6 +122,13 @@ export default function TimerListScreen({ route, navigation }) {
       console.log('running : ', runningTimer)
       setDirection(runningTimer[1].start > 0 ? true : false)
       setCount(elapsedTime(runningTimer))
+      let startState = {
+        direction : direction,
+        runningTimer: runningTimer,
+        count : count,
+        total : total
+      }
+      console.log('startState : ', startState)
       start()
     }
   }, [runningTimer])

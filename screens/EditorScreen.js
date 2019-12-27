@@ -43,7 +43,7 @@ export default function EditorScreen({ route, navigation }) {
   }
 
   useEffect(() => handleRoutedParams(), [])
-  useEffect(() => navigation.setOptions({ title: name, headerStyle: {backgroundColor: color} }), [color])
+  useEffect(() => navigation.setOptions({ title: name, headerStyle: { backgroundColor: color } }), [color])
 
   const addProject = (NEWKEY, NEWVALUE) => {
     if (name.length > 0) {
@@ -74,7 +74,12 @@ export default function EditorScreen({ route, navigation }) {
     else {
       // REFACTOR AS A FUNCTION
       let newroute
-      let value = { created: created, type: 'project', name: name, color: color, time: time }
+      let value = {
+        created: created, type: 'project',
+        name: name,
+        color: color,
+        time: typeof time === 'string' && time.length > 0 ? parseInt(time) : time
+      }
       if (key) {
         console.log('Updating Project')
         updateItem(key, value)
