@@ -8,7 +8,6 @@ import React, { useState, useCallback, useRef } from 'react';
  */
 export function useCounter(ms, countdown) {
   const [count, setCount] = useState()
-  const [total, setTotal] = useState(0)
   const intervalRef = useRef(null);
 
   const start = useCallback(() => {
@@ -19,14 +18,12 @@ export function useCounter(ms, countdown) {
     if (countdown) {
       intervalRef.current = setInterval(() => {
         setCount(c => c - 1)
-        setTotal(t => t + 1)
       }, ms)
 
     }
     else {
       intervalRef.current = setInterval(() => {
         setCount(c => c + 1)
-        setTotal(t => t + 1)
       }, ms)
     }
   }, []);
@@ -41,5 +38,5 @@ export function useCounter(ms, countdown) {
 
   const reset = useCallback(() => setCount(0), []);
 
-  return { count, total, setCount, setTotal, start, stop, reset };
+  return { count, setCount, start, stop, reset };
 }

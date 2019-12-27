@@ -6,7 +6,7 @@ import { DatePicker, TimePicker } from '../components/DatePickers'
 import { addMinutes } from 'date-fns'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { timerValid, createdValid } from '../constants/Validators'
-import { timeRules } from '../constants/Functions'
+import { timeRules, isRunning } from '../constants/Functions'
 import { styles } from '../constants/Styles'
 
 export default function TimerEditorScreen({ route, navigation }) {
@@ -43,7 +43,7 @@ export default function TimerEditorScreen({ route, navigation }) {
             setEnergy(timer[1].energy)
             if (createdValid) {
                 setCreated(timer[1].created)
-                setEnded(timer[1].ended)
+                setEnded(isRunning(timer) ? 'tracking' : timer[1].ended)
             }
         }
     }
@@ -112,9 +112,10 @@ export default function TimerEditorScreen({ route, navigation }) {
                     <FontAwesome name="chevron-right" style={{ fontSize: 20, marginLeft: 10 }} />
                 </TouchableOpacity>
             </View>
-
+        
             <View style={styles.textInputContainer}>
                 <Text style={styles.sideTitle}>End </Text>
+                
                 <TouchableOpacity onPress={() => { setEnded(time => addMinutes(new Date(time), -5)) }}>
                     <FontAwesome name="chevron-left" style={{ fontSize: 20, marginRight: 10 }} />
                 </TouchableOpacity>

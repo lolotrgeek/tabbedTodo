@@ -2,22 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { Text, SafeAreaView, SectionList, Button } from 'react-native';
 import { Timeline } from '../components/Timeline';
 import { getAll, storeItem, updateItem, removeAll } from '../constants/Store'
-import { secondsToString, sumProjectTimers, sayDay, dayHeaders, elapsedTime, findRunning, formatTime } from '../constants/Functions'
-import { timerValid, runningValid } from '../constants/Validators'
+import { secondsToString, sumProjectTimers, sayDay, dayHeaders, elapsedTime, findRunning, formatTime, isRunning, totalTime } from '../constants/Functions'
+import { timerValid, runningValid, timersValid } from '../constants/Validators'
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
 import Hashids from 'hashids'
 
 export default function TimelineScreen({ navigation }) {
   let pagename = 'TIMELINE'
+
   const [timers, setTimers] = useState([]); // state of timers list
   const [projects, setProjects] = useState([]); // state of timers list
   const [dayList, setDayList] = useState([])
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
   const [runningTimer, setRunningTimer] = useState([])
   const [runningProject, setRunningProject] = useState([])
-  const [direction, setDirection] = useState(Boolean)
-  const { count, total, setCount, setTotal, start, stop } = useCounter(1000, direction)
+  const { count, setCount, start, stop } = useCounter(1000, false)
 
   const getEntries = () => new Promise(async (resolve, reject) => {
     try {
@@ -28,8 +28,6 @@ export default function TimelineScreen({ navigation }) {
       reject(error)
     }
   })
-
-
   const setEntryState = async () => {
     const retrieved = await getEntries()
     setTimers(retrieved.timers)
@@ -39,7 +37,7 @@ export default function TimelineScreen({ navigation }) {
       const days = await dayHeaders(sortedTimers)
       setDayList(days)
       const summed = sumProjectTimers(days)
-      // console.log(summed)
+      console.log('List Items : ', summed)
       setDaysWithTimer(summed)
     } catch (err) {
       console.log(err)
@@ -51,13 +49,12 @@ export default function TimelineScreen({ navigation }) {
     stop()
     item[1].status = 'done'
     item[1].ended = new Date().toString()
-    item[1].total = total
+    item[1].total = count
     updateItem(item[0], item[1])
-    setTotal(0)
     setCount(0)
-    setDirection(Boolean)
     setRunningTimer([])
     setRunningProject([])
+    console.log('Total Time : ', totalTime(item[1].created))
     console.log('updated : ', [item[0], item[1]])
     setEntryState()
   }
@@ -74,79 +71,72 @@ export default function TimelineScreen({ navigation }) {
       type: 'timer',
       project: project[0],
       status: 'running',
-      start: project[1].time,
-      stop: count,
-      total: total,
+      total: 0,
       mood: 'good',
       energy: 50,
     }
     console.log('new: ', [key, value])
     storeItem(key, value)
-    setDirection(value.start > 0 ? true : false)
-    setCount(value.start)
-    setRunningTimer([key, value])
+    // setEntryState()
+    setCount(0)
     setRunningProject(project)
+    setRunningTimer([key, value])
   }
 
   useEffect(() => {
     setEntryState()
+  }, [])
+
+  useEffect(() => {
     const focused = navigation.addListener('focus', () => {
       //console.log('FOCUS - ' + pagename)
       setEntryState()
-      if (runningTimer && runningTimer !== undefined && Array.isArray(runningTimer) && runningTimer.length === 2) {
-        startandUpdate()
-      }
     })
     const unfocused = navigation.addListener('blur', () => {
       console.log('attempting stop...')
+      setRunningProject([])
+      setRunningTimer([])
       stop()
     })
     return focused, unfocused
   }, [])
 
   useEffect(() => {
-    if (timers && Array.isArray(timers) && timers.length > 0) {
-      // let found = timers.filter(timer => timer[1].status === 'running' ? true : false)
-      const foundTimer = timers.filter(timer => {
-        if (timer[1].status === 'running') {
-          return true
-        } else {
-          return false
-        }
-      })
-      
-      if(foundTimer && start.length > 0 || start > 0) {
-        console.log('foundTimer: ', foundTimer)
-        setRunningTimer(foundTimer[0])
-        // setDirection(foundTimer[1].start > 0 ? true : false)
-        setCount(foundTimer[1].start)
-      } else {
-        console.log('foundTimer : no valid : ', foundTimer )
+    if (timersValid(timers)) {
+      const foundRunning = findRunning(timers)
+      if (runningValid(foundRunning)) {
+        setRunningTimer(foundRunning)
+        setCount(elapsedTime(foundRunning[1].created))
       }
     }
   }, [timers])
 
   useEffect(() => {
-    if (runningTimer && runningTimer !== undefined && Array.isArray(runningTimer) && runningTimer.length === 2) {
-      // console.log(runningTimer)
+    if (timersValid(projects) && runningValid(runningTimer)) {
+      projects.map(project => {
+        if (runningTimer[1].project === project[0]) {
+          console.log('Found Running Project')
+          setRunningProject(project)
+        }
+      })
+    }
+  }, [runningTimer, projects])
+
+  useEffect(() => {
+    if (runningTimer && Array.isArray(runningTimer) && runningTimer.length === 2) {
+      console.log('runningTimer: ', runningTimer)
       start()
     }
   }, [runningTimer])
 
-  useEffect(() => {
-    let startState = {
-      direction: direction,
-      runningProject: runningProject,
-      runningTimer: runningTimer,
-      count: count,
-      total: total
-    }
-    console.log('startState : ', runningTimer.length > 0 ? startState : 'no valid running timer')
-  }, [runningProject])
+  // useEffect(() => {
+  //   if (runningValid(runningTimer)) {
+  //     console.log('ticked : ', count, 'calculated : ', elapsedTime(runningTimer[1].created))
+  //   }
+  // }, [count])
 
   return (
     <SafeAreaView style={styles.container}>
-
       <Text style={styles.subheader}> {runningValid(runningTimer) ? 'Tracking' : ''}</Text>
       <Text onPress={() => stopAndUpdate(runningTimer)}>
         {runningValid(runningProject) ? runningProject[1].name : ''}
@@ -158,19 +148,21 @@ export default function TimelineScreen({ navigation }) {
         sections={daysWithTimer}
         keyExtractor={(item, index) => item + index}
         renderSectionHeader={({ section: { title } }) => {
-          // return (<Text style={styles.subheader}>{sayDay(new Date(title))}</Text>)
           return (<Text style={styles.subheader}>{sayDay(title)}</Text>)
-          // return (<Text style={styles.subheader}>{title}</Text>)
         }}
         renderItem={({ item }) => projects.map(project => {
+          // if (item.status === 'running') return ('')
           if (project[0] === item.project) {
             return (<Timeline
               key={item.project}
               color={project[1].color}
               project={project[1].name}
-              total={secondsToString(item.total)}
-              // total={runningValid(runningTimer) && item.project === runningTimer[1].project ? secondsToString(item.total + total) : secondsToString(item.total)}
-              onPress={() => navigation.navigate('TimerList', { project: project, lastscreen: 'Timeline' })}
+              total={typeof item.total === 'number' ? secondsToString(item.total) : item.total}
+              onPress={() => navigation.navigate('TimerList', {
+                project: project,
+                running: { project: runningProject, timer: runningTimer },
+                lastscreen: 'Timeline'
+              })}
               onStart={() => startandUpdate(project)}
             />)
           }

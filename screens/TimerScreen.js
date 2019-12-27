@@ -1,19 +1,16 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View } from 'react-native';
 import { Timer } from '../components/Timer';
 import { TimerStartNotes, TimerStopNotes } from '../components/TimerNotes';
 import { styles } from '../constants/Styles'
-import { findRunning } from '../constants/Functions'
-import Grid from '@material-ui/core/Grid';
+import { findRunning, elapsedTime, formatTime } from '../constants/Functions'
 import Hashids from 'hashids'
-// import { startSocketIO, emitTickSocketIO, emitEntrySocketIO } from '../constants/Socket';
 import { timerValid } from '../constants/Validators'
 import { storeItem, updateItem, getAll } from '../constants/Store'
 import { useCounter } from '../constants/Hooks'
-import { arrayIncludes } from '@material-ui/pickers/_helpers/utils';
 
 export default function TimerScreen({ route, navigation }) {
-  const { project, run } = route.params
+  const { project, timer, run } = route.params
   let pagename = 'TimerScreen'
   let projectKey = project[0]
   let projectName = project[1].name
@@ -23,30 +20,19 @@ export default function TimerScreen({ route, navigation }) {
   useEffect(() => navigation.setOptions({ title: projectName, headerStyle: { backgroundColor: color } }), [])
 
   // LOCAL STATE
-  const [connection, setConnection] = useState()
   const [currentTimer, setCurrentTimer] = useState('')
   const [created, setCreated] = useState('')
   const [button, setButton] = useState('start')
-  const [mood, setMood] = useState('')
-  const [energy, setEnergy] = useState(50)
+  const [mood, setMood] = useState(timer ? timer[1].mood : '')
+  const [energy, setEnergy] = useState(timer? timer[1].energy : 50)
 
-  const initialCount = project[1].time > 0 ? project[1].time : 0
-  const direction = initialCount > 0 ? true : false
-  const { count, total, setCount, setTotal, start, stop } = useCounter(1000, direction)
-  useEffect(() => setCount(initialCount), [])
-
-  // useEffect(() => {
-  //   startSocketIO()
-  //   return startSocketIO()
-  // }, [])
-
-  // useEffect(() => {
-  //   emitEntrySocketIO(currentTimer)
-  // },[currentTimer])
-
-  // useEffect(() => {
-  //   emitTickSocketIO([currentTimer[0], count])
-  // },[count])
+  const { count, setCount, start, stop } = useCounter(1000, false)
+  useEffect(() => {
+    if(timer[1].status === 'running') {
+      setCount(elapsedTime(timer))
+    }
+    setCount(initialCount)
+  }, [])
 
   const addTimer = () => {
     const NEWVALUE = {
@@ -143,20 +129,6 @@ export default function TimerScreen({ route, navigation }) {
     setEntryState()
   }, [currentTimer])
 
-  const formatTime = t => {
-    if (t >= 0) return new Date(t * 1000).toISOString().substr(11, 8)  // hh : mm : ss
-    else {
-      t = Math.abs(t)
-      t = t.toString()
-      if (t.length === 0) return '00:00:00'
-      if (t.length === 1) return '-00:00:0' + t.charAt(0)
-      if (t.length === 2) return '-00:00:' + t.charAt(0) + t.charAt(1)
-      if (t.length === 3) return '-00:0' + t.charAt(0) + ':' + t.charAt(1) + t.charAt(2)
-      if (t.length === 4) return '-00:' + t.charAt(0) + t.charAt(1) + ':' + t.charAt(2) + t.charAt(3)
-      if (t.length === 5) return '-0' + t.charAt(0) + ':' + t.charAt(1) + t.charAt(2) + ':' + t.charAt(3) + t.charAt(4)
-      if (t.length > 5) return '-' + t.charAt(0) + t.charAt(1) + ':' + t.charAt(2) + t.charAt(3) + ':' + t.charAt(4) + t.charAt(5)
-    }
-  }
 
   // TIMER VIEW
   return (
@@ -167,12 +139,9 @@ export default function TimerScreen({ route, navigation }) {
         color: project[1].color,
         paddingBottom: 10
       }}>{projectName}</Text>
-      {/* <Text style={styles.subheader}>{initialCount} </Text>
-      <Text >{projectKey} </Text>
-      <Text> Total: {total} </Text> */}
       <Timer
         start={() => {
-          // start(1000, initialCount, initialCount > 0 ? true : false)
+          
           start()
           addTimer()
           setButton('stop')
@@ -180,7 +149,6 @@ export default function TimerScreen({ route, navigation }) {
         stop={() => {
           stop()
           updateTimer(currentTimer[0])
-          setTotal(0)
           setCount(initialCount)
           setButton('start')
         }}

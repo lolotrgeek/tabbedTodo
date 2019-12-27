@@ -20,7 +20,6 @@ export default function EditorScreen({ route, navigation }) {
   const [name, setName] = useState('');
   const [color, setColor] = useState('');
   const [time, setTime] = useState('')
-  // const [showtime, setShowTime] = useState([])
 
   const handleRoutedParams = () => {
     if (projectValid(project)) {
@@ -106,25 +105,19 @@ export default function EditorScreen({ route, navigation }) {
     }
   }
 
-  const formatTime = t => {
-    if (typeof t !== 'string') return false
-    if (t.length === 0) return '00 : 00 : 00'
-    if (t.length === 1) return '00 : 00 : 0' + t.charAt(0)
-    if (t.length === 2) return '00 : 00 : ' + t.charAt(0) + t.charAt(1)
-    if (t.length === 3) return '00 : 0' + t.charAt(0) + ' : ' + t.charAt(1) + t.charAt(2)
-    if (t.length === 4) return '00 : ' + t.charAt(0) + t.charAt(1) + ' : ' + t.charAt(2) + t.charAt(3)
-    if (t.length === 5) return '0' + t.charAt(0) + ' : ' + t.charAt(1) + t.charAt(2) + ' : ' + t.charAt(3) + t.charAt(4)
-    if (t.length > 5) return t.charAt(0) + t.charAt(1) + ' : ' + t.charAt(2) + t.charAt(3) + ' : ' + t.charAt(4) + t.charAt(5)
-  }
+  // const formatTime = t => {
+  //   if (typeof t !== 'string') return false
+  //   if (t.length === 0) return '00 : 00 : 00'
+  //   if (t.length === 1) return '00 : 00 : 0' + t.charAt(0)
+  //   if (t.length === 2) return '00 : 00 : ' + t.charAt(0) + t.charAt(1)
+  //   if (t.length === 3) return '00 : 0' + t.charAt(0) + ' : ' + t.charAt(1) + t.charAt(2)
+  //   if (t.length === 4) return '00 : ' + t.charAt(0) + t.charAt(1) + ' : ' + t.charAt(2) + t.charAt(3)
+  //   if (t.length === 5) return '0' + t.charAt(0) + ' : ' + t.charAt(1) + t.charAt(2) + ' : ' + t.charAt(3) + t.charAt(4)
+  //   if (t.length > 5) return t.charAt(0) + t.charAt(1) + ' : ' + t.charAt(2) + t.charAt(3) + ' : ' + t.charAt(4) + t.charAt(5)
+  // }
 
   return (
     <View style={styles.container}>
-      {/* <Text style={{
-        marginTop: '5%',
-        fontSize: 40,
-        color: color,
-        paddingBottom: 10
-      }}>{name}</Text> */}
       <View style={styles.textInputContainer}>
         <TextInput
           style={{
@@ -152,9 +145,9 @@ export default function EditorScreen({ route, navigation }) {
           onChangeComplete={handleSelectedColor}
         />
       </View>
-      <Text style={{ fontSize: 20 }}>{formatTime(time)}</Text>
+      {/* <Text style={{ fontSize: 20 }}>{formatTime(time)}</Text> */}
 
-      <NumPad
+      {/* <NumPad
         onOne={() => { setTime(time + '1'); console.log(time) }}
         onTwo={() => { setTime(time + '2'); console.log(time) }}
         onThree={() => { setTime(time + '3'); console.log(time) }}
@@ -166,7 +159,7 @@ export default function EditorScreen({ route, navigation }) {
         onNine={() => { setTime(time + '9'); console.log(time) }}
         onZero={() => { setTime(time + '0'); console.log(time) }}
         onDel={() => { setTime(time.substring(0, time.length - 1)); console.log(time.substring(0, time.length - 1)) }}
-      />
+      /> */}
       <View style={styles.doneButton}>
         <Button title="done" style={{ fontSize: 60 }} onPress={() => handleComplete()} />
 

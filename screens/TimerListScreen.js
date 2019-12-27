@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Text, View, SafeAreaView, SectionList } from 'react-native';
 import { getAll, updateItem, storeItem } from '../constants/Store'
 import { TimerList } from '../components/TimerList';
-import { timerValid, runningValid, justtimeValid } from '../constants/Validators'
+import { timerValid, runningValid, timersValid } from '../constants/Validators'
 import { timeString, secondsToString, totalTime, timeSpan, sayDay, dayHeaders, moodMap, isRunning, elapsedTime, findRunning, runningFind, formatTime } from '../constants/Functions'
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
@@ -10,17 +10,19 @@ import Hashids from 'hashids'
 
 export default function TimerListScreen({ route, navigation }) {
   const pagename = 'TimerList'
-  const { project, timer } = route.params
+  const { project, running, lastscreen } = route.params
   let projectKey = project[0]
   let projectName = project[1].name
   let color = project[1].color
 
   useEffect(() => navigation.setOptions({ title: projectName, headerStyle: { backgroundColor: color } }), [])
 
+  const [timers, setTimers] = useState([])
   const [daysWithTimer, setDaysWithTimer] = useState([]); // display the timers within each day
-  const [runningTimer, setRunningTimer] = useState([])
-  const [direction, setDirection] = useState(true)
-  const { count, total, setCount, setTotal, start, stop } = useCounter(1000, direction)
+  const [runningProject, setRunningProject] = useState(runningValid(running) ? running.project : [])
+  const [runningTimer, setRunningTimer] = useState(runningValid(running) ? running.timer : [])
+
+  const { count, setCount, start, stop } = useCounter(1000, false)
 
 
   // PAGE FUNCTIONS
@@ -36,6 +38,7 @@ export default function TimerListScreen({ route, navigation }) {
   const setEntryState = async () => {
     try {
       const retrieved = await getEntries()
+      setTimers(retrieved.timers)
       try {
         const projectTimers = retrieved.timers.filter(timer => timer[1].project === project[0] ? true : false)
         const sortedTimers = projectTimers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
@@ -50,29 +53,18 @@ export default function TimerListScreen({ route, navigation }) {
     }
   }
 
-  const foundRunning = async () => {
-    try {
-      let found = await runningFind(daysWithTimer)
-      console.log('found: ', found[0][0])
-      setRunningTimer(found[0][0])
-    }
-    catch (error) {
-      console.log(error)
-    }
-  }
-
   const stopAndUpdate = item => {
     stop()
     item[1].status = 'done'
     item[1].ended = new Date().toString()
-    item[1].total = total
+    item[1].total = count
     updateItem(item[0], item[1])
-    setTotal(0)
     setCount(0)
     setRunningTimer([])
-    console.log('updated : ' , [item[0], item[1]])
+    setRunningProject([])
+    console.log('updated : ', [item[0], item[1]])
+    setEntryState()
   }
-
   const startandUpdate = project => {
     if (runningValid(runningTimer)) {
       stopAndUpdate(runningTimer)
@@ -85,17 +77,16 @@ export default function TimerListScreen({ route, navigation }) {
       type: 'timer',
       project: project[0],
       status: 'running',
-      start: project[1].time,
-      stop: count,
-      total: total,
+      total: 0,
       mood: 'good',
       energy: 50,
     }
     console.log('new: ', [key, value])
     storeItem(key, value)
-    setCount(value.start)
+    setEntryState()
+    setCount(0)
+    setRunningProject(project)
     setRunningTimer([key, value])
-    start()
   }
 
   useEffect(() => {
@@ -112,35 +103,40 @@ export default function TimerListScreen({ route, navigation }) {
   }, [])
 
   useEffect(() => {
-    if (daysWithTimer && Array.isArray(daysWithTimer) && daysWithTimer.length > 0) {
-      foundRunning(daysWithTimer)
+    if (timersValid(timers)) {
+      const foundRunning = findRunning(timers)
+      if (runningValid(foundRunning)) {
+        setRunningTimer(foundRunning)
+        setCount(elapsedTime(foundRunning[1].created))
+      }
     }
-  }, [daysWithTimer])
+  }, [timers])
 
   useEffect(() => {
-    if (runningTimer && Array.isArray(runningTimer) && runningTimer.length > 0) {
-      console.log('running : ', runningTimer)
-      setDirection(runningTimer[1].start > 0 ? true : false)
-      setCount(elapsedTime(runningTimer))
-      let startState = {
-        direction : direction,
-        runningTimer: runningTimer,
-        count : count,
-        total : total
+    if (running.project && runningValid(runningTimer)) {
+      if (runningTimer[1].project === running.project[0]) {
+        console.log('Found Running Project')
+        setRunningProject(running.project)
       }
-      console.log('startState : ', startState)
-      start()
     }
   }, [runningTimer])
 
   useEffect(() => {
-    console.log(count)
-  }, [count])
-
-
+    if (runningTimer && Array.isArray(runningTimer) && runningTimer.length === 2) {
+      console.log('runningTimer: ', runningTimer)
+      start()
+    }
+  }, [runningTimer])
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.subheader}> {runningValid(runningTimer) ? 'Tracking' : ''}</Text>
+      <Text onPress={() => stopAndUpdate(runningTimer)}>
+        {runningValid(runningProject) ? runningProject[1].name : ''}
+      </Text>
+      <Text onPress={() => stopAndUpdate(runningTimer)}>
+        {runningValid(runningTimer) ? formatTime(count) : ''}
+      </Text>
       <Text
         onPress={() => navigation.navigate('Edit', { project: project })}
         style={{
@@ -150,14 +146,10 @@ export default function TimerListScreen({ route, navigation }) {
           paddingBottom: 10
         }}>{projectName}</Text>
 
-      <Text onPress={() => stopAndUpdate(runningTimer)}>
-        {runningValid(runningTimer) ? formatTime(count) : ''}
-      </Text>
-
       <View style={styles.addButton}>
         <Button
           title='New Entry'
-          onPress={() => navigation.navigate('Timer', { project: project })}
+          onPress={() => startandUpdate(project)}
         />
       </View>
       <SectionList style={{ width: '100%' }}
@@ -174,22 +166,20 @@ export default function TimerListScreen({ route, navigation }) {
             mood={moodMap(item[1].mood)}
             energy={item[1].energy}
             project={isRunning(item) ? timeString(new Date(item[1].created)) + ' - ' + item[1].status : timeSpan(item[1].created, item[1].ended)}
-            // project={timeSpan(item[1].created, item[1].ended)}
             total={isRunning(item) && runningValid(runningTimer) ? formatTime(count) : secondsToString(totalTime(item[1].created, item[1].ended))}
-            // total={secondsToString(totalTime(item[1].created, item[1].ended))}
-            onPress={() => isRunning(item) ? stopAndUpdate(item) : navigation.navigate('TimerEditor', {
+            onPress={() => navigation.navigate('TimerEditor', {
               project: project,
               timer: item,
-              lastscreen: pagename
+              running: { project: runningProject, timer: runningTimer },
+              lastscreen: pagename,
             })}
-            onEdit={() => isRunning(item) ? stopAndUpdate(item) : navigation.navigate('TimerEditor', {
+            onEdit={() => navigation.navigate('TimerEditor', {
               project: project,
               timer: item,
+              running: { project: runningProject, timer: runningTimer },
               lastscreen: pagename
             })}
           />)
-
-
         }
         }
       />

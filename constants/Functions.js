@@ -19,7 +19,7 @@ export const totalOver = (start, end) => Math.sign(end) === -1 ? start + end : 0
 export const totalProjectTime = timers => timers.reduce((acc, timer) => acc + timer.total)
 export const sayDay = datestring => isToday(new Date(datestring)) ? 'Today' : isYesterday(new Date(datestring)) ? 'Yesterday' : datestring
 export const formatTime = t => {
-    if (t > 0) return new Date(t * 1000).toISOString().substr(11, 8)  // hh : mm : ss
+    if (t >= 0) return new Date(t * 1000).toISOString().substr(11, 8)  // hh : mm : ss
     else {
         t = Math.abs(t)
         t = t.toString()
@@ -33,20 +33,44 @@ export const formatTime = t => {
     }
 }
 
-
 // TIMER FUNCTIONS - WIP
 export const sayRunning = timer => timer[1].ended === timer[1].created ? 'running' : timer[1].ended
 export const isRunning = timer => timer[1].status === 'running' ? true : false
-export const elapsedTime = timer => differenceInSeconds(new Date(), new Date(timer[1].created))
-export const findRunning = async timers => new Promise((resolve, reject) => {
-    let found = timers.filter(timer => isRunning(timer) ? timer : false)
-    found.length > 0 ? resolve(found) : reject([])
-})
+/**
+ * Get amount of time since entry was created
+ * @param {string} created datestring when entry was created
+ */
+export const elapsedTime = created => differenceInSeconds(new Date(), new Date(created))
+// export const findRunning = async timers => new Promise((resolve, reject) => {
+//     let found = timers.filter(timer => isRunning(timer) ? timer : false)
+//     found.length > 0 ? resolve(found) : reject([])
+// })
 export const runningFind = async days => new Promise((resolve, reject) => {
     let found = days.map(day => day.data.filter(timers => isRunning(timers) ? timers : false))
     found.length > 0 ? resolve(found) : reject([])
 })
-
+export const findRunning = timers => {
+    const foundRunning = timers.filter(timer => {
+        if (timer[1].status === 'running') {
+            return true
+        } else {
+            return false
+        }
+    })
+    if (foundRunning && foundRunning.length === 1) {
+        console.log('foundRunning : ', foundRunning[0])
+        return foundRunning[0]
+    }
+    else if (foundRunning.length > 1) {
+        console.log('foundRunning - multiple running :', foundRunning)
+        foundRunning.map(found => found)
+        return []
+    }
+    else {
+        console.log('foundRunning - no valid : ', foundRunning)
+        return []
+    }
+}
 
 
 // STYLE FUNCTIONS
@@ -75,7 +99,7 @@ export const dayHeaders = timerlist => new Promise((resolve, reject) => {
     timerdays.forEach(timerday => {
         // first value if output is empty is always unique
         if (output.length === 0) {
-            //console.log(pagename + '- FIRST OUTPUT ENTRY :', timerday)
+            // console.log('FIRST OUTPUT ENTRY :', timerday)
             output.push({ title: timerday.day, data: [timerday.timer] })
         }
         else {
@@ -92,7 +116,7 @@ export const dayHeaders = timerlist => new Promise((resolve, reject) => {
             }
         }
     })
-    //console.log(pagename + '- DAYHEADERS - OUTPUT', output)
+    // console.log('- DAYHEADERS - OUTPUT', output)
     if (output.length > 0) { resolve(output) }
     else { reject([]) }
 })
@@ -109,21 +133,24 @@ export const sumProjectTimers = dayheaders => {
         day.data.map(timer => {
             // ... group timer entries by project
             if (projects.length === 0) {
-                timer[1].total = totalTime(timer[1].created, timer[1].ended)
-                projects.push({ project: timer[1].project, totals: [timer[1].total], total: timer[1].total })
+                // console.log('ticked : ',  timer[1].total, 'calculated : ', totalTime(timer[1].created, timer[1].ended))
+                let total = totalTime(timer[1].created, timer[1].ended)
+                projects.push({ project: timer[1].project, totals: [total], total: timer[1].total, status: timer[1].status })
             }
             // for each project get all timer entries and sum the totals
             const match = projects.find(inProjects => inProjects.project === timer[1].project)
             // console.log('projects : ', projects)
             if (match) {
+                // console.log('ticked : ',  timer[1].total, 'calculated : ', totalTime(timer[1].created, timer[1].ended))
                 let total = totalTime(timer[1].created, timer[1].ended)
                 match.totals = [...match.totals, total]
-                // console.log('match : ', match)
+                // console.log('timer :', timer, ' matches :' , match)
                 match.total = match.totals.reduce((acc, val) => acc + val) // sum the totals
             }
             else {
-                timer[1].total = totalTime(timer[1].created, timer[1].ended)
-                projects.push({ project: timer[1].project, totals: [timer[1].total], total: timer[1].total })
+                // console.log('ticked : ',  timer[1].total, 'calculated : ', totalTime(timer[1].created, timer[1].ended))
+                let total = totalTime(timer[1].created, timer[1].ended)
+                projects.push({ project: timer[1].project, totals: [total], total: timer[1].total, status: timer[1].status })
             }
 
         })
