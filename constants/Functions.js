@@ -1,4 +1,4 @@
-import { isDate, differenceInSeconds, compareAsc, isToday, isYesterday } from 'date-fns'
+import { isDate, differenceInSeconds, differenceInDays, compareAsc, isToday, isYesterday, subSeconds, addSeconds, endOfDay, addMinutes } from 'date-fns'
 
 // TIME FUNCTIONS
 export const dateCreator = () => {
@@ -72,6 +72,36 @@ export const findRunning = timers => {
     }
 }
 
+/**
+ * 
+ * @param {*} created 
+ * @param {*} stopped
+ */
+export const newEntryPerDay = (created, stopped) => {
+    if(!stopped) stopped = new Date()
+    const secondsinday = 86400
+    if(simpleDate(stopped) !== simpleDate(created)) {
+        let totalSeconds = differenceInSeconds(stopped, created)
+        // get whole days
+        if (totalSeconds > secondsinday) {
+            let daysfromseconds = totalSeconds / secondsinday
+            let start = created
+            while (daysfromseconds > 1) {
+                console.log(daysfromseconds)
+                let end = endOfDay(start)
+                let day = {start : start, end: end }
+                console.log(day)
+                start = addSeconds(end, 1) 
+                totalSeconds = totalSeconds - secondsinday
+                daysfromseconds = totalSeconds / secondsinday
+                if(daysfromseconds < 1) break
+            }
+
+        } else {
+            return false
+        }
+    }
+}
 
 // STYLE FUNCTIONS
 export const moodMap = mood => {

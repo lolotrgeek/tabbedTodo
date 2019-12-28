@@ -43,8 +43,8 @@ export const styles = StyleSheet.create({
   textInputContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    borderColor: 'black',
-    borderBottomWidth: 1,
+    // borderColor: 'black',
+    // borderBottomWidth: 1,
     paddingRight: 10,
     paddingBottom: 10
   },

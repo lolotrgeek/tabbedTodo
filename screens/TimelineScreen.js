@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, SafeAreaView, SectionList, Button } from 'react-native';
 import { Timeline } from '../components/Timeline';
 import { getAll, storeItem, updateItem, removeAll } from '../constants/Store'
-import { secondsToString, sumProjectTimers, sayDay, dayHeaders, elapsedTime, findRunning, formatTime, isRunning, totalTime } from '../constants/Functions'
+import { secondsToString, sumProjectTimers, sayDay, dayHeaders, elapsedTime, findRunning, formatTime, isRunning, totalTime, newEntryPerDay } from '../constants/Functions'
 import { timerValid, runningValid, timersValid } from '../constants/Validators'
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
@@ -83,6 +83,10 @@ export default function TimelineScreen({ navigation }) {
     setRunningTimer([key, value])
   }
 
+  useEffect(()=> {
+    let dummy = new Date('2019-12-20T21:54:00.000Z')
+    newEntryPerDay(dummy)
+  }, [])
   useEffect(() => {
     setEntryState()
   }, [])
