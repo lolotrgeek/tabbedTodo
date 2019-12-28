@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, SafeAreaView, SectionList, Button } from 'react-native';
 import { Timeline } from '../components/Timeline';
 import { getAll, storeItem, updateItem, removeAll } from '../constants/Store'
-import { secondsToString, sumProjectTimers, sayDay, dayHeaders, elapsedTime, findRunning, formatTime, isRunning, totalTime, newEntryPerDay } from '../constants/Functions'
+import { multiDay, secondsToString, sumProjectTimers, sayDay, dayHeaders, elapsedTime, findRunning, formatTime, isRunning, totalTime, newEntryPerDay } from '../constants/Functions'
 import { timerValid, runningValid, timersValid } from '../constants/Validators'
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
@@ -45,6 +45,26 @@ export default function TimelineScreen({ navigation }) {
 
   }
 
+  const splitAndUpdate = timer => {
+    const entries = newEntryPerDay(timer[1].created)
+    entries.map((entry, i) => {
+      if (i === 0) {
+        let value = timer[1]
+        value.ended = entry.end
+        updateItem(timer[0], value)
+      } else {
+        const hashids = new Hashids()
+        let key = hashids.encode(Date.now().toString())
+        let value = timer[1]
+        value.created = entry.start
+        value.ended = entry.end
+        console.log('new: ', [key, value])
+        storeItem(key, value)
+      }
+
+    })
+  }
+
   const stopAndUpdate = item => {
     stop()
     item[1].status = 'done'
@@ -83,11 +103,27 @@ export default function TimelineScreen({ navigation }) {
     setRunningTimer([key, value])
   }
 
-  useEffect(()=> {
-    let dummy = new Date('2019-12-20T21:54:00.000Z')
-    newEntryPerDay(dummy)
-  }, [])
+  // useEffect(() => {
+  //   // let dummy = new Date('2019-12-20T21:54:00.000Z')
+  //   // multiDay(dummy) ? console.log(dummy, new Date(), 'same day') : newEntryPerDay(dummy)
+
+  //   let dummyVal =["xnQyzq63E", {
+  //     created: '2019-12-20T21:54:00.000Z',
+  //     ended: "running",
+  //     type: "timer",
+  //     project: "GvGAj9010", // insert a valid project id here to properly test
+  //     status: "done",
+  //     total: 211,
+  //     mood: "good",
+  //     energy: 50,
+  //   }]
+
+  //   multiDay(dummyVal[1].created) ? console.log('no dummy, same day') : splitAndUpdate(dummyVal)
+  //   setEntryState()
+  // }, [])
+
   useEffect(() => {
+    // removeAll()
     setEntryState()
   }, [])
 
@@ -109,6 +145,9 @@ export default function TimelineScreen({ navigation }) {
     if (timersValid(timers)) {
       const foundRunning = findRunning(timers)
       if (runningValid(foundRunning)) {
+        if (multiDay(foundRunning[1].created)) {
+          splitAndUpdate(foundRunning)
+        }
         setRunningTimer(foundRunning)
         setCount(elapsedTime(foundRunning[1].created))
       }
