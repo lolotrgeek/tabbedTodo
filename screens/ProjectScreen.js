@@ -7,7 +7,7 @@ import {styles} from '../constants/Styles'
 export default function ProjectScreen({ route, navigation }) {
 
   let pagename = 'Projects'
-  const { project, running, lastscreen } = route.params
+  const { running, lastscreen } = route.params
 
   useEffect(() => navigation.setOptions({ title: pagename }), [])
 

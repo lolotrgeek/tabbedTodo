@@ -15,7 +15,7 @@ export default function TimerEditorScreen({ route, navigation }) {
     const timerEntry = timer[1]
     let color = project[1].color
     const projectName = project[1].name
-    
+
     const [key, setKey] = useState('')
     const [created, setCreated] = useState('')
     const [ended, setEnded] = useState('')
@@ -24,7 +24,7 @@ export default function TimerEditorScreen({ route, navigation }) {
     const [mood, setMood] = useState('')
     const [energy, setEnergy] = useState(projectName ? timer[1].energy : 0)
 
-    useEffect(() => navigation.setOptions({ title: projectName + ' - Timer Entry', headerStyle: {backgroundColor: color} }), [])
+    useEffect(() => navigation.setOptions({ title: projectName + ' - Timer Entry', headerStyle: { backgroundColor: color } }), [])
 
     const deleteEntry = () => {
         removeItem(timerKey)
@@ -42,26 +42,36 @@ export default function TimerEditorScreen({ route, navigation }) {
             setMood(timer[1].mood)
             setEnergy(timer[1].energy)
             if (createdValid) {
-                setCreated(timer[1].created)
-                setEnded(isRunning(timer) ? 'tracking' : timer[1].ended)
+                setCreated(new Date (timer[1].created))
+                setEnded(isRunning(timer) ? 'tracking' : new Date (timer[1].ended))
             }
         }
     }
+
     useEffect(() => {
         handleRoutedParams()
     }, [])
 
-    useEffect (() => {
+    useEffect(() => {
+        console.log(created, ' | ', ended)
+        if (!timeRules(created, ended)) {
+            // MODAL HERE
+            console.log(created, ' | ', ended)
+            console.log('Cannot End before Start.')
+        }
+    }, [created, ended])
+
+    useEffect(() => {
         timer[1].mood = mood
         updateItem(timer[0], timer[1])
     }, [mood])
 
-    useEffect (() => {
+    useEffect(() => {
         timer[1].created = created
         updateItem(timer[0], timer[1])
     }, [created])
 
-    useEffect (() => {
+    useEffect(() => {
         timer[1].ended = ended
         updateItem(timer[0], timer[1])
     }, [ended])
@@ -72,8 +82,8 @@ export default function TimerEditorScreen({ route, navigation }) {
             console.log('Cannot End before Start.')
             return false
         }
-        timer[1].created = created
-        timer[1].ended = ended
+        timer[1].created = created.toString()
+        timer[1].ended = ended.toString()
         timer[1].stop = stop
         timer[1].start = start
         timer[1].energy = energy
@@ -112,10 +122,10 @@ export default function TimerEditorScreen({ route, navigation }) {
                     <FontAwesome name="chevron-right" style={{ fontSize: 20, marginLeft: 10 }} />
                 </TouchableOpacity>
             </View>
-        
+
             <View style={styles.textInputContainer}>
                 <Text style={styles.sideTitle}>End </Text>
-                
+
                 <TouchableOpacity onPress={() => { setEnded(time => addMinutes(new Date(time), -5)) }}>
                     <FontAwesome name="chevron-left" style={{ fontSize: 20, marginRight: 10 }} />
                 </TouchableOpacity>

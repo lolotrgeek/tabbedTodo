@@ -77,7 +77,7 @@ export default function TimelineScreen({ navigation }) {
     setRunningTimer([])
     setRunningProject([])
     console.log(item[0], ' - Total Time : ', totalTime(item[1].created))
-    console.log( item[0], ' - Updated : ', item[1])
+    console.log(item[0], ' - Updated : ', item[1])
     setEntryState()
   }
 
@@ -97,7 +97,7 @@ export default function TimelineScreen({ navigation }) {
       mood: 'good',
       energy: 50,
     }
-    console.log(key ,' - Adding New : ', value)
+    console.log(key, ' - Adding New : ', value)
     storeItem(key, value)
     // setEntryState()
     setCount(0)
@@ -214,7 +214,10 @@ export default function TimelineScreen({ navigation }) {
         })
         }
       />
-      <Button title="Projects" onPress={() => navigation.navigate('Projects', { lastscreen: 'Timeline' })} />
+      <Button title="Projects" onPress={() => navigation.navigate('Projects', {
+        running: { project: runningProject, timer: runningTimer },
+        lastscreen: 'Timeline'
+      })} />
     </SafeAreaView >
   )
 }
