@@ -3,7 +3,7 @@ import { Button, Text, View, SafeAreaView, SectionList } from 'react-native';
 import { getAll, updateItem, storeItem } from '../constants/Store'
 import { TimerList } from '../components/TimerList';
 import { timerValid, runningValid, timersValid } from '../constants/Validators'
-import { timeString, secondsToString, totalTime, timeSpan, sayDay, dayHeaders, moodMap, isRunning, elapsedTime, findRunning, runningFind, formatTime } from '../constants/Functions'
+import { timeString, secondsToString, totalTime, timeSpan, sayDay, dayHeaders, moodMap, isRunning, elapsedTime, findRunning, runningFind, formatTime, multiDay, newEntryPerDay } from '../constants/Functions'
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
 import Hashids from 'hashids'
@@ -52,7 +52,28 @@ export default function TimerListScreen({ route, navigation }) {
 
     }
   }
-
+  
+  const splitAndUpdate = timer => {
+    const entries = newEntryPerDay(timer[1].created)
+    console.log(entries)
+    entries.map((entry, i) => {
+      if (i === 0) {
+        let value = timer[1]
+        value.ended = entry.end
+        value.status = 'done'
+        updateItem(timer[0], value)
+      } else {
+        const hashids = new Hashids()
+        let key = hashids.encode(Date.now().toString())
+        let value = timer[1]
+        value.created = entry.start
+        value.ended = entry.end === 'running' ? new Date() : entry.end
+        value.status = entry.end === 'running' ? 'running' : 'done'
+        console.log('new: ', [key, value])
+        storeItem(key, value)
+      }
+    })
+  }
   const stopAndUpdate = item => {
     stop()
     item[1].status = 'done'
@@ -106,6 +127,9 @@ export default function TimerListScreen({ route, navigation }) {
     if (timersValid(timers)) {
       const foundRunning = findRunning(timers)
       if (runningValid(foundRunning)) {
+        if (multiDay(foundRunning[1].created)) {
+          splitAndUpdate(foundRunning)
+        }
         setRunningTimer(foundRunning)
         setCount(elapsedTime(foundRunning[1].created))
       }

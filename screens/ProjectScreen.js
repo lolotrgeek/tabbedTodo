@@ -7,6 +7,7 @@ import {styles} from '../constants/Styles'
 export default function ProjectScreen({ route, navigation }) {
 
   let pagename = 'Projects'
+  const { project, running, lastscreen } = route.params
 
   useEffect(() => navigation.setOptions({ title: pagename }), [])
 
@@ -57,7 +58,11 @@ export default function ProjectScreen({ route, navigation }) {
             text={project[1].name}
             color={project[1].color}
             deleteEntry={() => deleteProject(project[0])}
-            onView={() => navigation.navigate('TimerList', {project : project})}
+            onView={() => navigation.navigate('TimerList', {
+              project: project,
+              running: running,
+              lastscreen: 'Timeline'
+            })}
             // onStart={() => navigation.navigate('Timer', {
             //   project: project,
             //   run: true,

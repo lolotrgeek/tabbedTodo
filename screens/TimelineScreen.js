@@ -47,21 +47,23 @@ export default function TimelineScreen({ navigation }) {
 
   const splitAndUpdate = timer => {
     const entries = newEntryPerDay(timer[1].created)
+    console.log(entries)
     entries.map((entry, i) => {
       if (i === 0) {
         let value = timer[1]
         value.ended = entry.end
+        value.status = 'done'
         updateItem(timer[0], value)
       } else {
         const hashids = new Hashids()
         let key = hashids.encode(Date.now().toString())
         let value = timer[1]
         value.created = entry.start
-        value.ended = entry.end
+        value.ended = entry.end === 'running' ? new Date() : entry.end
+        value.status = entry.end === 'running' ? 'running' : 'done'
         console.log('new: ', [key, value])
         storeItem(key, value)
       }
-
     })
   }
 
@@ -74,8 +76,8 @@ export default function TimelineScreen({ navigation }) {
     setCount(0)
     setRunningTimer([])
     setRunningProject([])
-    console.log('Total Time : ', totalTime(item[1].created))
-    console.log('updated : ', [item[0], item[1]])
+    console.log(item[0], ' - Total Time : ', totalTime(item[1].created))
+    console.log( item[0], ' - Updated : ', item[1])
     setEntryState()
   }
 
@@ -95,7 +97,7 @@ export default function TimelineScreen({ navigation }) {
       mood: 'good',
       energy: 50,
     }
-    console.log('new: ', [key, value])
+    console.log(key ,' - Adding New : ', value)
     storeItem(key, value)
     // setEntryState()
     setCount(0)
@@ -107,12 +109,12 @@ export default function TimelineScreen({ navigation }) {
   //   // let dummy = new Date('2019-12-20T21:54:00.000Z')
   //   // multiDay(dummy) ? console.log(dummy, new Date(), 'same day') : newEntryPerDay(dummy)
 
-  //   let dummyVal =["xnQyzq63E", {
-  //     created: '2019-12-20T21:54:00.000Z',
+  //   let dummyVal = ["xnQyzq63E", {
+  //     created: '2019-12-26T21:54:00.000Z',
   //     ended: "running",
   //     type: "timer",
-  //     project: "GvGAj9010", // insert a valid project id here to properly test
-  //     status: "done",
+  //     project: "4QgwkYmw2", // insert a valid project id here to properly test
+  //     status: "running",
   //     total: 211,
   //     mood: "good",
   //     energy: 50,
@@ -194,7 +196,7 @@ export default function TimelineScreen({ navigation }) {
           return (<Text style={styles.subheader}>{sayDay(title)}</Text>)
         }}
         renderItem={({ item }) => projects.map(project => {
-          // if (item.status === 'running') return ('')
+          if (item.status === 'running') return ('')
           if (project[0] === item.project) {
             return (<Timeline
               key={item.project}

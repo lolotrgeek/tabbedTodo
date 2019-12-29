@@ -1,4 +1,4 @@
-import { isSameDay, isDate, differenceInSeconds, differenceInDays, compareAsc, isToday, isYesterday, subSeconds, addSeconds, endOfDay, addMinutes } from 'date-fns'
+import { isSameDay, isDate, differenceInSeconds, startOfToday, differenceInDays, compareAsc, isToday, isYesterday, subSeconds, addSeconds, endOfDay, addMinutes } from 'date-fns'
 
 // TIME FUNCTIONS
 export const dateCreator = () => {
@@ -106,7 +106,18 @@ export const newEntryPerDay = (created, stopped) => {
             start = addSeconds(end, 1)
             totalSeconds = totalSeconds - secondsinday
             daysfromseconds = totalSeconds / secondsinday
-            if (daysfromseconds < 1) break
+            if (daysfromseconds < 1) {
+                console.log(daysfromseconds)
+                let end = endOfDay(start)
+                let day = { start: start.toString(), end: end.toString()}
+                output.push(day)
+                console.log(day)
+                let last = { start: startOfToday().toString(), end: 'running'}
+                output.push(last)
+                console.log(last)
+                break
+            }
+            
         }
         return output
     } else {
@@ -176,26 +187,32 @@ export const sumProjectTimers = dayheaders => {
         day.data.map(timer => {
             // ... group timer entries by project
             if (projects.length === 0) {
+                console.log('first timer: ', )
                 // console.log('ticked : ',  timer[1].total, 'calculated : ', totalTime(timer[1].created, timer[1].ended))
                 let total = totalTime(timer[1].created, timer[1].ended)
-                projects.push({ project: timer[1].project, totals: [total], total: timer[1].total, status: timer[1].status })
+                projects.push({ project: timer[1].project, totals: [total], total: total, status: timer[1].status, timers : [timer[0]] })
             }
             // for each project get all timer entries and sum the totals
             const match = projects.find(inProjects => inProjects.project === timer[1].project)
             // console.log('projects : ', projects)
             if (match) {
+                if (projects[0].timers[0] === timer[0]) {
+                    console.log('existing match')
+                } else {
                 // console.log('ticked : ',  timer[1].total, 'calculated : ', totalTime(timer[1].created, timer[1].ended))
                 let total = totalTime(timer[1].created, timer[1].ended)
                 match.totals = [...match.totals, total]
-                // console.log('timer :', timer, ' matches :' , match)
+                console.log('new match')
                 match.total = match.totals.reduce((acc, val) => acc + val) // sum the totals
+                }
             }
             else {
+                console.log('last timer: ', timer[0])
                 // console.log('ticked : ',  timer[1].total, 'calculated : ', totalTime(timer[1].created, timer[1].ended))
                 let total = totalTime(timer[1].created, timer[1].ended)
-                projects.push({ project: timer[1].project, totals: [total], total: timer[1].total, status: timer[1].status })
+                projects.push({ project: timer[1].project, totals: [total], total: total, status: timer[1].status })
             }
-
+            console.log(projects)
         })
         // console.log({title: day.title , data : projects})
 
