@@ -80,7 +80,7 @@ export const multiDay = (created, stopped) => {
 }
 
 /**
- * split a timer into one timer per day
+ * Split a timer into one timer per day
  * @param {*} created 
  * @param {*} stopped
  */

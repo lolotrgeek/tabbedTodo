@@ -42,8 +42,8 @@ export default function TimerEditorScreen({ route, navigation }) {
             setMood(timer[1].mood)
             setEnergy(timer[1].energy)
             if (createdValid) {
-                setCreated(new Date (timer[1].created))
-                setEnded(isRunning(timer) ? 'tracking' : new Date (timer[1].ended))
+                setCreated(new Date(timer[1].created))
+                setEnded(isRunning(timer) ? false : new Date(timer[1].ended))
             }
         }
     }
@@ -52,14 +52,14 @@ export default function TimerEditorScreen({ route, navigation }) {
         handleRoutedParams()
     }, [])
 
-    useEffect(() => {
-        console.log(created, ' | ', ended)
-        if (!timeRules(created, ended)) {
-            // MODAL HERE
-            console.log(created, ' | ', ended)
-            console.log('Cannot End before Start.')
-        }
-    }, [created, ended])
+    // useEffect(() => {
+    //     console.log(created, ' | ', ended)
+    //     if (!timeRules(created, ended)) {
+    //         // MODAL HERE
+    //         console.log(created, ' | ', ended)
+    //         console.log('Cannot End before Start.')
+    //     }
+    // }, [created, ended])
 
     useEffect(() => {
         timer[1].mood = mood
@@ -67,13 +67,31 @@ export default function TimerEditorScreen({ route, navigation }) {
     }, [mood])
 
     useEffect(() => {
-        timer[1].created = created
-        updateItem(timer[0], timer[1])
+        if (!timeRules(created, ended)) {
+            // MODAL HERE
+            console.log(created, ' | ', ended)
+            console.log('Cannot Start after End.')
+        }
+        else if (!timeRules(created, new Date())) {
+            console.log('Cannot Start before now')
+        } else {
+            timer[1].created = created
+            updateItem(timer[0], timer[1])
+        }
     }, [created])
 
     useEffect(() => {
-        timer[1].ended = ended
-        updateItem(timer[0], timer[1])
+        if (!timeRules(created, ended)) {
+            // MODAL HERE
+            console.log(created, ' | ', ended)
+            console.log('Cannot End before Start.')
+        }
+        else if (!timeRules(created, new Date())) {
+            console.log('Cannot Start before now')
+        } else {
+            timer[1].ended = ended
+            updateItem(timer[0], timer[1])
+        }
     }, [ended])
 
     const handleComplete = () => {
@@ -131,6 +149,7 @@ export default function TimerEditorScreen({ route, navigation }) {
                 </TouchableOpacity>
 
                 <TimePicker
+                    running={!ended ? true : false}
                     label=' '
                     time={new Date(ended)}
                     onTimeChange={newTime => setEnded(newTime)}

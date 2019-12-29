@@ -189,8 +189,9 @@ export default function TimerListScreen({ route, navigation }) {
             color={project[1].color}
             mood={moodMap(item[1].mood)}
             energy={item[1].energy}
-            project={isRunning(item) ? timeString(new Date(item[1].created)) + ' - ' + item[1].status : timeSpan(item[1].created, item[1].ended)}
-            total={isRunning(item) && runningValid(runningTimer) ? formatTime(count) : secondsToString(totalTime(item[1].created, item[1].ended))}
+            project={isRunning(item) ? timeString(new Date(item[1].created)) + ' - ' + '...' : timeSpan(item[1].created, item[1].ended)}
+            total={isRunning(item) && runningValid(runningTimer) ? 'Tracking' : secondsToString(totalTime(item[1].created, item[1].ended))}
+            // total={isRunning(item) && runningValid(runningTimer) ? formatTime(count) : secondsToString(totalTime(item[1].created, item[1].ended))}
             onPress={() => navigation.navigate('TimerEditor', {
               project: project,
               timer: item,
