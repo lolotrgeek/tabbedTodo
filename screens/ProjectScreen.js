@@ -5,17 +5,10 @@ import { getAll, removeAll } from '../constants/Store'
 import {styles} from '../constants/Styles'
 
 export default function ProjectScreen({ route, navigation }) {
-
   let pagename = 'Projects'
   const { running, lastscreen } = route.params
-
-  useEffect(() => navigation.setOptions({ title: pagename }), [])
-
-
-  // LOCAL STATE
   const [projects, setProject] = useState([]); // state of projects list
 
-  // PAGE FUNCTIONS
   const entries = async () => {
     try {
       let entry = await getAll(value => value.type === 'project' ? true : false)
@@ -24,7 +17,8 @@ export default function ProjectScreen({ route, navigation }) {
       console.log(error)
     }
   }
-  // EFFECTS
+
+  useEffect(() => navigation.setOptions({ title: pagename }), [])
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
       console.log('FOCUSED PAGE - ' + pagename)
@@ -34,7 +28,7 @@ export default function ProjectScreen({ route, navigation }) {
     })
     return focused, unfocused
   }, [])
-
+  
   useEffect(() => {
     entries()
   }, [])

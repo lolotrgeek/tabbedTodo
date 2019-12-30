@@ -42,7 +42,6 @@ export default function TimelineScreen({ navigation }) {
     } catch (err) {
       console.log(err)
     }
-
   }
 
   const splitAndUpdate = timer => {
@@ -73,11 +72,11 @@ export default function TimelineScreen({ navigation }) {
     item[1].ended = new Date().toString()
     item[1].total = count
     updateItem(item[0], item[1])
+    console.log(item[0], ' - Total Time : ', totalTime(item[1].created))
+    console.log(item[0], ' - Updated : ', item[1])
     setCount(0)
     setRunningTimer([])
     setRunningProject([])
-    console.log(item[0], ' - Total Time : ', totalTime(item[1].created))
-    console.log(item[0], ' - Updated : ', item[1])
     setEntryState()
   }
 
@@ -99,30 +98,11 @@ export default function TimelineScreen({ navigation }) {
     }
     console.log(key, ' - Adding New : ', value)
     storeItem(key, value)
-    // setEntryState()
+    setEntryState()
     setCount(0)
     setRunningProject(project)
     setRunningTimer([key, value])
   }
-
-  // useEffect(() => {
-  //   // let dummy = new Date('2019-12-20T21:54:00.000Z')
-  //   // multiDay(dummy) ? console.log(dummy, new Date(), 'same day') : newEntryPerDay(dummy)
-
-  //   let dummyVal = ["xnQyzq63E", {
-  //     created: '2019-12-26T21:54:00.000Z',
-  //     ended: "running",
-  //     type: "timer",
-  //     project: "4QgwkYmw2", // insert a valid project id here to properly test
-  //     status: "running",
-  //     total: 211,
-  //     mood: "good",
-  //     energy: 50,
-  //   }]
-
-  //   multiDay(dummyVal[1].created) ? console.log('no dummy, same day') : splitAndUpdate(dummyVal)
-  //   setEntryState()
-  // }, [])
 
   useEffect(() => {
     // removeAll()

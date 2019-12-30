@@ -21,7 +21,6 @@ export default function TimerListScreen({ route, navigation }) {
   const [daysWithTimer, setDaysWithTimer] = useState([]); // display the timers within each day
   const [runningProject, setRunningProject] = useState(runningValid(running) ? running.project : [])
   const [runningTimer, setRunningTimer] = useState(runningValid(running) ? running.timer : [])
-
   const { count, setCount, start, stop } = useCounter(1000, false)
 
 

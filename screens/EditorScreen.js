@@ -41,9 +41,6 @@ export default function EditorScreen({ route, navigation }) {
     }
   }
 
-  useEffect(() => handleRoutedParams(), [])
-  useEffect(() => navigation.setOptions({ title: name, headerStyle: { backgroundColor: color } }), [color])
-
   const addProject = (NEWKEY, NEWVALUE) => {
     if (name.length > 0) {
       storeItem(NEWKEY, NEWVALUE)
@@ -52,7 +49,7 @@ export default function EditorScreen({ route, navigation }) {
 
   const deleteProject = id => {
     removeItem(id)
-    //todo are you sure notification        
+    //todo : are you sure notification        
     navigation.navigate('Projects')
   }
 
@@ -71,7 +68,6 @@ export default function EditorScreen({ route, navigation }) {
       console.warn('Give a Valid Color')
     }
     else {
-      // REFACTOR AS A FUNCTION
       let newroute
       let value = {
         created: created, type: 'project',
@@ -88,7 +84,6 @@ export default function EditorScreen({ route, navigation }) {
         }
       }
       if (!key || key === '') {
-        // REFACTOR AS A FUNCTION
         value.created = dateCreator()
         const hashids = new Hashids()
         const newkey = hashids.encode(Date.now())
@@ -105,16 +100,8 @@ export default function EditorScreen({ route, navigation }) {
     }
   }
 
-  // const formatTime = t => {
-  //   if (typeof t !== 'string') return false
-  //   if (t.length === 0) return '00 : 00 : 00'
-  //   if (t.length === 1) return '00 : 00 : 0' + t.charAt(0)
-  //   if (t.length === 2) return '00 : 00 : ' + t.charAt(0) + t.charAt(1)
-  //   if (t.length === 3) return '00 : 0' + t.charAt(0) + ' : ' + t.charAt(1) + t.charAt(2)
-  //   if (t.length === 4) return '00 : ' + t.charAt(0) + t.charAt(1) + ' : ' + t.charAt(2) + t.charAt(3)
-  //   if (t.length === 5) return '0' + t.charAt(0) + ' : ' + t.charAt(1) + t.charAt(2) + ' : ' + t.charAt(3) + t.charAt(4)
-  //   if (t.length > 5) return t.charAt(0) + t.charAt(1) + ' : ' + t.charAt(2) + t.charAt(3) + ' : ' + t.charAt(4) + t.charAt(5)
-  // }
+  useEffect(() => handleRoutedParams(), [])
+  useEffect(() => navigation.setOptions({ title: name, headerStyle: { backgroundColor: color } }), [color])
 
   return (
     <View style={styles.container}>
@@ -145,21 +132,6 @@ export default function EditorScreen({ route, navigation }) {
           onChangeComplete={handleSelectedColor}
         />
       </View>
-      {/* <Text style={{ fontSize: 20 }}>{formatTime(time)}</Text> */}
-
-      {/* <NumPad
-        onOne={() => { setTime(time + '1'); console.log(time) }}
-        onTwo={() => { setTime(time + '2'); console.log(time) }}
-        onThree={() => { setTime(time + '3'); console.log(time) }}
-        onFour={() => { setTime(time + '4'); console.log(time) }}
-        onFive={() => { setTime(time + '5'); console.log(time) }}
-        onSix={() => { setTime(time + '6'); console.log(time) }}
-        onSeven={() => { setTime(time + '7'); console.log(time) }}
-        onEight={() => { setTime(time + '8'); console.log(time) }}
-        onNine={() => { setTime(time + '9'); console.log(time) }}
-        onZero={() => { setTime(time + '0'); console.log(time) }}
-        onDel={() => { setTime(time.substring(0, time.length - 1)); console.log(time.substring(0, time.length - 1)) }}
-      /> */}
       <View style={styles.doneButton}>
         <Button title="done" style={{ fontSize: 60 }} onPress={() => handleComplete()} />
 

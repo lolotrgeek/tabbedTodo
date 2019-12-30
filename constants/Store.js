@@ -2,7 +2,14 @@ import { AsyncStorage } from 'react-native';
 
 
 export const countKeys = async () => await AsyncStorage.getAllKeys()
-
+export const getEntry = async (id) => {
+    try {
+        const entry = await AsyncStorage.getItem(id)
+        return entry
+    } catch (error) {
+        console.error(error)
+    }
+}
 const storeMap = (result, validator) => {
     let key = result[0]
     let value = result[1]
@@ -10,9 +17,9 @@ const storeMap = (result, validator) => {
         //console.info('ASYNC STORAGE - INVALID KEY : ', key) 
         return false
     }
-    if (!value || value === 'undefined') { 
+    if (!value || value === 'undefined') {
         //console.info('ASYNC STORAGE - INVALID VALUE : ', value)
-        return false 
+        return false
     }
     if (typeof value === 'string' && value.charAt(0) === '{') {
         let value = JSON.parse(result[1])
@@ -51,9 +58,9 @@ const keyValueMap = (result, validator) => {
         //console.info('ASYNC STORAGE - INVALID KEY : ', key) 
         return false
     }
-    if (!value || value === 'undefined') { 
+    if (!value || value === 'undefined') {
         //console.info('ASYNC STORAGE - INVALID VALUE : ', value)
-        return false 
+        return false
     }
     if (typeof value === 'string' && value.charAt(0) === '{') {
         let value = JSON.parse(result[1])

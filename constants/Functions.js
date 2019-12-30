@@ -1,5 +1,7 @@
 import { isSameDay, isDate, differenceInSeconds, startOfToday, differenceInDays, compareAsc, isToday, isYesterday, subSeconds, addSeconds, endOfDay, addMinutes } from 'date-fns'
 
+// TODO: REFACTOR SO FUNCTIONS DO NOT NEED ANY DATA STRUCTURE
+
 // TIME FUNCTIONS
 export const dateCreator = () => {
     const today = new Date();
@@ -117,7 +119,6 @@ export const newEntryPerDay = (created, stopped) => {
                 console.log(last)
                 break
             }
-            
         }
         return output
     } else {
