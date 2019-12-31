@@ -4,7 +4,8 @@ import { updateItem, storeItem, removeItem } from '../constants/Store'
 import { projectValid, createdValid, nameValid, colorValid, timeValid } from '../constants/Validators'
 import { dateCreator, secondsToString } from '../constants/Functions'
 import Icon from 'react-native-vector-icons/Feather';
-import { CirclePicker } from 'react-color'
+// import { CirclePicker } from 'react-color'
+import { default as CirclePicker } from '../components/ColorPicker'
 import Hashids from 'hashids'
 import NumPad from '../components/NumPad';
 import { styles } from '../constants/Styles'
@@ -55,8 +56,6 @@ export default function EditorScreen({ route, navigation }) {
 
 
   const handleSelectedColor = (color, event) => {
-    console.log(color)
-    console.log(event)
     setColor(color.hex)
   }
 
@@ -128,9 +127,10 @@ export default function EditorScreen({ route, navigation }) {
       </View>
 
       <View style={styles.colorPicker}>
-        <CirclePicker
-          onChangeComplete={handleSelectedColor}
-        />
+          <CirclePicker
+            onChangeComplete={handleSelectedColor}
+          />
+
       </View>
       <View style={styles.doneButton}>
         <Button title="done" style={{ fontSize: 60 }} onPress={() => handleComplete()} />

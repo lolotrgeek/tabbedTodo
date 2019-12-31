@@ -38,7 +38,7 @@ export default function ProjectScreen({ route, navigation }) {
       <View style={styles.addButton}>
         <Button
           title='Add Project'
-          onPress={() => navigation.navigate('Edit', { name: '', color: '' })}
+          onPress={() => navigation.navigate('Edit', {project : []})}
         />        
         {/* <Button
         title='Delete All'
