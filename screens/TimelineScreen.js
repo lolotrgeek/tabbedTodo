@@ -13,7 +13,6 @@ export default function TimelineScreen({ navigation }) {
 
   const [timers, setTimers] = useState([]); // state of timers list
   const [projects, setProjects] = useState([]); // state of timers list
-  const [dayList, setDayList] = useState([])
   const [daysWithTimer, setDaysWithTimer] = useState([]); // disply the timers within each day
   const [runningTimer, setRunningTimer] = useState([])
   const [runningProject, setRunningProject] = useState([])
@@ -35,7 +34,6 @@ export default function TimelineScreen({ navigation }) {
     const sortedTimers = retrieved.timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
     try {
       const days = await dayHeaders(sortedTimers)
-      setDayList(days)
       const summed = sumProjectTimers(days)
       console.log('List Items : ', summed)
       setDaysWithTimer(summed)
@@ -162,7 +160,9 @@ export default function TimelineScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.subheader}> {runningValid(runningTimer) ? 'Tracking' : ''}</Text>
+      <Text style={styles.subheader}>
+        {runningValid(runningTimer) ? 'Tracking' : ''}
+      </Text>
       <Text onPress={() => stopAndUpdate(runningTimer)}>
         {runningValid(runningProject) ? runningProject[1].name : ''}
       </Text>
@@ -176,7 +176,7 @@ export default function TimelineScreen({ navigation }) {
           return (<Text style={styles.subheader}>{sayDay(title)}</Text>)
         }}
         renderItem={({ item }) => projects.map(project => {
-          if (item.status === 'running') return ('')
+          if (item.status === 'running') return (<Text></Text>)
           if (project[0] === item.project) {
             return (<Timeline
               key={item.project}

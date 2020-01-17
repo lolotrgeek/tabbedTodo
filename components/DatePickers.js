@@ -1,57 +1,64 @@
 import React from 'react';
 import 'date-fns';
-import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from '@material-ui/pickers';
-import { TextField } from '@material-ui/core';
+import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
+/**
+ * 
+ * @param {object} props 
+ * @param {date} props.date
+ * @param {function} props.onDateChange
+ * @param {*} props.label 
+ *  
+ */
 export function DatePicker(props) {
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Grid container justify="space-around">
-        <KeyboardDatePicker
-          margin="normal"
-          id="date-picker-dialog"
-          label={props.label ? props.label : "Date picker dialog"}
-          format="MM/dd/yyyy"
-          value={props.startdate}
-          onChange={props.onDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
-      </Grid>
-    </MuiPickersUtilsProvider>
+    <View>
+      <DateTimePicker
+        mode="date"
+        value={props.date}
+        onChange={props.onDateChange}
+      />
+    </View>
+
   );
 }
+
+/**
+ * 
+ * @param {object} props
+ * @param {boolean} props.running
+ * @param {function} props.onTimeChange 
+ * @param {date} props.time
+ *  
+ */
 export function TimePicker(props) {
   if (props.running === true) {
     return (
-      <Grid container justify="space-around">
-        <TextField
-          value="Tracking"
-          disabled='true'
-        />
-      </Grid>
+      <TextInput
+        value="Tracking"
+        editable='false'
+      />
     )
   }
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Grid container justify="space-around">
-        <KeyboardTimePicker
-          margin="normal"
-          id="time-picker"
-          views={['hours', 'minutes', 'seconds']}
-          format="HH:mm:ss"
-          opento='hours'
-          label={props.label ? props.label : "Time picker"}
-          value={props.time}
-          onChange={props.onTimeChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change time',
+    <View>
+      {/* <TimePicker
+          ref={ref => {
+            TimePicker = ref;
           }}
-        />
-      </Grid>
-    </MuiPickersUtilsProvider>
-  );
+          selectedHour={props.time}
+          selectedMinute={props.time}
+          onCancel={() => TimePicker.close()}
+          onConfirm={(hour, minute) => props.onTimeChange; TimePicker.close()}
+        /> */}
+      <DateTimePicker
+        mode="time"
+        value={props.time}
+        onChange={props.onTimeChange}
+      />
+    </View>
+  )
+
 }

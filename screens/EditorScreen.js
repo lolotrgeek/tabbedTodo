@@ -5,10 +5,12 @@ import { projectValid, createdValid, nameValid, colorValid, timeValid } from '..
 import { dateCreator, secondsToString } from '../constants/Functions'
 import Icon from 'react-native-vector-icons/Feather';
 // import { CirclePicker } from 'react-color'
-import { default as CirclePicker } from '../components/ColorPicker'
+import {ColorPicker} from '../components/ColorPicker'
 import Hashids from 'hashids'
 import NumPad from '../components/NumPad';
 import { styles } from '../constants/Styles'
+import * as material from 'material-colors'
+// import { simpleCheckForValidColor } from '../constants/Colors'
 
 // Color picking
 //https://casesandberg.github.io/react-color/
@@ -21,6 +23,21 @@ export default function EditorScreen({ route, navigation }) {
   const [name, setName] = useState('');
   const [color, setColor] = useState('');
   const [time, setTime] = useState('')
+
+  const swatch = {
+    width: 252,
+    circleSize: 28,
+    circleSpacing: 14,
+  }
+  const colors = [
+    material.red['500'], material.pink['500'], material.purple['500'],
+    material.deepPurple['500'], material.indigo['500'], material.blue['500'],
+    material.lightBlue['500'], material.cyan['500'], material.teal['500'],
+    material.green['500'], material.lightGreen['500'], material.lime['500'],
+    material.yellow['500'], material.amber['500'], material.orange['500'],
+    material.deepOrange['500'], material.brown['500'], material.blueGrey['500']
+  ]
+
 
   const handleRoutedParams = () => {
     if (projectValid(project)) {
@@ -55,9 +72,12 @@ export default function EditorScreen({ route, navigation }) {
   }
 
 
-  const handleSelectedColor = (color, event) => {
-    setColor(color.hex)
-  }
+  // const handleSelectedColor = (color, event) => {
+  //   const isValidColor = simpleCheckForValidColor(data)
+  //   if (isValidColor) {
+
+  //   }
+  // }
 
   const handleComplete = () => {
     if (!name || name === '') {
@@ -107,13 +127,13 @@ export default function EditorScreen({ route, navigation }) {
       <View style={styles.textInputContainer}>
         <TextInput
           style={{
-            height: 20,
+            height: 50,
             fontSize: 18,
             fontWeight: 'bold',
             color: color ? color : "black",
             paddingLeft: 10,
             minHeight: '3%',
-            paddingBottom: 10
+            borderBottomWidth: 1,
           }}
           multiline={false}
           placeholder="Enter Project Name?"
@@ -126,15 +146,28 @@ export default function EditorScreen({ route, navigation }) {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.colorPicker}>
-          <CirclePicker
-            onChangeComplete={handleSelectedColor}
-          />
-
+      <View style={{
+        width: '100%',
+        display: 'flex',
+        flexWrap: 'wrap',
+        marginRight: -14,
+        marginBottom: -14,
+      }}>
+        {colors.map(c => {
+          return (
+            <ColorPicker
+              key={c}
+              width={swatch.width}
+              circleSpacing={swatch.circleSpacing}
+              circleSize={swatch.circleSize}
+              color={c}
+              onPress={() => setColor(c)}
+            />)
+        })}
       </View>
+
       <View style={styles.doneButton}>
         <Button title="done" style={{ fontSize: 60 }} onPress={() => handleComplete()} />
-
       </View>
       <View style={styles.deleteButton}>
         {project ? (<Icon
@@ -144,8 +177,7 @@ export default function EditorScreen({ route, navigation }) {
           style={{ marginLeft: 'auto' }}
           onPress={() => deleteProject(project[0])}
         />) : <Text></Text>}
-
       </View>
-    </View>
+    </View >
   )
 }

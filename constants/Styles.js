@@ -124,5 +124,12 @@ export const styles = StyleSheet.create({
     marginTop: '5%',
     marginLeft: 'auto',
     marginRight: 'auto',
-  }
+  },
+  card: {
+    width : '100%',
+    display: 'flex',
+    flexWrap: 'wrap',
+    marginRight: -14,
+    marginBottom: -14,
+},
 });

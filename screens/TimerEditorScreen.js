@@ -122,7 +122,7 @@ export default function TimerEditorScreen({ route, navigation }) {
                 <Text style={styles.sideTitle}>Date </Text>
                 <DatePicker
                     label=' '
-                    startdate={created}
+                    date={created}
                     onDateChange={newDate => setCreated(newDate)}
                 />
             </View>

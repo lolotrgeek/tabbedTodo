@@ -1,88 +1,11 @@
 import React from 'react';
 import {View, Text, Button, TextInput } from 'react-native';
-// import Slider from '@react-native-community/slider';
-import PropTypes from 'prop-types';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import Slider from '@material-ui/core/Slider';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
+import Slider from '@react-native-community/slider';
 import { FontAwesome5 } from '@expo/vector-icons'
 import {styles} from '../constants/Styles'
 
-//https://material-ui.com/components/slider/
-
-const useStyles = makeStyles(theme => ({
-    root: {
-        width: 300 + theme.spacing(3) * 2,
-    },
-    margin: {
-        height: theme.spacing(3),
-    },
-}));
-
-function ValueLabelComponent(props) {
-    const { children, open, value } = props;
-
-    const popperRef = React.useRef(null);
-
-    React.useEffect(() => {
-        if (popperRef.current) {
-            popperRef.current.update();
-        }
-    });
-
-    return (
-        <Tooltip
-            PopperProps={{
-                popperRef,
-            }}
-            open={open}
-            enterTouchDelay={0}
-            placement="top"
-            title={value}
-        >
-            {children}
-        </Tooltip>
-    );
-}
-ValueLabelComponent.propTypes = {
-    children: PropTypes.element.isRequired,
-    open: PropTypes.bool.isRequired,
-    value: PropTypes.number.isRequired,
-};
-
-const PrettoSlider = withStyles({
-    root: {
-        color: '#52af77',
-        height: 8,
-    },
-    thumb: {
-        height: 24,
-        width: 24,
-        backgroundColor: '#fff',
-        border: '2px solid currentColor',
-        marginTop: -8,
-        marginLeft: -12,
-        '&:focus,&:hover,&$active': {
-            boxShadow: 'inherit',
-        },
-    },
-    active: {},
-    valueLabel: {
-        left: 'calc(-50% + 4px)',
-    },
-    track: {
-        height: 8,
-        borderRadius: 4,
-    },
-    rail: {
-        height: 8,
-        borderRadius: 4,
-    },
-})(Slider);
 
 export function TimerStopNotes(props) {
-    const classes = useStyles();
     return (
         <View style={styles.container}>
             <View style={styles.moodContainer}>
@@ -148,12 +71,16 @@ export function TimerStopNotes(props) {
             </View >
             <View style={styles.energyBar}>
                 <Text style={styles.subheader}>Energy Level</Text>
-                <PrettoSlider
-                    valueLabelDisplay="auto"
-                    aria-label="pretto slider"
-                    defaultValue={props.startingEnergy}
-                    onChangeCommitted={props.onEnergySet}
+                <Slider
+                    style={{width: '100%', height: 40}}
+                    minimumValue={0}
+                    maximumValue={100}
+                    minimumTrackTintColor="#FFFFFF"
+                    maximumTrackTintColor="#000000"
+                    onSlidingComplete={props.onEnergySet}
+                    value={props.startingEnergy}
                 />
+
             </View>
         </View>
 
