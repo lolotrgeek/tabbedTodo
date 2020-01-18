@@ -1,7 +1,5 @@
 import React from 'react';
-import 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
-import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
+import View from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 /**
@@ -16,7 +14,7 @@ export function DatePicker(props) {
   return (
     <View>
       <DateTimePicker
-        mode="date"
+        mode='date'
         value={props.date}
         onChange={props.onDateChange}
       />
@@ -37,24 +35,15 @@ export function TimePicker(props) {
   if (props.running === true) {
     return (
       <TextInput
-        value="Tracking"
+        value='Tracking'
         editable='false'
       />
     )
   }
   return (
     <View>
-      {/* <TimePicker
-          ref={ref => {
-            TimePicker = ref;
-          }}
-          selectedHour={props.time}
-          selectedMinute={props.time}
-          onCancel={() => TimePicker.close()}
-          onConfirm={(hour, minute) => props.onTimeChange; TimePicker.close()}
-        /> */}
       <DateTimePicker
-        mode="time"
+        mode='time'
         value={props.time}
         onChange={props.onTimeChange}
       />

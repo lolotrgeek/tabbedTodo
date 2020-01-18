@@ -182,7 +182,7 @@ export default function TimelineScreen({ navigation }) {
               key={item.project}
               color={project[1].color}
               project={project[1].name}
-              total={typeof item.total === 'number' ? secondsToString(item.total) : item.total}
+              total={typeof item.total === 'number' && new Date(item.total) ? secondsToString(item.total) : item.total}
               onPress={() => navigation.navigate('TimerList', {
                 project: project,
                 running: { project: runningProject, timer: runningTimer },
