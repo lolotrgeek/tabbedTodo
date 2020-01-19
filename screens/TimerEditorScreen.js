@@ -8,6 +8,7 @@ import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { timerValid, createdValid } from '../constants/Validators'
 import { timeRules, isRunning, simpleDate, timeString } from '../constants/Functions'
 import { styles } from '../constants/Styles'
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function TimerEditorScreen({ route, navigation }) {
     const { timer, project, lastscreen } = route.params
@@ -108,39 +109,38 @@ export default function TimerEditorScreen({ route, navigation }) {
         })
     }
 
-    // useEffect(() => {
-    //     if (picker !== '' || picker !== 'Date' && picker ) {
-    //         <TimePicker
-    //             label=' '
-    //             time={new Date(picker)}
-    //             onTimeChange={newTime => setCreated(newTime)}
-    //         />
-    //     }
-    //     if (picker === 'Date') {
-    //         <DatePicker
-    //             label=' '
-    //             date={new Date(created)}
-    //             onDateChange={newDate => setCreated(newDate)}
-    //         />
-    //     }
-    // }, [picker])
 
     return (
         <View style={styles.container}>
             <View style={styles.textInputContainer}>
                 <Text style={styles.sideTitle}>Date </Text>
-                <TouchableOpacity onPress={() => setPicker('Date')} >
+                <TouchableOpacity onPress={() => setPicker('date')} >
                     <Text>{simpleDate(new Date(created))}</Text>
                 </TouchableOpacity>
+                {picker === 'date' ?
+                    <DateTimePicker
+                        mode='date'
+                        value={new Date(created)}
+                        onChange={(event, newTime) => {setCreated(newTime); setPicker(false)}}
+                    />
+                    : <Text></Text>}
             </View>
             <View style={styles.textInputContainer}>
                 <Text style={styles.sideTitle}>Start</Text>
                 <TouchableOpacity onPress={() => { setCreated(time => addMinutes(new Date(time), -5)) }}>
                     <FontAwesome name='chevron-left' style={{ fontSize: 20, marginRight: 10 }} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setPicker(created)} >
+                <TouchableOpacity onPress={() => setPicker('start')} >
                     <Text>{timeString(new Date(created))}</Text>
                 </TouchableOpacity>
+
+                {picker === 'start' ?
+                    <DateTimePicker
+                        mode='time'
+                        value={new Date(created)}
+                        onChange={(event, newTime) => {setCreated(newTime); setPicker(false)}}
+                    />
+                    : <Text></Text>}
 
                 <TouchableOpacity onPress={() => { setCreated(time => addMinutes(new Date(time), 5)) }}>
                     <FontAwesome name='chevron-right' style={{ fontSize: 20, marginLeft: 10 }} />
@@ -154,9 +154,16 @@ export default function TimerEditorScreen({ route, navigation }) {
                     <FontAwesome name='chevron-left' style={{ fontSize: 20, marginRight: 10 }} />
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => setPicker(ended)} >
-                    <Text>{timeString(new Date (ended))}</Text>
+                <TouchableOpacity onPress={() => setPicker('end')} >
+                    <Text>{timeString(new Date(ended))}</Text>
                 </TouchableOpacity>
+                {picker === 'end' ?
+                    <DateTimePicker
+                        mode='time'
+                        value={new Date(ended)}
+                        onChange={(event, newTime) => {setCreated(newTime); setPicker(false)}}
+                    />
+                    : <Text></Text>}
 
                 <TouchableOpacity onPress={() => { setEnded(time => addMinutes(new Date(time), 5)) }}>
                     <FontAwesome name='chevron-right' style={{ fontSize: 20, marginLeft: 10 }} />

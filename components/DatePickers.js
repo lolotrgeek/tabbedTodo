@@ -19,7 +19,6 @@ export function DatePicker(props) {
         onChange={props.onDateChange}
       />
     </View>
-
   );
 }
 
