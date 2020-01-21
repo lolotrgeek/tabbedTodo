@@ -10,7 +10,8 @@ export const dateCreator = () => {
     return date + ' ' + time;
 }
 export const secondsToString = seconds => new Date(seconds * 1000).toISOString().substr(11, 8) // hh: mm : ss
-export const simpleDate = date => date.getDate() + " " + date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear()
+export const getMonth = date => date.toLocaleString('default', { month: 'long' })
+export const simpleDate = date => getMonth(date)
 export const sortbydate = () => timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
 export const listDay = () => timers.map(timer => new Date(timer[1].created))
 export const timeRules = (created, ended) => compareAsc(parseISO(created), parseISO(ended)) === 1 ? false : true

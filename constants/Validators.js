@@ -1,3 +1,5 @@
+import { isValid } from "date-fns"
+
 export const projectValid = validate => Array.isArray(validate) && validate.length === 2 && validate[1].type === 'project' ? true : false
 export const createdValid = validate => typeof validate[1].created.charAt(0) === 'number' ? true : false
 export const nameValid = validate => typeof validate[1].name === 'string' ? true : false
@@ -7,3 +9,4 @@ export const timerValid = value => value.type === 'timer' ? true : false
 export const justtimeValid = time => typeof parseInt(time) === 'number' ? true : false 
 export const runningValid = validate => validate && Array.isArray(validate) && validate.length > 0 ? true : false
 export const timersValid = validate => validate && Array.isArray(validate) && validate.length > 0 ? true : false
+export const dateValid = validate => isValid(validate) ? validate : false

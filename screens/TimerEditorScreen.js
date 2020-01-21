@@ -5,7 +5,7 @@ import { EnergySlider, MoodPicker } from '../components/TimerNotes'
 import { DatePicker, TimePicker } from '../components/DatePickers'
 import { addMinutes } from 'date-fns'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
-import { timerValid, createdValid } from '../constants/Validators'
+import { timerValid, createdValid, dateValid } from '../constants/Validators'
 import { timeRules, isRunning, simpleDate, timeString } from '../constants/Functions'
 import { styles } from '../constants/Styles'
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -50,43 +50,6 @@ export default function TimerEditorScreen({ route, navigation }) {
         }
     }
 
-    useEffect(() => {
-        handleRoutedParams()
-    }, [])
-
-    useEffect(() => {
-        timer[1].mood = mood
-        updateItem(timer[0], timer[1])
-    }, [mood])
-
-    useEffect(() => {
-        if (!timeRules(created, ended)) {
-            // MODAL HERE
-            console.log(created, ' | ', ended)
-            console.log('Cannot Start after End.')
-        }
-        else if (!timeRules(created, new Date())) {
-            console.log('Cannot Start before now')
-        } else {
-            timer[1].created = created
-            updateItem(timer[0], timer[1])
-        }
-    }, [created])
-
-    useEffect(() => {
-        if (!timeRules(created, ended)) {
-            // MODAL HERE
-            console.log(created, ' | ', ended)
-            console.log('Cannot End before Start.')
-        }
-        else if (!timeRules(created, new Date())) {
-            console.log('Cannot Start before now')
-        } else {
-            timer[1].ended = ended
-            updateItem(timer[0], timer[1])
-        }
-    }, [ended])
-
     const handleComplete = () => {
         if (!timeRules(created, ended)) {
             // MODAL HERE
@@ -109,6 +72,57 @@ export default function TimerEditorScreen({ route, navigation }) {
         })
     }
 
+    const chooseNewTime = newTime => {
+        if (!timeRules(created, ended)) {
+            // MODAL HERE
+            console.warn(created, ' | ', ended)
+            console.warn('Cannot Start after End.')
+        }
+        else if (!timeRules(created, new Date())) {
+            console.warn('Cannot Start before now')
+        } else {
+            setPicker(false)
+            dateValid(newTime) ? setCreated(newTime) : false
+        }
+
+    }
+
+    useEffect(() => {
+        handleRoutedParams()
+    }, [])
+
+    useEffect(() => {
+        timer[1].mood = mood
+        updateItem(timer[0], timer[1])
+    }, [mood])
+
+    useEffect(() => {
+        if (!timeRules(created, ended)) {
+            // MODAL HERE
+            console.warn(created, ' | ', ended)
+            console.warn('Cannot Start after End.')
+        }
+        else if (!timeRules(created, new Date())) {
+            console.warn('Cannot Start before now')
+        } else {
+            timer[1].created = created
+            updateItem(timer[0], timer[1])
+        }
+    }, [created])
+
+    useEffect(() => {
+        if (!timeRules(created, ended)) {
+            console.warn(created, ' | ', ended)
+            console.warn('Cannot End before Start.')
+        }
+        else if (!timeRules(created, new Date())) {
+            console.warn('Cannot Start before now')
+        } else {
+            timer[1].ended = ended
+            updateItem(timer[0], timer[1])
+        }
+    }, [ended])
+
 
     return (
         <View style={styles.container}>
@@ -121,7 +135,7 @@ export default function TimerEditorScreen({ route, navigation }) {
                     <DateTimePicker
                         mode='date'
                         value={new Date(created)}
-                        onChange={(event, newTime) => {setCreated(newTime); setPicker(false)}}
+                        onChange={(event, newDate) => { setPicker(false); dateValid(newDate) ? setCreated(newDate) : false }}
                     />
                     : <Text></Text>}
             </View>
@@ -138,7 +152,7 @@ export default function TimerEditorScreen({ route, navigation }) {
                     <DateTimePicker
                         mode='time'
                         value={new Date(created)}
-                        onChange={(event, newTime) => {setCreated(newTime); setPicker(false)}}
+                        onChange={(event, newTime) => chooseNewTime(newTime)}
                     />
                     : <Text></Text>}
 
@@ -155,13 +169,15 @@ export default function TimerEditorScreen({ route, navigation }) {
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => setPicker('end')} >
-                    <Text>{timeString(new Date(ended))}</Text>
+                    <Text>{ended ? timeString(new Date(ended)) : '...'}</Text>
+
+
                 </TouchableOpacity>
-                {picker === 'end' ?
+                {picker === 'end' && ended ?
                     <DateTimePicker
                         mode='time'
                         value={new Date(ended)}
-                        onChange={(event, newTime) => {setCreated(newTime); setPicker(false)}}
+                        onChange={(event, newTime) => chooseNewTime(newTime)}
                     />
                     : <Text></Text>}
 
