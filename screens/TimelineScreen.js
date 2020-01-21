@@ -176,7 +176,7 @@ export default function TimelineScreen({ navigation }) {
           return (<Text style={styles.subheader}>{sayDay(title)}</Text>)
         }}
         renderItem={({ item }) => projects.map(project => {
-          if (item.status === 'running') return (<Text></Text>)
+          if (item.status === 'running') return (<Text key={item.project}></Text>)
           if (project[0] === item.project) {
             return (<Timeline
               key={item.project}

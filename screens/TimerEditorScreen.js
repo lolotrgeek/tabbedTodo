@@ -6,7 +6,7 @@ import { DatePicker, TimePicker } from '../components/DatePickers'
 import { addMinutes } from 'date-fns'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { timerValid, createdValid, dateValid } from '../constants/Validators'
-import { timeRules, isRunning, simpleDate, timeString } from '../constants/Functions'
+import { timeRules, isRunning, simpleDate, timeString, dateRules } from '../constants/Functions'
 import { styles } from '../constants/Styles'
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -74,17 +74,33 @@ export default function TimerEditorScreen({ route, navigation }) {
 
     const chooseNewTime = newTime => {
         if (!timeRules(created, ended)) {
+            setPicker(false);
             // MODAL HERE
             console.warn(created, ' | ', ended)
             console.warn('Cannot Start after End.')
         }
         else if (!timeRules(created, new Date())) {
+            setPicker(false);
             console.warn('Cannot Start before now')
-        } else {
+        }
+        else if (!dateRules(newTime)) {
+            setPicker(false);
+            console.warn('Cannot Pick Date before Today.')
+        }
+        else {
             setPicker(false)
             dateValid(newTime) ? setCreated(newTime) : false
         }
+    }
 
+    const chooseNewDate = newDate => {
+        if (dateRules(newDate)) {
+            setPicker(false);
+            dateValid(newDate) ? setCreated(newDate) : false
+        } else {
+            setPicker(false);
+            console.warn('Cannot Pick Date before Today.')
+        }
     }
 
     useEffect(() => {
@@ -135,7 +151,7 @@ export default function TimerEditorScreen({ route, navigation }) {
                     <DateTimePicker
                         mode='date'
                         value={new Date(created)}
-                        onChange={(event, newDate) => { setPicker(false); dateValid(newDate) ? setCreated(newDate) : false }}
+                        onChange={(event, newDate) => chooseNewDate(newDate)}
                     />
                     : <Text></Text>}
             </View>

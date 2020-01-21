@@ -19,6 +19,7 @@ export const simpleDate = date => date.getDate() + " " + getMonth(date) + " " + 
 export const sortbydate = () => timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
 export const listDay = () => timers.map(timer => new Date(timer[1].created))
 export const timeRules = (created, ended) => compareAsc(parseISO(created), parseISO(ended)) === 1 ? false : true
+export const dateRules = date => compareAsc(date, new Date()) === 1 ? false : date  
 export const timeString = date => isDate(date) ? date.toTimeString().split(' ')[0] : date
 export const totalTime = (start, end) => differenceInSeconds(new Date(end), new Date(start))
 export const timeSpan = (start, end) => timeString(new Date(start)) + ' - ' + timeString(new Date(end))
