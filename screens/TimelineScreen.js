@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, SafeAreaView, SectionList, Button } from 'react-native';
+import { View, Text, SafeAreaView, SectionList, Button } from 'react-native';
 import { Timeline } from '../components/Timeline';
 import { getAll, storeItem, updateItem, removeAll } from '../constants/Store'
 import { multiDay, secondsToString, sumProjectTimers, sayDay, dayHeaders, elapsedTime, findRunning, formatTime, isRunning, totalTime, newEntryPerDay } from '../constants/Functions'
@@ -160,15 +160,18 @@ export default function TimelineScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.subheader}>
-        {runningValid(runningTimer) ? 'Tracking' : ''}
-      </Text>
-      <Text onPress={() => stopAndUpdate(runningTimer)}>
-        {runningValid(runningProject) ? runningProject[1].name : ''}
-      </Text>
-      <Text onPress={() => stopAndUpdate(runningTimer)}>
-        {runningValid(runningTimer) ? formatTime(count) : ''}
-      </Text>
+      <View key={runningProject[0] + '_running'} >
+        <Text style={styles.subheader}>
+          {runningValid(runningTimer) ? 'Tracking' : ''}
+        </Text>
+        <Text onPress={() => stopAndUpdate(runningTimer)}>
+          {runningValid(runningProject) ? runningProject[1].name : ''}
+        </Text>
+        <Text onPress={() => stopAndUpdate(runningTimer)}>
+          {runningValid(runningTimer) ? formatTime(count) : ''}
+        </Text>
+      </View>
+
       <SectionList style={{ width: '100%' }}
         sections={daysWithTimer}
         keyExtractor={(item, index) => item + index}
@@ -176,7 +179,7 @@ export default function TimelineScreen({ navigation }) {
           return (<Text style={styles.subheader}>{sayDay(title)}</Text>)
         }}
         renderItem={({ item }) => projects.map(project => {
-          if (item.status === 'running') return (<Text key={item.project}></Text>)
+          if (item.status === 'running') return (null)
           if (project[0] === item.project) {
             return (<Timeline
               key={item.project}
