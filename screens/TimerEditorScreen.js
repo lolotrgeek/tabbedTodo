@@ -180,12 +180,12 @@ export default function TimerEditorScreen({ route, navigation }) {
             <View style={styles.textInputContainer}>
                 <Text style={styles.sideTitle}>End</Text>
 
-                <TouchableOpacity onPress={() => { setEnded(time => addMinutes(new Date(time), -5)) }}>
+                <TouchableOpacity onPress={() => { ended ? setEnded(time => addMinutes(new Date(time), -5)) : null }}>
                     <FontAwesome name='chevron-left' style={{ fontSize: 20, marginRight: 10 }} />
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => setPicker('end')} >
-                    <Text>{ended ? timeString(new Date(ended)) : '...'}</Text>
+                    <Text>{ended ? timeString(new Date(ended)) : 'Tracking'}</Text>
 
 
                 </TouchableOpacity>
@@ -197,7 +197,7 @@ export default function TimerEditorScreen({ route, navigation }) {
                     />
                     : <Text></Text>}
 
-                <TouchableOpacity onPress={() => { setEnded(time => addMinutes(new Date(time), 5)) }}>
+                <TouchableOpacity onPress={() => { ended ? setEnded(time => addMinutes(new Date(time), 5)) : null }}>
                     <FontAwesome name='chevron-right' style={{ fontSize: 20, marginLeft: 10 }} />
                 </TouchableOpacity>
 

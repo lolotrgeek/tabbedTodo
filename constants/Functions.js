@@ -1,31 +1,95 @@
-import { isSameDay, isDate, differenceInSeconds, startOfToday, differenceInDays, compareAsc, isToday, isYesterday, subSeconds, addSeconds, endOfDay, addMinutes, parseISO } from 'date-fns'
+import { isSameDay, isDate, differenceInSeconds, startOfToday, compareAsc, isToday, isYesterday, addSeconds, endOfDay, addMinutes, parseISO } from 'date-fns'
 
 // TODO: REFACTOR SO FUNCTIONS DO NOT NEED ANY DATA STRUCTURE
 
 // TIME FUNCTIONS
+/**
+ * 
+ */
 export const dateCreator = () => {
     const today = new Date();
     const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
     const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     return date + ' ' + time;
 }
+/**
+ * 
+ * @param {number} seconds 
+ */
 export const secondsToString = seconds => new Date(seconds * 1000).toISOString().substr(11, 8) // hh: mm : ss
+
+/**
+ * 
+ * @param {*} date 
+ */
 export const getMonth = date => {
     const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"]
   return monthNames[date.getMonth()]
 }
+/**
+ * 
+ * @param {*} date 
+ */
 export const simpleDate = date => date.getDate() + " " + getMonth(date) + " " + date.getFullYear()
+
+/**
+ * 
+ */
 export const sortbydate = () => timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
+/**
+ * 
+ */
 export const listDay = () => timers.map(timer => new Date(timer[1].created))
+/**
+ * 
+ * @param {*} created 
+ * @param {*} ended 
+ */
 export const timeRules = (created, ended) => compareAsc(parseISO(created), parseISO(ended)) === 1 ? false : true
+/**
+ * 
+ * @param {*} date 
+ */
 export const dateRules = date => compareAsc(date, new Date()) === 1 ? false : date  
+
+/**
+ * 
+ * @param {*} date 
+ */
 export const timeString = date => isDate(date) ? date.toTimeString().split(' ')[0] : date
+/**
+ * 
+ * @param {*} start 
+ * @param {*} end 
+ */
 export const totalTime = (start, end) => differenceInSeconds(new Date(end), new Date(start))
+/**
+ * 
+ * @param {*} start 
+ * @param {*} end 
+ */
 export const timeSpan = (start, end) => timeString(new Date(start)) + ' - ' + timeString(new Date(end))
+/**
+ * 
+ * @param {*} start 
+ * @param {*} end 
+ */
 export const totalOver = (start, end) => Math.sign(end) === -1 ? start + end : 0
+/**
+ * 
+ * @param {*} timers 
+ */
 export const totalProjectTime = timers => timers.reduce((acc, timer) => acc + timer.total)
+/**
+ * 
+ * @param {*} datestring 
+ */
 export const sayDay = datestring => isToday(new Date(datestring)) ? 'Today' : isYesterday(new Date(datestring)) ? 'Yesterday' : datestring
+/**
+ * 
+ * @param {*} t timestring or date object
+ */
 export const formatTime = t => {
     if (t >= 0) return new Date(t * 1000).toISOString().substr(11, 8)  // hh : mm : ss
     else {
@@ -42,7 +106,15 @@ export const formatTime = t => {
 }
 
 // TIMER FUNCTIONS - WIP
+/**
+ * 
+ * @param {*} timer 
+ */
 export const sayRunning = timer => timer[1].ended === timer[1].created ? 'running' : timer[1].ended
+/**
+ * 
+ * @param {*} timer 
+ */
 export const isRunning = timer => timer[1].status === 'running' ? true : false
 /**
  * Get amount of time since entry was created
@@ -53,10 +125,18 @@ export const elapsedTime = created => differenceInSeconds(new Date(), new Date(c
 //     let found = timers.filter(timer => isRunning(timer) ? timer : false)
 //     found.length > 0 ? resolve(found) : reject([])
 // })
+/**
+ * 
+ * @param {*} days 
+ */
 export const runningFind = async days => new Promise((resolve, reject) => {
     let found = days.map(day => day.data.filter(timers => isRunning(timers) ? timers : false))
     found.length > 0 ? resolve(found) : reject([])
 })
+/**
+ * 
+ * @param {*} timers 
+ */
 export const findRunning = timers => {
     const foundRunning = timers.filter(timer => {
         if (timer[1].status === 'running') {
@@ -79,7 +159,11 @@ export const findRunning = timers => {
         return []
     }
 }
-
+/**
+ * 
+ * @param {*} created 
+ * @param {*} stopped 
+ */
 export const multiDay = (created, stopped) => {
     if (typeof created === 'string') created = new Date(created)
     if (typeof stopped === 'string') stopped = new Date(stopped)
@@ -135,6 +219,10 @@ export const newEntryPerDay = (created, stopped) => {
 }
 
 // STYLE FUNCTIONS
+/**
+ * 
+ * @param {*} mood 
+ */
 export const moodMap = mood => {
     if (mood === '') return { name: 'times', color: 'black' }
     if (mood === 'great') return { name: 'grin', color: 'orange' }
