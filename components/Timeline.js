@@ -1,20 +1,21 @@
 import React from 'react';
-import { View, Text, Button, TextInput } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
-import {styles} from '../constants/Styles'
+import { View, Text } from 'react-native';
+import { styles } from '../constants/Styles'
 
 export function Timeline(props) {
     return (
         <View style={styles.listContainer}>
-            <View style={{flex: 1, flexDirection: 'column', width:'50%'}}>
-                <Text style={{ color: props.color, fontSize: 20 }} onPress={props.onPress}>
+            <View style={styles.listParent}>
+                <Text style={{ color: props.color, fontSize: 20, }} onPress={props.onPress}>
                     {props.project}
                 </Text>
             </View>
-            <View style={{ flex: 1, flexDirection: 'column', width:'50%' }}>
+            <View style={styles.listParent}>
                 <Text style={styles.listItem}>
-                {props.status}    
+                    {props.status}
                 </Text>
+            </View>
+            <View style={styles.listParent}>
                 <Text style={styles.listItem} onPress={props.onStart}>
                     {props.total}
                 </Text>

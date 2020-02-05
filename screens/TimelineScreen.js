@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, SectionList, Button } from 'react-native';
+import {Text, SafeAreaView, SectionList, Button } from 'react-native';
 import { Timeline } from '../components/Timeline';
 import { getAll, storeItem, updateItem, removeAll } from '../constants/Store'
 import { multiDay, secondsToString, sumProjectTimers, sayDay, dayHeaders, elapsedTime, findRunning, formatTime, isRunning, totalTime, newEntryPerDay } from '../constants/Functions'
@@ -7,6 +7,7 @@ import { timerValid, runningValid, timersValid } from '../constants/Validators'
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
 import { newProject, newTimer, updateTimer } from '../constants/Models'
+import RunningTimer from '../components/runningTimer';
 
 export default function TimelineScreen({ navigation }) {
   let pagename = 'TIMELINE'
@@ -47,20 +48,20 @@ export default function TimelineScreen({ navigation }) {
     // // console.log(entries)
     entries.map((entry, i) => {
       if (i === 0) {
-        updateItem(updateTimer(timer, {ended: entry.end}))
+        updateItem(updateTimer(timer, { ended: entry.end }))
       } else {
         let value = timer[1]
         value.created = entry.start
         value.ended = entry.end === 'running' ? new Date() : entry.end
         value.status = entry.end === 'running' ? 'running' : 'done'
-        storeItem(newTimer({value: value}))
+        storeItem(newTimer({ value: value }))
       }
     })
   }
 
   const stopAndUpdate = timer => {
     stop()
-    updateItem(updateTimer(timer, {count: count}))
+    updateItem(updateTimer(timer, { count: count }))
     setCount(0)
     setRunningTimer([])
     setRunningProject([])
@@ -71,7 +72,7 @@ export default function TimelineScreen({ navigation }) {
     if (runningValid(runningTimer)) {
       stopAndUpdate(runningTimer)
     }
-    let newtimer = newTimer({project: project})
+    let newtimer = newTimer({ project: project })
     storeItem(newtimer)
     setEntryState()
     setCount(0)
@@ -135,18 +136,15 @@ export default function TimelineScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View key={runningProject[0] + '_running'} >
-        <Text style={styles.subheader}>
-          {runningValid(runningTimer) ? 'Tracking' : ''}
-        </Text>
-        <Text onPress={() => stopAndUpdate(runningTimer)}>
-          {runningValid(runningProject) ? runningProject[1].name : ''}
-        </Text>
-        <Text onPress={() => stopAndUpdate(runningTimer)}>
-          {runningValid(runningTimer) ? formatTime(count) : ''}
-        </Text>
-      </View>
-
+      <RunningTimer
+        key={runningProject[0] + '_running'}
+        onPress={() => stopAndUpdate(runningTimer)}
+        display={runningValid(runningTimer) ? 'flex' : 'none'}
+        color={runningValid(runningProject) ? runningProject[1].color : ''}
+        title={runningValid(runningTimer) ? 'Tracking' : ''}
+        project={runningValid(runningProject) ? runningProject[1].name : ''}
+        timer={runningValid(runningTimer) ? formatTime(count) : ''}
+      />
       <SectionList style={{ width: '100%' }}
         sections={daysWithTimer}
         keyExtractor={(item, index) => item + index}

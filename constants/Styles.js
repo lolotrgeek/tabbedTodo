@@ -28,25 +28,25 @@ export const styles = StyleSheet.create({
     marginTop: '5%',
     flexDirection: 'row',
     borderColor: '#aaaaaa',
-    // borderBottomWidth: 1.5,
     width: '100%',
-    alignItems: 'flex-start',
-    padding: 10,
+    padding: '2%',
     minHeight: 40
   },
+  listParent: {
+    flex: 1,
+    borderTopWidth: 1,
+    borderTopColor: 'grey',
+    padding: 10,
+  },
   listItem: {
-    paddingLeft: 5,
-    marginTop: 6,
     fontSize: 15,
-    color: 'black'
+    color: 'black',
+
   },
   textInputContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    // borderColor: 'black',
-    // borderBottomWidth: 1,
-    paddingRight: 10,
-    paddingBottom: 10
+    padding: 10,
   },
   textInput: {
     flex: 1,
@@ -82,9 +82,6 @@ export const styles = StyleSheet.create({
     // borderColor: '#aaaaaa',
     // borderBottomWidth: 1.5,
   },
-  runningTimer : {
-    
-  },
   colorPicker: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -110,7 +107,7 @@ export const styles = StyleSheet.create({
     paddingBottom: 10
   },
   moodContainer: {
-    maxWidth:500,
+    maxWidth: 500,
     marginTop: '5%',
     flexDirection: 'row',
     width: '100%',
@@ -126,10 +123,10 @@ export const styles = StyleSheet.create({
     marginRight: 'auto',
   },
   card: {
-    width : '100%',
+    width: '100%',
     display: 'flex',
     flexWrap: 'wrap',
     marginRight: -14,
     marginBottom: -14,
-},
+  },
 });

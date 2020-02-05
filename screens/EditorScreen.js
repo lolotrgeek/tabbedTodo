@@ -71,7 +71,6 @@ export default function EditorScreen({ route, navigation }) {
       ],
       { cancelable: true },
     );        
-    
   }
 
   const enforceProjectRules = () => {

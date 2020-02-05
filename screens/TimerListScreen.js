@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Button, Text, View, SafeAreaView, SectionList } from 'react-native';
 import { getAll, updateItem, storeItem } from '../constants/Store'
 import { TimerList } from '../components/TimerList';
+import RunningTimer from '../components/runningTimer';
 import { timerValid, runningValid, timersValid } from '../constants/Validators'
 import { timeString, secondsToString, totalTime, timeSpan, sayDay, dayHeaders, moodMap, isRunning, elapsedTime, findRunning, formatTime, multiDay, newEntryPerDay } from '../constants/Functions'
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
-import Hashids from 'hashids'
 import { newTimer, updateTimer } from '../constants/Models';
 
 export default function TimerListScreen({ route, navigation }) {
@@ -130,13 +130,15 @@ export default function TimerListScreen({ route, navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.subheader}> {runningValid(runningTimer) ? 'Tracking' : ''}</Text>
-      <Text onPress={() => stopAndUpdate(runningTimer)}>
-        {runningValid(runningProject) ? runningProject[1].name : ''}
-      </Text>
-      <Text onPress={() => stopAndUpdate(runningTimer)}>
-        {runningValid(runningTimer) ? formatTime(count) : ''}
-      </Text>
+      <RunningTimer
+        key={runningProject[0] + '_running'}
+        onPress={() => stopAndUpdate(runningTimer)}
+        display={runningValid(runningTimer) ? 'flex' : 'none'}
+        color={runningValid(runningProject) ? runningProject[1].color : ''}
+        title={runningValid(runningTimer) ? 'Tracking' : ''}
+        project={runningValid(runningProject) ? runningProject[1].name : ''}
+        timer={runningValid(runningTimer) ? formatTime(count) : ''}
+      />
       <Text
         onPress={() => navigation.navigate('Edit', { project: project })}
         style={{

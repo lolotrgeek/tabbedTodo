@@ -26,7 +26,6 @@ export const updateTimer = (timer, { count, created, ended, energy, mood }) => {
         mood: mood ? mood : timer[1].mood,
         total: count ? count : timer[1].total,
         status: 'done',
-
     }
     return [timer[0], updated]
 }
