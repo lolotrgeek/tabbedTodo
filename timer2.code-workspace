@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "timer",
+			"path": "."
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}

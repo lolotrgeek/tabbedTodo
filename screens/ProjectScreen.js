@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import {  Button, View, ScrollView } from 'react-native';
-import ProjectList from '../components/ProjectList';
+import React, { useState, useEffect } from 'react'
+import {  Button, View, ScrollView } from 'react-native'
+import ProjectList from '../components/ProjectList'
 import { getAll, removeAll } from '../constants/Store'
 import {styles} from '../constants/Styles'
 
 export default function ProjectScreen({ route, navigation }) {
   let pagename = 'Projects'
-  const { running, lastscreen } = route.params
+  const { running, update, lastscreen } = route.params
   const [projects, setProject] = useState([]); // state of projects list
 
   const entries = async () => {
@@ -14,24 +14,18 @@ export default function ProjectScreen({ route, navigation }) {
       let entry = await getAll(value => value.type === 'project' ? true : false)
       setProject(entry)
     } catch (error) {
-      console.log(error)
+      // console.log(error)
     }
   }
 
-  useEffect(() => navigation.setOptions({ title: pagename }), [])
   useEffect(() => {
-    const focused = navigation.addListener('focus', () => {
-      console.log('FOCUSED PAGE - ' + pagename)
-      entries()
-    })
-    const unfocused = navigation.addListener('blur', () => {
-    })
-    return focused, unfocused
-  }, [])
-  
-  useEffect(() => {
+    navigation.setOptions({ title: pagename })
     entries()
   }, [])
+
+  useEffect(() => {
+    entries()
+  }, [update])
 
   return (
     <View style={styles.container}>
@@ -40,10 +34,6 @@ export default function ProjectScreen({ route, navigation }) {
           title='Add Project'
           onPress={() => navigation.navigate('Edit', {project : []})}
         />        
-        {/* <Button
-        title='Delete All'
-        onPress={() => removeAll()}
-      /> */}
       </View>
       <ScrollView style={{ width: '100%' }}>
         {projects.map((project, i) =>
@@ -57,10 +47,6 @@ export default function ProjectScreen({ route, navigation }) {
               running: running,
               lastscreen: 'Timeline'
             })}
-            // onStart={() => navigation.navigate('Timer', {
-            //   project: project,
-            //   run: true,
-            // })}
           />
           ))}
 

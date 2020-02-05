@@ -95,10 +95,11 @@ export const stringifyValue = value => {
 
 /**
  * Add key value pair to Async Storage
- * @param {*} key 
- * @param {*} value 
+ * @param {Array} item [key, value]
  */
-export const storeItem = async (key, value) => {
+export const storeItem = async item => {
+    let key = item[0]
+    let value = item[1]
     if (typeof value === 'object' || Array.isArray(value)) value = JSON.stringify(value)
     try {
         //console.info('ASYNC STORAGE - STORING : ', [key  , value] )
@@ -110,10 +111,11 @@ export const storeItem = async (key, value) => {
 
 /**
  * Update existing key with given value in Async Storage
- * @param {*} key 
- * @param {*} value 
+ * @param {Array} item [key, value]
  */
-export const updateItem = async (key, value) => {
+export const updateItem = async item => {
+    let key = item[0]
+    let value = item[1]
     if (typeof value === 'object' || Array.isArray(value)) value = JSON.stringify(value)
     try {
         //console.info('ASYNC STORAGE - UPDATING: ', [key, value])

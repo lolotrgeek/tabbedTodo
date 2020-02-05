@@ -1,23 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, TouchableOpacity, TextInput, Button, } from 'react-native';
+import { Text, View, TouchableOpacity, TextInput, Button, Alert } from 'react-native';
 import { updateItem, storeItem, removeItem } from '../constants/Store'
 import { projectValid, createdValid, nameValid, colorValid, timeValid } from '../constants/Validators'
-import { dateCreator, secondsToString } from '../constants/Functions'
 import Icon from 'react-native-vector-icons/Feather';
-// import { CirclePicker } from 'react-color'
-import {ColorPicker} from '../components/ColorPicker'
-import Hashids from 'hashids'
-import NumPad from '../components/NumPad';
+import { ColorPicker } from '../components/ColorPicker'
 import { styles } from '../constants/Styles'
 import * as material from 'material-colors'
-// import { simpleCheckForValidColor } from '../constants/Colors'
+import { updateProject, newProject } from '../constants/Models';
 
-// Color picking
-//https://casesandberg.github.io/react-color/
 
 export default function EditorScreen({ route, navigation }) {
   const { project } = route.params
-
   const [key, setKey] = useState('')
   const [created, setCreated] = useState('')
   const [name, setName] = useState('');
@@ -37,7 +30,6 @@ export default function EditorScreen({ route, navigation }) {
     material.yellow['500'], material.amber['500'], material.orange['500'],
     material.deepOrange['500'], material.brown['500'], material.blueGrey['500']
   ]
-
 
   const handleRoutedParams = () => {
     if (projectValid(project)) {
@@ -59,9 +51,9 @@ export default function EditorScreen({ route, navigation }) {
     }
   }
 
-  const addProject = (NEWKEY, NEWVALUE) => {
+  const addProject = project => {
     if (name.length > 0) {
-      storeItem(NEWKEY, NEWVALUE)
+      storeItem(project)
     }
   }
 
@@ -71,47 +63,43 @@ export default function EditorScreen({ route, navigation }) {
     navigation.navigate('Projects')
   }
 
-
-  // const handleSelectedColor = (color, event) => {
-  //   const isValidColor = simpleCheckForValidColor(data)
-  //   if (isValidColor) {
-
-  //   }
-  // }
-
-  const handleComplete = () => {
+  const enforceProjectRules = () => {
     if (!name || name === '') {
-      console.warn('Give a Valid Name')
+      Alert.alert(
+        'Error',
+        'Give a Valid Name',
+      )
+      return false
     }
     else if (!color || color === '' || color.charAt(0) !== '#') {
-      console.warn('Give a Valid Color')
+      Alert.alert(
+        'Error',
+        'Give a Valid Color',
+      )
+      return false
     }
     else {
+      return true
+    }
+  }
+
+  const handleComplete = () => {
+    if (enforceProjectRules()) {
       let newroute
-      let value = {
-        created: created, type: 'project',
-        name: name,
-        color: color,
-        time: typeof time === 'string' && time.length > 0 ? parseInt(time) : time
-      }
       if (key) {
-        console.log('Updating Project')
-        updateItem(key, value)
+        let updatedproject = updateProject(key, created, name, color, time)  
+        updateItem(updatedproject)
         newroute = {
-          project: [key, value],
+          project: updatedproject,
           update: true
         }
       }
       if (!key || key === '') {
-        value.created = dateCreator()
-        const hashids = new Hashids()
-        const newkey = hashids.encode(Date.now())
-        console.log(newkey)
-        setKey(newkey)
-        console.log('Adding New Project')
-        addProject(newkey, value)
+        let newproject = newProject(name, color, time)
+        setKey(newproject[0])
+        addProject(newproject)
         newroute = {
-          project: [newkey, value],
+          project: newproject,
           update: false
         }
       }

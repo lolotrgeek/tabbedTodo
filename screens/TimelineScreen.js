@@ -6,7 +6,7 @@ import { multiDay, secondsToString, sumProjectTimers, sayDay, dayHeaders, elapse
 import { timerValid, runningValid, timersValid } from '../constants/Validators'
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
-import Hashids from 'hashids'
+import { newProject, newTimer, updateTimer } from '../constants/Models'
 
 export default function TimelineScreen({ navigation }) {
   let pagename = 'TIMELINE'
@@ -35,16 +35,16 @@ export default function TimelineScreen({ navigation }) {
     try {
       const days = await dayHeaders(sortedTimers)
       const summed = sumProjectTimers(days)
-      console.log('List Items : ', summed)
+      // console.log('List Items : ', summed)
       setDaysWithTimer(summed)
     } catch (err) {
-      console.log(err)
+      // console.log(err)
     }
   }
 
   const splitAndUpdate = timer => {
     const entries = newEntryPerDay(timer[1].created)
-    console.log(entries)
+    // // console.log(entries)
     entries.map((entry, i) => {
       if (i === 0) {
         let value = timer[1]
@@ -58,20 +58,17 @@ export default function TimelineScreen({ navigation }) {
         value.created = entry.start
         value.ended = entry.end === 'running' ? new Date() : entry.end
         value.status = entry.end === 'running' ? 'running' : 'done'
-        console.log('new: ', [key, value])
+        // // console.log('new: ', [key, value])
         storeItem(key, value)
+
       }
     })
   }
 
-  const stopAndUpdate = item => {
+  const stopAndUpdate = timer => {
     stop()
-    item[1].status = 'done'
-    item[1].ended = new Date().toString()
-    item[1].total = count
-    updateItem(item[0], item[1])
-    console.log(item[0], ' - Total Time : ', totalTime(item[1].created))
-    console.log(item[0], ' - Updated : ', item[1])
+    let updatedtimer = updateTimer(timer, count)
+    updateItem(updatedtimer)
     setCount(0)
     setRunningTimer([])
     setRunningProject([])
@@ -82,24 +79,12 @@ export default function TimelineScreen({ navigation }) {
     if (runningValid(runningTimer)) {
       stopAndUpdate(runningTimer)
     }
-    const hashids = new Hashids()
-    let key = hashids.encode(Date.now().toString())
-    let value = {
-      created: new Date().toString(),
-      ended: new Date().toString(),
-      type: 'timer',
-      project: project[0],
-      status: 'running',
-      total: 0,
-      mood: 'good',
-      energy: 50,
-    }
-    console.log(key, ' - Adding New : ', value)
-    storeItem(key, value)
+    let newtimer = newTimer(project)
+    storeItem(newtimer)
     setEntryState()
     setCount(0)
     setRunningProject(project)
-    setRunningTimer([key, value])
+    setRunningTimer(newtimer)
   }
 
   useEffect(() => {
@@ -109,11 +94,11 @@ export default function TimelineScreen({ navigation }) {
 
   useEffect(() => {
     const focused = navigation.addListener('focus', () => {
-      //console.log('FOCUS - ' + pagename)
+      //// console.log('FOCUS - ' + pagename)
       setEntryState()
     })
     const unfocused = navigation.addListener('blur', () => {
-      console.log('attempting stop...')
+      // console.log('attempting stop...')
       setRunningProject([])
       setRunningTimer([])
       stop()
@@ -138,7 +123,7 @@ export default function TimelineScreen({ navigation }) {
     if (timersValid(projects) && runningValid(runningTimer)) {
       projects.map(project => {
         if (runningTimer[1].project === project[0]) {
-          console.log('Found Running Project')
+          // console.log('Found Running Project')
           setRunningProject(project)
         }
       })
@@ -147,14 +132,14 @@ export default function TimelineScreen({ navigation }) {
 
   useEffect(() => {
     if (runningTimer && Array.isArray(runningTimer) && runningTimer.length === 2) {
-      console.log('runningTimer: ', runningTimer)
+      // console.log('runningTimer: ', runningTimer)
       start()
     }
   }, [runningTimer])
 
   // useEffect(() => {
   //   if (runningValid(runningTimer)) {
-  //     console.log('ticked : ', count, 'calculated : ', elapsedTime(runningTimer[1].created))
+  //     // console.log('ticked : ', count, 'calculated : ', elapsedTime(runningTimer[1].created))
   //   }
   // }, [count])
 
@@ -186,12 +171,12 @@ export default function TimelineScreen({ navigation }) {
               color={project[1].color}
               project={project[1].name}
               total={typeof item.total === 'number' && new Date(item.total) ? secondsToString(item.total) : item.total}
+              onStart={() => startandUpdate(project)}
               onPress={() => navigation.navigate('TimerList', {
                 project: project,
                 running: { project: runningProject, timer: runningTimer },
                 lastscreen: 'Timeline'
               })}
-              onStart={() => startandUpdate(project)}
             />)
           }
         })

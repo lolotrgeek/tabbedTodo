@@ -7,6 +7,7 @@ import { timeString, secondsToString, totalTime, timeSpan, sayDay, dayHeaders, m
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
 import Hashids from 'hashids'
+import { newTimer, updateTimer } from '../constants/Models';
 
 export default function TimerListScreen({ route, navigation }) {
   const pagename = 'TimerList'
@@ -44,17 +45,17 @@ export default function TimerListScreen({ route, navigation }) {
         const days = await dayHeaders(sortedTimers)
         setDaysWithTimer(days)
       } catch (error) {
-        console.log(error)
+        // console.log(error)
       }
     } catch (error) {
-      console.log(error)
+      // console.log(error)
 
     }
   }
   
   const splitAndUpdate = timer => {
     const entries = newEntryPerDay(timer[1].created)
-    console.log(entries)
+    // console.log(entries)
     entries.map((entry, i) => {
       if (i === 0) {
         let value = timer[1]
@@ -68,55 +69,40 @@ export default function TimerListScreen({ route, navigation }) {
         value.created = entry.start
         value.ended = entry.end === 'running' ? new Date() : entry.end
         value.status = entry.end === 'running' ? 'running' : 'done'
-        console.log('new: ', [key, value])
+        // console.log('new: ', [key, value])
         storeItem(key, value)
       }
     })
   }
-  const stopAndUpdate = item => {
+  const stopAndUpdate = timer => {
     stop()
-    item[1].status = 'done'
-    item[1].ended = new Date().toString()
-    item[1].total = count
-    updateItem(item[0], item[1])
+    let updatedtimer = updateTimer(timer, count)
+    updateItem(updatedtimer)
     setCount(0)
     setRunningTimer([])
     setRunningProject([])
-    console.log('updated : ', [item[0], item[1]])
     setEntryState()
   }
   const startandUpdate = project => {
     if (runningValid(runningTimer)) {
       stopAndUpdate(runningTimer)
     }
-    const hashids = new Hashids()
-    let key = hashids.encode(Date.now().toString())
-    let value = {
-      created: new Date().toString(),
-      ended: new Date().toString(),
-      type: 'timer',
-      project: project[0],
-      status: 'running',
-      total: 0,
-      mood: 'good',
-      energy: 50,
-    }
-    console.log('new: ', [key, value])
-    storeItem(key, value)
+    let newtimer = newTimer(project)
+    storeItem(newtimer)
     setEntryState()
     setCount(0)
     setRunningProject(project)
-    setRunningTimer([key, value])
+    setRunningTimer(newtimer)
   }
 
   useEffect(() => {
     // setEntryState()
     const focused = navigation.addListener('focus', () => {
-      console.log('FOCUS - ' + pagename)
+      // console.log('FOCUS - ' + pagename)
       setEntryState()
     })
     const unfocused = navigation.addListener('blur', () => {
-      console.log('attempting stop...')
+      // console.log('attempting stop...')
       stop()
     })
     return focused, unfocused
@@ -138,7 +124,7 @@ export default function TimerListScreen({ route, navigation }) {
   useEffect(() => {
     if (running.project && runningValid(runningTimer)) {
       if (runningTimer[1].project === running.project[0]) {
-        console.log('Found Running Project')
+        // console.log('Found Running Project')
         setRunningProject(running.project)
       }
     }
@@ -146,7 +132,7 @@ export default function TimerListScreen({ route, navigation }) {
 
   useEffect(() => {
     if (runningTimer && Array.isArray(runningTimer) && runningTimer.length === 2) {
-      console.log('runningTimer: ', runningTimer)
+      // console.log('runningTimer: ', runningTimer)
       start()
     }
   }, [runningTimer])

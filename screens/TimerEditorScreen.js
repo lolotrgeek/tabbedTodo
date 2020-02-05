@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, Button, TouchableOpacity, TextInput } from 'react-native';
+import { Text, View, Button, TouchableOpacity, Alert } from 'react-native';
 import { updateItem, removeItem } from '../constants/Store'
 import { EnergySlider, MoodPicker } from '../components/TimerNotes'
 import { DatePicker, TimePicker } from '../components/DatePickers'
 import { addMinutes } from 'date-fns'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { timerValid, createdValid, dateValid } from '../constants/Validators'
-import { timeRules, isRunning, simpleDate, timeString, dateRules } from '../constants/Functions'
+import { timeRules, isRunning, simpleDate, timeString, dateRules, totalTime } from '../constants/Functions'
 import { styles } from '../constants/Styles'
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { updateTimer } from '../constants/Models';
 
 export default function TimerEditorScreen({ route, navigation }) {
     const { timer, project, lastscreen } = route.params
@@ -21,8 +22,6 @@ export default function TimerEditorScreen({ route, navigation }) {
     const [picker, setPicker] = useState('')
     const [created, setCreated] = useState('')
     const [ended, setEnded] = useState('')
-    const [start, setStart] = useState('');
-    const [stop, setStop] = useState('');
     const [mood, setMood] = useState('')
     const [energy, setEnergy] = useState(projectName ? timer[1].energy : 0)
 
@@ -39,8 +38,6 @@ export default function TimerEditorScreen({ route, navigation }) {
     const handleRoutedParams = () => {
         if (timer && timerValid) {
             setKey(timer[0])
-            setStart(timer[1].start)
-            setStop(timer[1].stop)
             setMood(timer[1].mood)
             setEnergy(timer[1].energy)
             if (createdValid) {
@@ -50,23 +47,37 @@ export default function TimerEditorScreen({ route, navigation }) {
         }
     }
 
-    const handleComplete = () => {
+    const timeRulesEnforcer = () => {
         if (!timeRules(created, ended)) {
-            // MODAL HERE
-            console.log('Cannot End before Start.')
+            Alert.alert(
+                'Error',
+                'Cannot Start after End.',
+            )
             return false
         }
-        timer[1].created = created.toString()
-        timer[1].ended = ended.toString()
-        timer[1].stop = stop
-        timer[1].start = start
-        timer[1].energy = energy
-        timer[1].mood = mood
-        timer[1].total = Math.abs(start) + Math.abs(stop)
-        console.log(timer[1])
-        if (key) {
-            updateItem(key, timer[1])
+        else if (!timeRules(created, new Date())) {
+            Alert.alert(
+                'Error',
+                'Cannot Start before now.',
+            )
+            return false
+        } else {
+            return true
         }
+    }
+
+    const handleComplete = () => {
+        if (!timeRulesEnforcer()) return false
+        let update = {
+            created : created,
+            ended : ended,
+            energy : energy,
+            mood : mood,
+            count : totalTime(created, ended)
+        }
+        console.log(update)
+        let updatedtimer = updateTimer(timer, update)
+        if (key) updateItem(updatedtimer)
         navigation.navigate(lastscreen ? lastscreen : 'Projects', {
             project: project
         })
@@ -75,17 +86,24 @@ export default function TimerEditorScreen({ route, navigation }) {
     const chooseNewTime = newTime => {
         if (!timeRules(created, ended)) {
             setPicker(false);
-            // MODAL HERE
-            console.warn(created, ' | ', ended)
-            console.warn('Cannot Start after End.')
+            Alert.alert(
+                'Error',
+                'Cannot Start after End.',
+            )
         }
         else if (!timeRules(created, new Date())) {
             setPicker(false);
-            console.warn('Cannot Start before now')
+            Alert.alert(
+                'Error',
+                'Cannot Start before now.',
+            )
         }
-        else if (!dateRules(newTime)) {
+        else if (newTime && !dateRules(newTime)) {
             setPicker(false);
-            console.warn('Cannot Pick Date before Today.')
+            Alert.alert(
+                'Error',
+                'Cannot Pick Date before Today.',
+            )
         }
         else {
             setPicker(false)
@@ -99,7 +117,11 @@ export default function TimerEditorScreen({ route, navigation }) {
             dateValid(newDate) ? setCreated(newDate) : false
         } else {
             setPicker(false);
-            console.warn('Cannot Pick Date before Today.')
+            Alert.alert(
+                'Error',
+                'Cannot Pick Date before Today.',
+            )
+            // console.warn('Cannot Pick Date before Today.')
         }
     }
 
@@ -113,27 +135,22 @@ export default function TimerEditorScreen({ route, navigation }) {
     }, [mood])
 
     useEffect(() => {
-        if (!timeRules(created, ended)) {
-            // MODAL HERE
-            console.warn(created, ' | ', ended)
-            console.warn('Cannot Start after End.')
-        }
-        else if (!timeRules(created, new Date())) {
-            console.warn('Cannot Start before now')
+        if (!timeRulesEnforcer()) {
+            console.log('invalid created')
+            setCreated(timer[1].created)
         } else {
+            console.log('valid created')
             timer[1].created = created
             updateItem(timer[0], timer[1])
         }
     }, [created])
 
     useEffect(() => {
-        if (!timeRules(created, ended)) {
-            console.warn(created, ' | ', ended)
-            console.warn('Cannot End before Start.')
-        }
-        else if (!timeRules(created, new Date())) {
-            console.warn('Cannot Start before now')
+        if (!timeRulesEnforcer()) {
+            console.log('invalid ended')
+            setEnded(timer[1].ended)
         } else {
+            console.log('valid ended')
             timer[1].ended = ended
             updateItem(timer[0], timer[1])
         }
@@ -157,7 +174,7 @@ export default function TimerEditorScreen({ route, navigation }) {
             </View>
             <View style={styles.textInputContainer}>
                 <Text style={styles.sideTitle}>Start</Text>
-                <TouchableOpacity onPress={() => { setCreated(time => addMinutes(new Date(time), -5)) }}>
+                <TouchableOpacity onPress={() => setCreated(time => addMinutes(new Date(time), -5))}>
                     <FontAwesome name='chevron-left' style={{ fontSize: 20, marginRight: 10 }} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setPicker('start')} >
@@ -217,7 +234,7 @@ export default function TimerEditorScreen({ route, navigation }) {
                 energyChange={value => setEnergy(value)}
                 onEnergySet={value => setEnergy(value)}
             />
-            <Button title='Done' onPress={() => handleComplete()}></Button>
+            <Button title='Done' onPress={() => timeRulesEnforcer() ? handleComplete() : false }></Button>
             <TouchableOpacity onPress={() => deleteEntry()}>
                 <FontAwesome5 name='trash-alt' color='red' style={styles.delete} />
             </TouchableOpacity>
