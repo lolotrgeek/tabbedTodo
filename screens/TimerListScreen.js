@@ -131,7 +131,6 @@ export default function TimerListScreen({ route, navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <RunningTimer
-        key={runningProject[0] + '_running'}
         onPress={() => stopAndUpdate(runningTimer)}
         display={runningValid(runningTimer) ? 'flex' : 'none'}
         color={runningValid(runningProject) ? runningProject[1].color : ''}

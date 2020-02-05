@@ -75,7 +75,6 @@ export default function TimerEditorScreen({ route, navigation }) {
             mood : mood,
             count : totalTime(created, ended)
         }
-        console.log(update)
         let updatedtimer = updateTimer(timer, update)
         if (key) updateItem(updatedtimer)
         navigation.navigate(lastscreen ? lastscreen : 'Projects', {
@@ -121,7 +120,6 @@ export default function TimerEditorScreen({ route, navigation }) {
                 'Error',
                 'Cannot Pick Date before Today.',
             )
-            // console.warn('Cannot Pick Date before Today.')
         }
     }
 
@@ -136,10 +134,8 @@ export default function TimerEditorScreen({ route, navigation }) {
 
     useEffect(() => {
         if (!timeRulesEnforcer()) {
-            console.log('invalid created')
             setCreated(timer[1].created)
         } else {
-            console.log('valid created')
             timer[1].created = created
             updateItem(timer[0], timer[1])
         }
@@ -147,10 +143,8 @@ export default function TimerEditorScreen({ route, navigation }) {
 
     useEffect(() => {
         if (!timeRulesEnforcer()) {
-            console.log('invalid ended')
             setEnded(timer[1].ended)
         } else {
-            console.log('valid ended')
             timer[1].ended = ended
             updateItem(timer[0], timer[1])
         }

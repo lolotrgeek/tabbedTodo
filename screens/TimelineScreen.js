@@ -10,7 +10,7 @@ import { newProject, newTimer, updateTimer } from '../constants/Models'
 import RunningTimer from '../components/runningTimer';
 
 export default function TimelineScreen({ navigation }) {
-  useEffect(() => navigation.setOptions({ title: 'Timeline', headerStyle: { backgroundColor: 'transparent' } }), [])
+  useEffect(() => navigation.setOptions({ title: 'Timeline'}), [])
 
   const [timers, setTimers] = useState([]); // state of timers list
   const [projects, setProjects] = useState([]); // state of timers list
@@ -137,7 +137,7 @@ export default function TimelineScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <RunningTimer
-        key={runningProject[0] + '_running'}
+        // key={runningProject[0] + '_running'}
         onPress={() => stopAndUpdate(runningTimer)}
         display={runningValid(runningTimer) ? 'flex' : 'none'}
         color={runningValid(runningProject) ? runningProject[1].color : ''}

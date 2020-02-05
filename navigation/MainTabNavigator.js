@@ -25,7 +25,7 @@ import TimelineScreen from '../screens/TimelineScreen'
 const TimelineStack = createStackNavigator();
 export default function MainStack() {
   return (
-    <TimelineStack.Navigator screenOptions={stackOptions}>
+    <TimelineStack.Navigator screenOptions={stackOptions} mode="modal" >
       <TimelineStack.Screen name="Timeline" component={TimelineScreen} />
       <TimelineStack.Screen name='Projects' component={ProjectScreen} />
       <TimelineStack.Screen name='Edit' component={EditorScreen} />
@@ -105,8 +105,8 @@ export default function MainStack() {
 
 const stackOptions = {
   // headerTitle: '',
-  // headerShown: true,
-  // headerHideShadow: true,
+  headerShown: true,
+  headerHideShadow: true,
   // headerLargeTitle: true,
   // headerTranslucent: true,
   // headerStyle: {

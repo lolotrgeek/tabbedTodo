@@ -4,7 +4,7 @@ import { styles } from '../constants/Styles'
 
 export default function RunningTimer(props) {
     return (
-        <TouchableOpacity key={props.key} style={{display: props.display}} onPress={props.onPress}>
+        <TouchableOpacity style={{display: props.display}} onPress={props.onPress}>
             <View style={{ backgroundColor: props.color , padding: 10 }}  >
                 <Text style={styles.subheader}>
                     {props.title}
