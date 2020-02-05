@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {Text, SafeAreaView, SectionList, Button } from 'react-native';
 import { Timeline } from '../components/Timeline';
 import { getAll, storeItem, updateItem, removeAll } from '../constants/Store'
-import { multiDay, secondsToString, sumProjectTimers, sayDay, dayHeaders, elapsedTime, findRunning, formatTime, isRunning, totalTime, newEntryPerDay } from '../constants/Functions'
+import { multiDay, secondsToString, sumProjectTimers, sayDay, dayHeaders, elapsedTime, findRunning, formatTime, newEntryPerDay } from '../constants/Functions'
 import { timerValid, runningValid, timersValid } from '../constants/Validators'
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
@@ -10,7 +10,7 @@ import { newProject, newTimer, updateTimer } from '../constants/Models'
 import RunningTimer from '../components/runningTimer';
 
 export default function TimelineScreen({ navigation }) {
-  let pagename = 'TIMELINE'
+  useEffect(() => navigation.setOptions({ title: 'Timeline', headerStyle: { backgroundColor: 'transparent' } }), [])
 
   const [timers, setTimers] = useState([]); // state of timers list
   const [projects, setProjects] = useState([]); // state of timers list

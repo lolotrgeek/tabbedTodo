@@ -35,8 +35,8 @@ export const styles = StyleSheet.create({
   listParent: {
     flex: 1,
     borderTopWidth: 1,
-    borderTopColor: 'grey',
-    padding: 10,
+    borderColor: '#aaaaaa',
+    paddingTop:20
   },
   listItem: {
     fontSize: 15,

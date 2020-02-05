@@ -105,18 +105,20 @@ export default function MainStack() {
 
 const stackOptions = {
   // headerTitle: '',
-  headerShown: true,
-  headerHideShadow: true,
-  headerLargeTitle: true,
-  headerTranslucent: true,
-  headerStyle: {
-    backgroundColor: 'transparent',
-    borderBottomWidth: 0
-  },
-  headerTintColor: '#000',
+  // headerShown: true,
+  // headerHideShadow: true,
+  // headerLargeTitle: true,
+  // headerTranslucent: true,
+  // headerStyle: {
+  //   backgroundColor: 'transparent',
+  //   borderBottomWidth: 0
+  // },
+  // headerTintColor: '#000',
   headerTitleStyle: {
     fontWeight: 'bold',
     backgroundColor: 'transparent',
+    borderBottomWidth: 0,
+    borderTopWidth: 0
 
   },
 }
