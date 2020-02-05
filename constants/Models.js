@@ -1,6 +1,6 @@
 import Hashids from 'hashids'
 
-export const newTimerValue = project => ({
+export const newTimerValue = (project) => ({
     created: new Date().toString(),
     ended: new Date().toString(),
     type: 'timer',
@@ -11,11 +11,11 @@ export const newTimerValue = project => ({
     energy: 50,
 })
 
-export const newTimer = project => {
+export const newTimer = ({project, value}) => {
     const hashids = new Hashids()
     let key = hashids.encode(Date.now().toString())
-    let value = newTimerValue(project)
-    return [key, value]
+    let new_value = value ? value : newTimerValue(project)
+    return [key, new_value]
 }
 
 export const updateTimer = (timer, { count, created, ended, energy, mood }) => {

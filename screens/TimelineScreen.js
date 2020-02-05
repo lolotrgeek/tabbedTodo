@@ -47,28 +47,20 @@ export default function TimelineScreen({ navigation }) {
     // // console.log(entries)
     entries.map((entry, i) => {
       if (i === 0) {
-        let value = timer[1]
-        value.ended = entry.end
-        value.status = 'done'
-        updateItem(timer[0], value)
+        updateItem(updateTimer(timer, {ended: entry.end}))
       } else {
-        const hashids = new Hashids()
-        let key = hashids.encode(Date.now().toString())
         let value = timer[1]
         value.created = entry.start
         value.ended = entry.end === 'running' ? new Date() : entry.end
         value.status = entry.end === 'running' ? 'running' : 'done'
-        // // console.log('new: ', [key, value])
-        storeItem(key, value)
-
+        storeItem(newTimer({value: value}))
       }
     })
   }
 
   const stopAndUpdate = timer => {
     stop()
-    let updatedtimer = updateTimer(timer, count)
-    updateItem(updatedtimer)
+    updateItem(updateTimer(timer, {count: count}))
     setCount(0)
     setRunningTimer([])
     setRunningProject([])
@@ -79,7 +71,7 @@ export default function TimelineScreen({ navigation }) {
     if (runningValid(runningTimer)) {
       stopAndUpdate(runningTimer)
     }
-    let newtimer = newTimer(project)
+    let newtimer = newTimer({project: project})
     storeItem(newtimer)
     setEntryState()
     setCount(0)
@@ -123,7 +115,6 @@ export default function TimelineScreen({ navigation }) {
     if (timersValid(projects) && runningValid(runningTimer)) {
       projects.map(project => {
         if (runningTimer[1].project === project[0]) {
-          // console.log('Found Running Project')
           setRunningProject(project)
         }
       })
@@ -132,7 +123,6 @@ export default function TimelineScreen({ navigation }) {
 
   useEffect(() => {
     if (runningTimer && Array.isArray(runningTimer) && runningTimer.length === 2) {
-      // console.log('runningTimer: ', runningTimer)
       start()
     }
   }, [runningTimer])
