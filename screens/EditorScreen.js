@@ -18,7 +18,7 @@ export default function EditorScreen({ route, navigation }) {
   const [time, setTime] = useState('')
 
   const swatch = {
-    width: 252,
+    width: 28,
     circleSize: 28,
     circleSpacing: 14,
   }
@@ -58,9 +58,20 @@ export default function EditorScreen({ route, navigation }) {
   }
 
   const deleteProject = id => {
-    removeItem(id)
-    //todo : are you sure notification        
-    navigation.navigate('Projects')
+    Alert.alert(
+      'Delete Project',
+      'Are you sure?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => {removeItem(id); navigation.navigate('Projects')} },
+      ],
+      { cancelable: true },
+    );        
+    
   }
 
   const enforceProjectRules = () => {
@@ -136,10 +147,14 @@ export default function EditorScreen({ route, navigation }) {
 
       <View style={{
         width: '100%',
-        display: 'flex',
-        flexWrap: 'wrap',
+        display:'flex',
+        flexDirection : 'row',
+        justifyContent : 'space-evenly',
+        flexWrap : 'wrap',
         marginRight: -14,
-        marginBottom: -14,
+        marginTop: 14,
+        marginBottom: 14,
+
       }}>
         {colors.map(c => {
           return (

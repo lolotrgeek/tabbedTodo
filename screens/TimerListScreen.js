@@ -89,13 +89,11 @@ export default function TimerListScreen({ route, navigation }) {
   }
 
   useEffect(() => {
-    // setEntryState()
     const focused = navigation.addListener('focus', () => {
       // console.log('FOCUS - ' + pagename)
       setEntryState()
     })
     const unfocused = navigation.addListener('blur', () => {
-      // console.log('attempting stop...')
       stop()
     })
     return focused, unfocused
