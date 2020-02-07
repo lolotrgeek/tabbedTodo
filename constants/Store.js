@@ -10,7 +10,7 @@ export const getEntry = async (id) => {
         console.error(error)
     }
 }
-const storeMap = (result, validator) => {
+export const storeMap = (result, validator) => {
     let key = result[0]
     let value = result[1]
     if (!key || key === 'undefined') {

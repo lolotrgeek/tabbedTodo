@@ -6,13 +6,18 @@ npm-debug.*
 *.p12
 *.key
 *.mobileprovision
+*.ps1
 *.orig.*
+credentials.json
 web-build/
 web-report/
 
-/mode_modules
+/node_modules
 /.history
 /.expo
 /.expo-shared
 /android
 /ios
+/logs
+/.vscode
+/__tests__

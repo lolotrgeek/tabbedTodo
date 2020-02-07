@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import {Text, SafeAreaView, SectionList, Button } from 'react-native';
-import { Timeline } from '../components/Timeline';
+import React, { useState, useEffect } from 'react'
+import {Text, SafeAreaView, SectionList, Button } from 'react-native'
+import { Timeline } from '../components/Timeline'
 import { getAll, storeItem, updateItem, removeAll } from '../constants/Store'
 import { multiDay, secondsToString, sumProjectTimers, sayDay, dayHeaders, elapsedTime, findRunning, formatTime, newEntryPerDay } from '../constants/Functions'
 import { timerValid, runningValid, timersValid } from '../constants/Validators'
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
 import { newProject, newTimer, updateTimer } from '../constants/Models'
-import RunningTimer from '../components/runningTimer';
+import RunningTimer from '../components/runningTimer'
+import {initDeepStream, testDeepStream} from '../constants/Messaging'
 
 export default function TimelineScreen({ navigation }) {
   useEffect(() => navigation.setOptions({ title: 'Timeline'}), [])
+  useEffect(() => {initDeepStream(); testDeepStream()}, [])
 
   const [timers, setTimers] = useState([]); // state of timers list
   const [projects, setProjects] = useState([]); // state of timers list
