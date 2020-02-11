@@ -10,7 +10,8 @@ import {
   ScrollView
 } from 'react-native';
 
-import {getAll, storeItem, updateItem, removeItem, removeAll} from '../constants/Store'
+import {getAll, storeItem, updateItem, removeItem, removeAll} from '../constants/Gun'
+// import {getAll, storeItem, updateItem, removeItem, removeAll} from '../constants/Store'
 
 import Icon from 'react-native-vector-icons/Feather';
 import TodoList from '../components/TodoList';

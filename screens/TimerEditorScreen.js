@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, Button, TouchableOpacity, Alert } from 'react-native';
-import { updateItem, removeItem } from '../constants/Store'
+// import { updateItem, removeItem } from '../constants/Store'
+import { updateItem, removeItem } from '../constants/Gun'
 import { EnergySlider, MoodPicker } from '../components/TimerNotes'
-import { DatePicker, TimePicker } from '../components/DatePickers'
 import { addMinutes } from 'date-fns'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { timerValid, createdValid, dateValid } from '../constants/Validators'

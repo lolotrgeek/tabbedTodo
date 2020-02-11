@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Text, View, SafeAreaView, SectionList } from 'react-native';
-import { getAll, updateItem, storeItem } from '../constants/Store'
+// import { getAll, updateItem, storeItem } from '../constants/Store'
+import { getAll, updateItem, storeItem } from '../constants/Gun'
 import { TimerList } from '../components/TimerList';
 import RunningTimer from '../components/runningTimer';
 import { timerValid, runningValid, timersValid } from '../constants/Validators'

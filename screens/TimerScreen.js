@@ -6,7 +6,8 @@ import { styles } from '../constants/Styles'
 import { findRunning, elapsedTime, formatTime } from '../constants/Functions'
 import Hashids from 'hashids'
 import { timerValid } from '../constants/Validators'
-import { storeItem, updateItem, getAll } from '../constants/Store'
+// import { storeItem, updateItem, getAll } from '../constants/Store'
+import { storeItem, updateItem, getAll } from '../constants/Gun'
 import { useCounter } from '../constants/Hooks'
 
 export default function TimerScreen({ route, navigation }) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, TextInput, Button, Alert } from 'react-native';
-import { updateItem, storeItem, removeItem } from '../constants/Store'
+// import { updateItem, storeItem, removeItem } from '../constants/Store'
+import { updateItem, storeItem, removeItem } from '../constants/Gun'
 import { projectValid, createdValid, nameValid, colorValid, timeValid } from '../constants/Validators'
 import Icon from 'react-native-vector-icons/Feather';
 import { ColorPicker } from '../components/ColorPicker'
