@@ -1,22 +1,72 @@
 import Gun from 'gun/gun.js'
 // import '@gooddollar/gun-asyncstorage'
 
-const {Flint, NodeAdapter} = require('gun-flint');
+// Object.defineProperty(exports, "__esModule", { value: true });
 import { AsyncStorage } from 'react-native';
-
-const asyncStorage = new NodeAdapter({
-    opt: function(context, options) {
-        // etc
-    },
-    get: function(key, field, done) {
-        // handle read
-    },
-    put: function(node, done) {
-        // handle write
+class Adapter {
+    constructor(db) {
+        this.db = db;
+        // Preserve the `this` context for read/write calls.
+        this.read = this.read.bind(this);
+        this.write = this.write.bind(this);
     }
+    read(context) {
+        const { get, gun } = context;
+        const { "#": key } = get;
+        const done = (err, data) => {
+            this.db.on("in", {
+                "@": context["#"],
+                put: Gun.graph.node(data),
+                //not needed. this solves an issue in gun https://github.com/amark/gun/issues/877
+                _: function () { },
+                err
+            });
+        };
+        AsyncStorage.getItem(key, (err, result) => {
+            if (err) {
+                // console.error(err)
+                done(err);
+            }
+            else if (result === null) {
+                // Nothing found
+                done(null);
+            }
+            else {
+                // console.log('async get:')
+                // console.log(JSON.parse(result))
+                done(null, JSON.parse(result));
+            }
+        });
+    }
+    write(context) {
+        const { put: graph, gun } = context;
+        const keys = Object.keys(graph);
+        const instructions = keys.map((key) => [
+            key,
+            JSON.stringify(graph[key])
+        ]);
+        AsyncStorage.multiMerge(instructions, (err) => {
+            this.db.on("in", {
+                "@": context["#"],
+                ok: !err || err.length === 0,
+                err
+            });
+        });
+    }
+}
+Gun.on("create", (db) => {
+    const adapter = new Adapter(db);
+    // Allows other plugins to respond concurrently.
+    const pluginInterop = (middleware) => function (ctx) {
+        this.to.next(ctx);
+        return middleware(ctx);
+    };
+    // Register the adapter
+    db.on("get", pluginInterop(adapter.read));
+    db.on("put", pluginInterop(adapter.write));
 });
 
-Flint.register(asyncStorage);
+
 
 
 const port = '8765'
@@ -26,6 +76,7 @@ const peers = [`http://${address}:${port}`]
 const gun = new Gun({
     localStorage: false,
     peers: peers,
+    // uuid: adapter()
 })
 
 
@@ -37,6 +88,7 @@ const gun = new Gun({
  */
 export function storeItem(item) {
     return new Promise((resolve, reject) => {
+        console.log(`Storing ${JSON.stringify(item)}`)
         gun.get('Items').get(item[0]).set(item[1], ack => {
             ack.err ? reject(ack.err) : resolve(item)
         })
@@ -142,8 +194,9 @@ export const storeMap = (result, validator) => {
     let value = result[1]
     if (!key || key === 'undefined') return false
     if (!value || value === 'undefined') return false
-    if (typeof value === 'string' && value.charAt(0) === '{') {
-        let value = JSON.parse(result[1])
+    // if (typeof value === 'string' && value.charAt(0) === '{') {
+    if (typeof value === 'object') {
+        // value = JSON.parse(result[1])
         if (validator(value) === true) return [key, value]
         else return false
     }
@@ -158,6 +211,24 @@ export const getAll = async (validator) => {
     const stores = await multiGet()
     return stores.map(result => storeMap(result, validator)).filter(result => result)
 }
+
+/**
+ * 
+ * @param {*} validator 
+ */
+export const getAllOptimized = async (validator) => {
+    let results = []
+    let keys = await getKeys()
+    if (!Array.isArray(keys)) return ('invalid keys')
+    await keys.map(key => {
+        gun.get('Items').get(id).map(item => typeof item[1] === 'object' && validator(item[1]) ? item : undefined ).once((data, key) => {
+            if (!data) reject(`${data} is not here.`)
+            results.push([id, trimSoul(data)])
+        })
+    })
+    return Promise.all(results)
+}
+
 
 /**
  * `DANGER!`

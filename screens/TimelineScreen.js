@@ -24,6 +24,8 @@ export default function TimelineScreen({ navigation }) {
     try {
       let timerEntries = await getAll(value => timerValid(value) ? true : false)
       let projectEntries = await getAll(value => value.type === 'project' ? true : false)
+      console.log('project entries')
+      console.log(projectEntries)
       resolve({ timers: timerEntries, projects: projectEntries })
     } catch (error) {
       reject(error)
