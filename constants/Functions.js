@@ -230,7 +230,7 @@ export const moodMap = mood => {
  * @param {*} timerlist 
  * @returns {Promise} [{title: day, data: [timer, ...]}, ...]
  */
-export const dayHeaders = timerlist => new Promise((resolve, reject) => {
+export const dayHeaders = timerlist => {
     const output = [] // [days...]
     // organize timers by day
     const timerdays = timerlist.map(timer => {
@@ -258,9 +258,9 @@ export const dayHeaders = timerlist => new Promise((resolve, reject) => {
         }
     })
     // // console.log('- DAYHEADERS - OUTPUT', output)
-    if (output.length > 0) { resolve(output) }
-    else { reject([]) }
-})
+    if (output.length > 0) { return(output) }
+    else { return([]) }
+}
 
 /**
  * takes timers sorted by day and combines by project then sums total time 

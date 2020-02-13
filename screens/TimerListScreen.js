@@ -9,6 +9,7 @@ import { timeString, secondsToString, totalTime, timeSpan, sayDay, dayHeaders, m
 import { styles } from '../constants/Styles'
 import { useCounter } from '../constants/Hooks'
 import { newTimer, updateTimer } from '../constants/Models';
+import useAsync from 'react-use/lib/useAsync';
 
 export default function TimerListScreen({ route, navigation }) {
   const pagename = 'TimerList'
@@ -38,65 +39,67 @@ export default function TimerListScreen({ route, navigation }) {
 
   const setEntryState = async () => {
     try {
-      const retrieved = await getEntries()
-      setTimers(retrieved.timers)
-      try {
-        const projectTimers = retrieved.timers.filter(timer => timer[1].project === project[0] ? true : false)
-        const sortedTimers = projectTimers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
-        const days = await dayHeaders(sortedTimers)
-        setDaysWithTimer(days)
-      } catch (error) {
-        // console.log(error)
-      }
-    } catch (error) {
-      // console.log(error)
+      // const retrieved = await getEntries()
+      let timerEntries = await getAll(value => timerValid(value) ? true : false)
+      setTimers(timerEntries)
+      const projectTimers = retrieved.timers.filter(timer => timer[1].project === project[0] ? true : false)
+      const sortedTimers = projectTimers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
+      const days = dayHeaders(sortedTimers)
+      setDaysWithTimer(days)
 
+    } catch (error) {
+      console.warn(error)
     }
   }
-  
+
   const splitAndUpdate = timer => {
     const entries = newEntryPerDay(timer[1].created)
-    // // console.log(entries)
-    entries.map((entry, i) => {
+    entries.map(async (entry, i) => {
       if (i === 0) {
-        updateItem(updateTimer(timer, {ended: entry.end}))
+        await updateItem(updateTimer(timer, { ended: entry.end }))
       } else {
         let value = timer[1]
         value.created = entry.start
         value.ended = entry.end === 'running' ? new Date() : entry.end
         value.status = entry.end === 'running' ? 'running' : 'done'
-        storeItem(newTimer({value: value}))
+        await storeItem(newTimer({ value: value }))
       }
     })
   }
-  const stopAndUpdate = timer => {
-    stop()
-    updateItem(updateTimer(timer, {count: count}))
-    setCount(0)
-    setRunningTimer([])
-    setRunningProject([])
-    setEntryState()
-  }
-  const startandUpdate = project => {
-    if (runningValid(runningTimer)) {
-      stopAndUpdate(runningTimer)
+
+  const stopAndUpdate = async timer => {
+    try {
+      stop()
+      await updateItem(updateTimer(timer, { count: count }))
+      setCount(0)
+      setRunningTimer([])
+      setRunningProject([])
+      setEntryState()
+    } catch (error) {
+      console.warn(error)
     }
-    let newtimer = newTimer({project: project})
-    storeItem(newtimer)
-    setEntryState()
-    setCount(0)
-    setRunningProject(project)
-    setRunningTimer(newtimer)
+
+  }
+  const startandUpdate = async project => {
+    try {
+      if (runningValid(runningTimer)) {
+        stopAndUpdate(runningTimer)
+      }
+      let newtimer = newTimer({ project: project })
+      await storeItem(newtimer)
+      setEntryState()
+      setCount(0)
+      setRunningProject(project)
+      setRunningTimer(newtimer)
+    } catch (error) {
+      console.warn(error)
+    }
+
   }
 
-  useEffect(() => {
-    const focused = navigation.addListener('focus', () => {
-      // console.log('FOCUS - ' + pagename)
-      setEntryState()
-    })
-    const unfocused = navigation.addListener('blur', () => {
-      stop()
-    })
+  useAsync(async () => {
+    const focused = navigation.addListener('focus', async () => await setEntryState())
+    const unfocused = navigation.addListener('blur', () => stop())
     return focused, unfocused
   }, [])
 

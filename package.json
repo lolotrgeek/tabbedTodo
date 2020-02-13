@@ -56,6 +56,7 @@
     "react-native-webview": "^8.0.2",
     "react-navigation": "^4.0.10",
     "react-numpad": "^5.0.4",
+    "react-use": "^13.24.0",
     "socket.io-client": "^2.1.1"
   },
   "devDependencies": {
@@ -66,7 +67,9 @@
     "jest-expo": "^36.0.1",
     "jetifier": "^1.6.5",
     "metro-react-native-babel-preset": "0.57.0",
-    "react-test-renderer": "16.12.0"
+    "react-native-debugger-open": "^0.3.24",
+    "react-test-renderer": "16.12.0",
+    "reactotron-react-native": "^4.0.3"
   },
   "private": true
 }

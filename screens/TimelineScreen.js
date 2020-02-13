@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import {Text, SafeAreaView, SectionList, Button } from 'react-native'
+import { Text, SafeAreaView, SectionList, Button } from 'react-native'
+import useAsync from 'react-use/lib/useAsync';
 import { Timeline } from '../components/Timeline'
 // import { getAll, storeItem, updateItem, removeAll } from '../constants/Store'
 import { getAll, storeItem, updateItem, removeAll } from '../constants/Gun'
@@ -11,7 +12,7 @@ import { newProject, newTimer, updateTimer } from '../constants/Models'
 import RunningTimer from '../components/runningTimer'
 
 export default function TimelineScreen({ navigation }) {
-  useEffect(() => navigation.setOptions({ title: 'Timeline'}), [])
+  useEffect(() => navigation.setOptions({ title: 'Timeline' }), [])
 
   const [timers, setTimers] = useState([]); // state of timers list
   const [projects, setProjects] = useState([]); // state of timers list
@@ -24,25 +25,33 @@ export default function TimelineScreen({ navigation }) {
     try {
       let timerEntries = await getAll(value => timerValid(value) ? true : false)
       let projectEntries = await getAll(value => value.type === 'project' ? true : false)
-      console.log('project entries')
-      console.log(projectEntries)
       resolve({ timers: timerEntries, projects: projectEntries })
     } catch (error) {
       reject(error)
     }
   })
   const setEntryState = async () => {
-    const retrieved = await getEntries()
-    setTimers(retrieved.timers)
-    setProjects(retrieved.projects)
-    const sortedTimers = retrieved.timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
     try {
+      // const retrieved = await getEntries()
+      let timerEntries = await getAll(value => timerValid(value) ? true : false)
+      let projectEntries = await getAll(value => value.type === 'project' ? true : false)
+      setTimers(timerEntries)
+      setProjects(projectEntries)
+      console.warn(projectEntries)
+      try {
+        const sortedTimers = timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
+        const days = dayHeaders(sortedTimers)
+        const summed = sumProjectTimers(days)
+        setDaysWithTimer(summed)
+      } catch (error) {
+        console.warn(error)
+      }
+      const sortedTimers = timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
       const days = await dayHeaders(sortedTimers)
       const summed = sumProjectTimers(days)
-      // console.log('List Items : ', summed)
       setDaysWithTimer(summed)
     } catch (err) {
-      // console.log(err)
+      console.warn(err)
     }
   }
 
@@ -62,36 +71,45 @@ export default function TimelineScreen({ navigation }) {
     })
   }
 
-  const stopAndUpdate = timer => {
-    stop()
-    updateItem(updateTimer(timer, { count: count }))
-    setCount(0)
-    setRunningTimer([])
-    setRunningProject([])
-    setEntryState()
-  }
-
-  const startandUpdate = project => {
-    if (runningValid(runningTimer)) {
-      stopAndUpdate(runningTimer)
+  const stopAndUpdate = async timer => {
+    try {
+      stop()
+      await updateItem(updateTimer(timer, { count: count }))
+      setCount(0)
+      setRunningTimer([])
+      setRunningProject([])
+      setEntryState()
+    } catch (error) {
+      console.warn(error)
     }
-    let newtimer = newTimer({ project: project })
-    storeItem(newtimer)
-    setEntryState()
-    setCount(0)
-    setRunningProject(project)
-    setRunningTimer(newtimer)
+
   }
 
-  useEffect(() => {
-    // removeAll()
-    setEntryState()
+  const startandUpdate = async project => {
+    try {
+      if (runningValid(runningTimer)) {
+        stopAndUpdate(runningTimer)
+      }
+      let newtimer = newTimer({ project: project })
+      await storeItem(newtimer)
+      setEntryState()
+      setCount(0)
+      setRunningProject(project)
+      setRunningTimer(newtimer)
+    } catch (error) {
+      console.warn(error)
+    }
+
+  }
+
+  useAsync(async () => {
+    await setEntryState()
   }, [])
 
-  useEffect(() => {
-    const focused = navigation.addListener('focus', () => {
+  useAsync(async () => {
+    const focused = navigation.addListener('focus', async () => {
       //// console.log('FOCUS - ' + pagename)
-      setEntryState()
+      await setEntryState()
     })
     const unfocused = navigation.addListener('blur', () => {
       // console.log('attempting stop...')

@@ -76,7 +76,6 @@ const peers = [`http://${address}:${port}`]
 const gun = new Gun({
     localStorage: false,
     peers: peers,
-    // uuid: adapter()
 })
 
 
@@ -111,8 +110,8 @@ export const trimSoul = data => {
  */
 export function getItem(id) {
     return new Promise((resolve, reject) => {
+        if (!id) reject(`${id} is not here.`)
         gun.get('Items').get(id).map().once((data, key) => {
-            if (!data) reject(`${data} is not here.`)
             resolve([id, trimSoul(data)])
         })
     })
@@ -134,7 +133,7 @@ export async function getItems(id) {
 }
 /**
  * Update existing key with given value
- * @param {Array} item [key, value]
+ * @param {Array} item `[key, value]`
  */
 export const updateItem = async item => await storeItem(item)
 
@@ -151,17 +150,15 @@ export const removeItem = async key => {
     })
 }
 
-
-
 /**
  * Get all Keys from Gun Store
  * @param {boolean} [validator] (key, value) critera for each item to pass
  */
 export const getKeys = async () => {
-    let keys = []
+    const keys = []
     await gun.get('Items').map().on((value, key) => {
         new Promise(async (resolve, reject) => {
-            if (!key) reject('no key')
+            if (!key) reject(null)
             resolve(keys.push(key))
         })
     })
@@ -170,7 +167,6 @@ export const getKeys = async () => {
 
 /**
  * Get all Items from Gun Store, including immutable sets
- * @param {boolean} [validator] (key, value) critera for each item to pass
  */
 export const multiGet = async () => {
     let results = []
@@ -207,9 +203,14 @@ export const storeMap = (result, validator) => {
  * 
  * @param {*} validator 
  */
-export const getAll = async (validator) => {
-    const stores = await multiGet()
-    return stores.map(result => storeMap(result, validator)).filter(result => result)
+export const getAll = (validator) => {
+    return new Promise(async (resolve, reject) => {
+        const stores = await multiGet()
+        if (!stores && !Array.isArray(stores)) reject('Invalid Store.')
+        let results = stores.map(result => storeMap(result, validator)).filter(result => result)
+        resolve(results)
+    })
+
 }
 
 /**
@@ -221,7 +222,7 @@ export const getAllOptimized = async (validator) => {
     let keys = await getKeys()
     if (!Array.isArray(keys)) return ('invalid keys')
     await keys.map(key => {
-        gun.get('Items').get(id).map(item => typeof item[1] === 'object' && validator(item[1]) ? item : undefined ).once((data, key) => {
+        gun.get('Items').get(id).map(item => typeof item[1] === 'object' && validator(item[1]) ? item : undefined).once((data, key) => {
             if (!data) reject(`${data} is not here.`)
             results.push([id, trimSoul(data)])
         })

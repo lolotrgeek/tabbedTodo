@@ -13,11 +13,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import EditorScreen from '../screens/EditorScreen'
 import TimerEditorScreen from '../screens/TimerEditorScreen'
 import TimelineScreen from '../screens/TimelineScreen'
-
-
-
-
-
+import StartScreen from '../screens/StartScreen'
 
 /**
  * Project stack
@@ -26,6 +22,7 @@ const TimelineStack = createStackNavigator();
 export default function MainStack() {
   return (
     <TimelineStack.Navigator screenOptions={stackOptions} mode="modal" >
+      <TimelineStack.Screen name="Start" component={StartScreen} />
       <TimelineStack.Screen name="Timeline" component={TimelineScreen} />
       <TimelineStack.Screen name='Projects' component={ProjectScreen} />
       <TimelineStack.Screen name='Edit' component={EditorScreen} />

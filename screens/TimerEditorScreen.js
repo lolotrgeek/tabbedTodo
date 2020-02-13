@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, Button, TouchableOpacity, Alert } from 'react-native';
+import useAsync from 'react-use/lib/useAsync';
 // import { updateItem, removeItem } from '../constants/Store'
 import { updateItem, removeItem } from '../constants/Gun'
 import { EnergySlider, MoodPicker } from '../components/TimerNotes'
@@ -127,28 +128,28 @@ export default function TimerEditorScreen({ route, navigation }) {
         handleRoutedParams()
     }, [])
 
-    useEffect(() => {
-        timer[1].mood = mood
-        updateItem(timer[0], timer[1])
-    }, [mood])
+    // useAsync(() => {
+    //     timer[1].mood = mood
+    //     // updateItem(timer[0], timer[1])
+    // }, [mood])
 
-    useEffect(() => {
-        if (!timeRulesEnforcer()) {
-            setCreated(timer[1].created)
-        } else {
-            timer[1].created = created
-            updateItem(timer[0], timer[1])
-        }
-    }, [created])
+    // useEffect(() => {
+    //     if (!timeRulesEnforcer()) {
+    //         setCreated(timer[1].created)
+    //     } else {
+    //         timer[1].created = created
+    //         // updateItem(timer[0], timer[1])
+    //     }
+    // }, [created])
 
-    useEffect(() => {
-        if (!timeRulesEnforcer()) {
-            setEnded(timer[1].ended)
-        } else {
-            timer[1].ended = ended
-            updateItem(timer[0], timer[1])
-        }
-    }, [ended])
+    // useEffect(() => {
+    //     if (!timeRulesEnforcer()) {
+    //         setEnded(timer[1].ended)
+    //     } else {
+    //         timer[1].ended = ended
+    //         updateItem(timer[0], timer[1])
+    //     }
+    // }, [ended])
 
 
     return (
