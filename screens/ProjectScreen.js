@@ -19,18 +19,6 @@ export default function ProjectScreen({ route, navigation }) {
       setProject(entries)
     } catch (error) {
       console.warn(error)
-      // Alert.alert(
-      //   'Error',
-      //   'Unable to Load Entries',
-      //   [{
-      //     text: 'Cancel',
-      //     onPress: () => console.log('Cancel Pressed'),
-      //     style: 'cancel',
-      //   },
-      //   { text: 'OK', onPress: () => navigation.navigate(lastscreen) },
-      //   ],
-      //   { cancelable: true },
-      // );
     }
   }
 

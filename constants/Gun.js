@@ -2,7 +2,7 @@ import Gun from 'gun/gun.js'
 // import '@gooddollar/gun-asyncstorage'
 
 // Object.defineProperty(exports, "__esModule", { value: true });
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage } from 'react-native'; 
 class Adapter {
     constructor(db) {
         this.db = db;

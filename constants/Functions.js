@@ -228,7 +228,7 @@ export const moodMap = mood => {
 /**
  * List all timers in each day
  * @param {*} timerlist 
- * @returns {Promise} [{title: day, data: [timer, ...]}, ...]
+ * @returns [{title: day, data: [timer, ...]}, ...]
  */
 export const dayHeaders = timerlist => {
     const output = [] // [days...]

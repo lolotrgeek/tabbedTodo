@@ -28,27 +28,52 @@ export default function TimerListScreen({ route, navigation }) {
 
 
   // PAGE FUNCTIONS
-  const getEntries = () => new Promise(async (resolve, reject) => {
-    try {
-      let timerEntries = await getAll(value => timerValid(value) ? true : false)
-      resolve({ timers: timerEntries })
-    } catch (error) {
-      reject(error)
-    }
-  })
-
   const setEntryState = async () => {
     try {
       // const retrieved = await getEntries()
       let timerEntries = await getAll(value => timerValid(value) ? true : false)
       setTimers(timerEntries)
-      const projectTimers = retrieved.timers.filter(timer => timer[1].project === project[0] ? true : false)
+      const projectTimers = timerEntries.filter(timer => timer[1].project === project[0] ? true : false)
       const sortedTimers = projectTimers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
       const days = dayHeaders(sortedTimers)
       setDaysWithTimer(days)
-
     } catch (error) {
       console.warn(error)
+    }
+  }
+
+  const refreshState = () => {
+    const projectTimers = timers.filter(timer => timer[1].project === project[0] ? true : false)
+    const sortedTimers = projectTimers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
+    const days = dayHeaders(sortedTimers)
+    console.log('DAYS', days)
+    setDaysWithTimer(days)
+  }
+
+  const foundRunning = () => {
+    if (running && running.project && runningValid(runningTimer)) {
+      if (runningTimer[1].project === running.project[0]) {
+        setRunningProject(running.project)
+      }
+    }
+  }
+
+  const parseRunning = () => {
+    if (timersValid(timers)) {
+      const foundRunning = findRunning(timers)
+      if (runningValid(foundRunning)) {
+        if (multiDay(foundRunning[1].created)) {
+          splitAndUpdate(foundRunning)
+        }
+        setRunningTimer(foundRunning)
+        setCount(elapsedTime(foundRunning[1].created))
+      }
+    }
+  }
+
+  const startRunning = () => {
+    if (runningTimer && Array.isArray(runningTimer) && runningTimer.length === 2) {
+      start()
     }
   }
 
@@ -70,15 +95,19 @@ export default function TimerListScreen({ route, navigation }) {
   const stopAndUpdate = async timer => {
     try {
       stop()
-      await updateItem(updateTimer(timer, { count: count }))
       setCount(0)
       setRunningTimer([])
       setRunningProject([])
-      setEntryState()
+      let updatedTimer = updateTimer(timer, { count: count })
+      console.log('updatedTimer ', updatedTimer)
+      const clearEntry = timers.filter(entry => entry[0] !== updatedTimer[0])
+      console.log('CLEAR', clearEntry)
+      setTimers([updatedTimer, ...clearEntry])
+      refreshState()
+      await storeItem(updatedTimer)
     } catch (error) {
       console.warn(error)
     }
-
   }
   const startandUpdate = async project => {
     try {
@@ -86,11 +115,10 @@ export default function TimerListScreen({ route, navigation }) {
         stopAndUpdate(runningTimer)
       }
       let newtimer = newTimer({ project: project })
-      await storeItem(newtimer)
-      setEntryState()
       setCount(0)
       setRunningProject(project)
       setRunningTimer(newtimer)
+      await storeItem(newtimer)
     } catch (error) {
       console.warn(error)
     }
@@ -103,34 +131,16 @@ export default function TimerListScreen({ route, navigation }) {
     return focused, unfocused
   }, [])
 
+  useEffect(() => parseRunning(), [timers])
+  useEffect(() => foundRunning(), [runningTimer])
+  useEffect(() => startRunning(), [runningTimer])
   useEffect(() => {
-    if (timersValid(timers)) {
-      const foundRunning = findRunning(timers)
-      if (runningValid(foundRunning)) {
-        if (multiDay(foundRunning[1].created)) {
-          splitAndUpdate(foundRunning)
-        }
-        setRunningTimer(foundRunning)
-        setCount(elapsedTime(foundRunning[1].created))
-      }
-    }
-  }, [timers])
-
-  useEffect(() => {
-    if (running.project && runningValid(runningTimer)) {
-      if (runningTimer[1].project === running.project[0]) {
-        // console.log('Found Running Project')
-        setRunningProject(running.project)
-      }
-    }
-  }, [runningTimer])
-
-  useEffect(() => {
-    if (runningTimer && Array.isArray(runningTimer) && runningTimer.length === 2) {
-      // console.log('runningTimer: ', runningTimer)
-      start()
-    }
-  }, [runningTimer])
+    console.log('STATE')
+    console.log('Timers', timers)
+    console.log('DayswithTimer', daysWithTimer)
+    console.log('runningProject', runningProject)
+    console.log('runningTimer', runningTimer)
+  }, [timers, daysWithTimer, runningProject, runningTimer])
 
   return (
     <SafeAreaView style={styles.container}>

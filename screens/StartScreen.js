@@ -1,33 +1,40 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Text, View, SafeAreaView, Button } from 'react-native'
 import useAsync from 'react-use/lib/useAsync';
-// import { getAll, storeItem, updateItem, removeAll } from '../constants/Store'
-import { getAll, storeItem, updateItem, removeAll, multiGet } from '../constants/Gun'
+import { removeAll } from '../constants/Store'
+import { getAll, storeItem, updateItem, multiGet } from '../constants/Gun'
 import { styles } from '../constants/Styles'
 
 export default function StartScreen({ navigation }) {
     useEffect(() => navigation.setOptions({ title: 'Start' }), [])
     const [items, setItems] = useState([])
+    const getter = useRef(false)
+    let i = useRef(0)
+    let Items = useRef([])
 
-    const setEntryState = async () => await multiGet()
-
-
+    const setEntryState = async () => {
+        try {
+            setItems(await multiGet() )
+        } catch (error) {
+            console.warn(error)
+        }
+    }
 
     useEffect(() => {
-        const timer = setInterval(async () => {
-            if (items.length > 0) clearInterval(timer)
-            
-            let Items = await setEntryState()
+        getter.current = setInterval(async () => {
+            if (items.length > 0 || i.current > 10) clearInterval(getter.current)
+            Items = await multiGet()
             setItems(Items)
-            console.log(items)
-            console.log(items.length)
-        }, 1000); 
-        return () => clearInterval(timer);
+            i.current++
+            console.log(i.current)
+        }, 1000);
+        return () => clearInterval(getter.current);
     }, []);
 
-    // useAsync(async () => {
-    //     setItems(['hello'])
-    // }, [])
+    useEffect(() => {
+        if (items.length > 0 || i.current > 10) clearInterval(getter.current)
+    })
+
 
     return (
         <SafeAreaView style={styles.container}>
@@ -39,13 +46,14 @@ export default function StartScreen({ navigation }) {
             })} />
             <Button title="Load Items" onPress={async () => await setEntryState()} />
             <Button title="Clear Items" onPress={async () => await setItems([])} />
+            <Button title="Delete Items" onPress={async () => await removeAll()} />
             <View style={{ width: '100%' }}>
                 {items.map(item => {
                     if (Array.isArray(item)) {
                         return (
                             <View key={item[0]}>
                                 <Text >{item[0]}</Text>
-                                <Text>{item[1] ? item[1].type : 'null'}</Text>
+                                <Text>{item[1] ? JSON.stringify(item[1]) : 'null'}</Text>
                             </View>
                         )
                     }

@@ -124,9 +124,7 @@ export default function TimerEditorScreen({ route, navigation }) {
         }
     }
 
-    useEffect(() => {
-        handleRoutedParams()
-    }, [])
+    useEffect(() => handleRoutedParams(), [])
 
     // useAsync(() => {
     //     timer[1].mood = mood

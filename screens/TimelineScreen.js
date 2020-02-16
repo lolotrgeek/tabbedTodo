@@ -21,23 +21,12 @@ export default function TimelineScreen({ navigation }) {
   const [runningProject, setRunningProject] = useState([])
   const { count, setCount, start, stop } = useCounter(1000, false)
 
-  const getEntries = () => new Promise(async (resolve, reject) => {
-    try {
-      let timerEntries = await getAll(value => timerValid(value) ? true : false)
-      let projectEntries = await getAll(value => value.type === 'project' ? true : false)
-      resolve({ timers: timerEntries, projects: projectEntries })
-    } catch (error) {
-      reject(error)
-    }
-  })
   const setEntryState = async () => {
     try {
-      // const retrieved = await getEntries()
       let timerEntries = await getAll(value => timerValid(value) ? true : false)
       let projectEntries = await getAll(value => value.type === 'project' ? true : false)
       setTimers(timerEntries)
       setProjects(projectEntries)
-      console.warn(projectEntries)
       try {
         const sortedTimers = timers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
         const days = dayHeaders(sortedTimers)
@@ -71,56 +60,21 @@ export default function TimelineScreen({ navigation }) {
     })
   }
 
-  const stopAndUpdate = async timer => {
-    try {
-      stop()
-      await updateItem(updateTimer(timer, { count: count }))
-      setCount(0)
-      setRunningTimer([])
-      setRunningProject([])
-      setEntryState()
-    } catch (error) {
-      console.warn(error)
+  const foundRunning = () => {
+    if (timersValid(projects) && runningValid(runningTimer)) {
+      projects.map(project => {
+        if (runningTimer[1].project === project[0]) {
+          setRunningProject(project)
+        }
+      })
     }
-
   }
-
-  const startandUpdate = async project => {
-    try {
-      if (runningValid(runningTimer)) {
-        stopAndUpdate(runningTimer)
-      }
-      let newtimer = newTimer({ project: project })
-      await storeItem(newtimer)
-      setEntryState()
-      setCount(0)
-      setRunningProject(project)
-      setRunningTimer(newtimer)
-    } catch (error) {
-      console.warn(error)
+  const startRunning = () => {
+    if (runningTimer && Array.isArray(runningTimer) && runningTimer.length === 2) {
+      start()
     }
-
   }
-
-  useAsync(async () => {
-    await setEntryState()
-  }, [])
-
-  useAsync(async () => {
-    const focused = navigation.addListener('focus', async () => {
-      //// console.log('FOCUS - ' + pagename)
-      await setEntryState()
-    })
-    const unfocused = navigation.addListener('blur', () => {
-      // console.log('attempting stop...')
-      setRunningProject([])
-      setRunningTimer([])
-      stop()
-    })
-    return focused, unfocused
-  }, [])
-
-  useEffect(() => {
+  const parseRunning = () => {
     if (timersValid(timers)) {
       const foundRunning = findRunning(timers)
       if (runningValid(foundRunning)) {
@@ -131,29 +85,51 @@ export default function TimelineScreen({ navigation }) {
         setCount(elapsedTime(foundRunning[1].created))
       }
     }
-  }, [timers])
+  }
 
-  useEffect(() => {
-    if (timersValid(projects) && runningValid(runningTimer)) {
-      projects.map(project => {
-        if (runningTimer[1].project === project[0]) {
-          setRunningProject(project)
-        }
-      })
+  const stopAndUpdate = async timer => {
+    try {
+      stop()
+      await updateItem(updateTimer(timer, { count: count }))
+      setCount(0)
+      setRunningTimer([])
+      setRunningProject([])
+    } catch (error) {
+      console.warn(error)
     }
-  }, [runningTimer, projects])
+  }
 
-  useEffect(() => {
-    if (runningTimer && Array.isArray(runningTimer) && runningTimer.length === 2) {
-      start()
+  const startandUpdate = async project => {
+    try {
+      if (runningValid(runningTimer)) {
+        stopAndUpdate(runningTimer)
+      }
+      let newtimer = newTimer({ project: project })
+      await storeItem(newtimer)
+      setCount(0)
+      setRunningProject(project)
+      setRunningTimer(newtimer)
+    } catch (error) {
+      console.warn(error)
     }
-  }, [runningTimer])
 
-  // useEffect(() => {
-  //   if (runningValid(runningTimer)) {
-  //     // console.log('ticked : ', count, 'calculated : ', elapsedTime(runningTimer[1].created))
-  //   }
-  // }, [count])
+  }
+
+  // useAsync(async () => await setEntryState(), [])
+
+  useAsync(async () => {
+    const focused = navigation.addListener('focus', async () => await setEntryState())
+    const unfocused = navigation.addListener('blur', () => {
+      setRunningProject([])
+      setRunningTimer([])
+      stop()
+    })
+    return focused, unfocused
+  }, [])
+
+  useEffect(() => parseRunning(), [timers])
+  useEffect(() => foundRunning(), [runningTimer, projects])
+  useEffect(() => startRunning(), [runningTimer])
 
   return (
     <SafeAreaView style={styles.container}>
