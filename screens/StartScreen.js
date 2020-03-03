@@ -2,19 +2,22 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Text, View, SafeAreaView, Button } from 'react-native'
 import useAsync from 'react-use/lib/useAsync';
 import { removeAll } from '../constants/Store'
-import { getAll, storeItem, updateItem, multiGet } from '../constants/Gun'
+import { multiGetAll, multiGet } from '../constants/Gun'
 import { styles } from '../constants/Styles'
+
+// TODO : useAsyncRetry
+// https://github.com/streamich/react-use/blob/master/docs/useAsyncRetry.md
 
 export default function StartScreen({ navigation }) {
     useEffect(() => navigation.setOptions({ title: 'Start' }), [])
     const [items, setItems] = useState([])
     const getter = useRef(false)
     let i = useRef(0)
-    let Items = useRef([])
 
     const setEntryState = async () => {
         try {
-            setItems(await multiGet() )
+            const Items = await multiGet()
+            setItems(Items)
         } catch (error) {
             console.warn(error)
         }
@@ -22,14 +25,14 @@ export default function StartScreen({ navigation }) {
 
     useEffect(() => {
         getter.current = setInterval(async () => {
-            if (items.length > 0 || i.current > 10) clearInterval(getter.current)
-            Items = await multiGet()
+            const Items = await multiGet()
+            console.log('Items', Items)
             setItems(Items)
             i.current++
             console.log(i.current)
-        }, 1000);
-        return () => clearInterval(getter.current);
-    }, []);
+        }, 1000)
+        return () => clearInterval(getter.current)
+    }, [])
 
     useEffect(() => {
         if (items.length > 0 || i.current > 10) clearInterval(getter.current)
@@ -58,7 +61,7 @@ export default function StartScreen({ navigation }) {
                         )
                     }
                     else {
-                        return (<Text key={item + Date.now()}>{item}</Text>)
+                        return (<Text key={Date.now()}>{JSON.stringify(item)}</Text>)
                     }
 
                 })}

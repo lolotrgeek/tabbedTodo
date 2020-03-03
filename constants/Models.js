@@ -4,7 +4,7 @@ export const newTimerValue = (project) => ({
     created: new Date().toString(),
     ended: new Date().toString(),
     type: 'timer',
-    project: project[0],
+    project: project,
     status: 'running',
     total: 0,
     mood: 'good',

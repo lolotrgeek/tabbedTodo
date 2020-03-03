@@ -2,7 +2,7 @@ import Gun from 'gun/gun.js'
 // import '@gooddollar/gun-asyncstorage'
 
 // Object.defineProperty(exports, "__esModule", { value: true });
-import { AsyncStorage } from 'react-native'; 
+import { AsyncStorage } from 'react-native';
 class Adapter {
     constructor(db) {
         this.db = db;
@@ -105,10 +105,10 @@ export const trimSoul = data => {
 }
 
 /**
- * retrieve last item from entry graph
+ * retrieve random item from entry graph
  * @param {Array} id 
  */
-export function getItem(id) {
+export function getItemRand(id) {
     return new Promise((resolve, reject) => {
         if (!id) reject(`${id} is not here.`)
         gun.get('Items').get(id).map().once((data, key) => {
@@ -131,6 +131,20 @@ export async function getItems(id) {
     })
     return Promise.all(results)
 }
+
+/**
+ * retrieve last item from entry graph
+ * @param {Array} id 
+ */
+export async function getItem(id) {
+    return new Promise(async (resolve, reject) => {
+        let items = await getItems(id)
+        console.log('Stored Items', items)
+        let value = items[items.length - 1]
+        resolve([id, value])
+    })
+}
+
 /**
  * Update existing key with given value
  * @param {Array} item `[key, value]`
@@ -166,16 +180,33 @@ export const getKeys = async () => {
 }
 
 /**
- * Get all Items from Gun Store, including immutable sets
+ * Get all current Items from Gun Store
  */
 export const multiGet = async () => {
     let results = []
     let keys = await getKeys()
     if (!Array.isArray(keys)) return ('invalid keys')
-    await keys.map(key => {
+    keys.map(key => {
         results.push(getItem(key))
     })
     return Promise.all(results)
+}
+
+/**
+ * Get all Items from Gun Store, including immutable sets
+ */
+export const multiGetAll = () => {
+    return new Promise(async (resolve, reject) => {
+        let results = []
+        let keys = await getKeys()
+        if (!Array.isArray(keys)) reject('invalid keys')
+        await keys.map(async key => {
+            let items = await getItems(key)
+            console.log('Items', key, items)
+            results.push([key, items])
+        })
+        resolve(results)
+    })
 }
 
 /**

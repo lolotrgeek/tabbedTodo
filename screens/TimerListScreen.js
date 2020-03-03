@@ -32,6 +32,7 @@ export default function TimerListScreen({ route, navigation }) {
     try {
       // const retrieved = await getEntries()
       let timerEntries = await getAll(value => timerValid(value) ? true : false)
+      console.log('TIMER ENTRIES', timerEntries)
       setTimers(timerEntries)
       const projectTimers = timerEntries.filter(timer => timer[1].project === project[0] ? true : false)
       const sortedTimers = projectTimers.sort((a, b) => new Date(b[1].created) - new Date(a[1].created))
